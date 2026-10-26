@@ -120,6 +120,21 @@ class SettingsActivity : AppCompatActivity() {
             }
 
 
+            // Restore defaults (asks for confirmation)
+            findPreference<Preference>("darkempire78.opencalculator.RESTORE_DEFAULTS")?.setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.settings_restore_confirm_title)
+                    .setMessage(R.string.settings_restore_confirm_message)
+                    .setNegativeButton(R.string.fin_cancel, null)
+                    .setPositiveButton(R.string.settings_restore_confirm) { _, _ ->
+                        MyPreferences(requireContext()).restoreDefaults()
+                        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                        requireActivity().recreate()
+                    }
+                    .show()
+                true
+            }
+
             // Numbering System button  settings_select_scientificMode_system
             val scientificModeTypesSystemPreference =
                 findPreference<Preference>("darkempire78.opencalculator.SCIENTIFIC_MODE_ENABLED_BY_DEFAULT")

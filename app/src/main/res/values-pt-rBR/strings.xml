@@ -264,4 +264,26 @@
     <string name="hist_result_copied">Resultado copiado</string>
     <string name="fin_history">Histórico</string>
     <string name="fin_history_empty">Nenhum cálculo financeiro ainda</string>
+
+    <!-- Settings -->
+    <string name="settings_category_financial">Calculadora financeira</string>
+    <string name="settings_financial_decimals">Casas decimais para valores monetários</string>
+    <string name="settings_financial_payment_mode">Pagamentos</string>
+    <string name="settings_financial_payment_mode_desc">Início ou final de cada período (igual às teclas BEG e END)</string>
+    <string name="settings_financial_payments_per_year">Pagamentos por ano</string>
+    <string name="settings_formatting_decimal_separator">Separador decimal</string>
+    <string name="settings_formatting_grouping">Separador de milhares</string>
+    <string name="settings_formatting_note">Alterar os separadores não modifica os itens já salvos no histórico</string>
+    <string name="settings_restore_defaults">Restaurar configurações padrão</string>
+    <string name="settings_restore_defaults_desc">Seu histórico, a memória e os registradores financeiros são mantidos</string>
+    <string name="settings_restore_confirm_title">Restaurar configurações padrão?</string>
+    <string name="settings_restore_confirm_message">Tema, formatos e opções voltam ao padrão. O histórico e os registradores financeiros não são alterados.</string>
+    <string name="settings_restore_confirm">Restaurar</string>
+    <string name="payment_mode_end">Final do período</string>
+    <string name="payment_mode_begin">Início do período</string>
+    <string name="sep_auto">Automático (segue o idioma)</string>
+    <string name="sep_dot">Ponto (.)</string>
+    <string name="sep_comma">Vírgula (,)</string>
+    <string name="sep_space">Espaço</string>
+    <string name="sep_none">Nenhum</string>
 </resources>

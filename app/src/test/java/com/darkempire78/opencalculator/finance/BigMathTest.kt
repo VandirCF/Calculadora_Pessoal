@@ -26,4 +26,14 @@ class BigMathTest {
     @Test fun zeroToNegativePowerIsDivisionByZero() {
         try { BigMath.pow(bd("0"), bd("-1")); throw AssertionError("expected failure") } catch (e: FinancialException) { assertEquals(FinancialError.DIVISION_BY_ZERO, e.error) }
     }
+
+    // sqrt is implemented with Newton iteration because BigDecimal.sqrt needs API 33 (minSdk is 21)
+    @Test fun sqrtOfTwo() = assertClose("1.4142135623730950488016887242097", BigMath.sqrt(bd("2")), "1E-30")
+    @Test fun sqrtOfPerfectSquare() = assertClose("12", BigMath.sqrt(bd("144")), "1E-30")
+    @Test fun sqrtOfZero() = assertEquals(0, bd("0").compareTo(BigMath.sqrt(bd("0"))))
+    @Test fun sqrtOfHugeNumber() = assertClose("1E50", BigMath.sqrt(bd("1E100")), "1E-10")
+    @Test fun sqrtOfTinyNumber() = assertClose("1E-100", BigMath.sqrt(bd("1E-200")), "1E-130")
+    @Test fun sqrtOfNegativeIsRejected() {
+        try { BigMath.sqrt(bd("-1")); throw AssertionError("expected failure") } catch (e: FinancialException) { assertEquals(FinancialError.OUT_OF_RANGE, e.error) }
+    }
 }

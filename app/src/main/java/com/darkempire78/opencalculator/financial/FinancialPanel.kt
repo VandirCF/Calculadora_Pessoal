@@ -261,7 +261,7 @@ class FinancialPanel(
                 setSingleLine()
                 typeface = Typeface.create("sans-serif-condensed", Typeface.NORMAL)
                 contentDescription = null
-                ViewCompat.setAccessibilityLiveRegion(this, if (isX) View.ACCESSIBILITY_LIVE_REGION_POLITE else View.ACCESSIBILITY_LIVE_REGION_NONE)
+                ViewCompat.setAccessibilityLiveRegion(this, if (isX) ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE else ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE)
                 if (isX) {
                     TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, 18, 44, 2, TypedValue.COMPLEX_UNIT_SP)
                 } else {
@@ -305,7 +305,7 @@ class FinancialPanel(
         messageView = TextView(context).apply {
             textSize = 12f
             setTextColor(dim)
-            ViewCompat.setAccessibilityLiveRegion(this, View.ACCESSIBILITY_LIVE_REGION_POLITE)
+            ViewCompat.setAccessibilityLiveRegion(this, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
             minLines = 2
         }
         box.addView(messageView, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
@@ -727,7 +727,7 @@ class FinancialPanel(
         val result = TextView(context).apply {
             textSize = 14f
             setPadding(0, dp(12), 0, 0)
-            ViewCompat.setAccessibilityLiveRegion(this, View.ACCESSIBILITY_LIVE_REGION_POLITE)
+            ViewCompat.setAccessibilityLiveRegion(this, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
         }
         fun updateVisibility() {
             val type = typeSpinner.selectedItemPosition

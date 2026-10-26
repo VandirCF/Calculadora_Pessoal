@@ -86,4 +86,43 @@
         <item>1000</item> <!-- Infinity -->
     </string-array>
 
+
+    <string-array name="financial_decimals_values">
+        <item>0</item><item>1</item><item>2</item><item>3</item><item>4</item><item>5</item><item>6</item><item>7</item><item>8</item>
+    </string-array>
+    <string-array name="payment_mode_entries">
+        <item>@string/payment_mode_end</item>
+        <item>@string/payment_mode_begin</item>
+    </string-array>
+    <string-array name="payment_mode_values">
+        <item>END</item>
+        <item>BEGIN</item>
+    </string-array>
+    <string-array name="payments_per_year_values">
+        <item>1</item><item>2</item><item>3</item><item>4</item><item>6</item><item>12</item><item>24</item><item>26</item><item>52</item><item>365</item>
+    </string-array>
+    <string-array name="decimal_separator_entries">
+        <item>@string/sep_auto</item>
+        <item>@string/sep_dot</item>
+        <item>@string/sep_comma</item>
+    </string-array>
+    <string-array name="decimal_separator_values">
+        <item>AUTO</item>
+        <item>DOT</item>
+        <item>COMMA</item>
+    </string-array>
+    <string-array name="grouping_entries">
+        <item>@string/sep_auto</item>
+        <item>@string/sep_comma</item>
+        <item>@string/sep_dot</item>
+        <item>@string/sep_space</item>
+        <item>@string/sep_none</item>
+    </string-array>
+    <string-array name="grouping_values">
+        <item>AUTO</item>
+        <item>COMMA</item>
+        <item>DOT</item>
+        <item>SPACE</item>
+        <item>NONE</item>
+    </string-array>
 </resources>

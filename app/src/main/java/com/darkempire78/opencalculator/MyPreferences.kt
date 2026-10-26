@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.preference.PreferenceManager
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.util.CalculatorMode
+import com.darkempire78.opencalculator.util.DecimalSeparatorSetting
+import com.darkempire78.opencalculator.util.GroupingSetting
+import com.darkempire78.opencalculator.util.SeparatorSettings
 import com.google.gson.Gson
 
 class MyPreferences(context: Context) {
@@ -36,6 +39,10 @@ class MyPreferences(context: Context) {
         private const val KEY_FINANCIAL_STATE = "darkempire78.opencalculator.FINANCIAL_STATE"
         private const val KEY_FINANCIAL_DECIMALS = "darkempire78.opencalculator.FINANCIAL_DECIMALS"
         private const val KEY_HISTORY_FILTER = "darkempire78.opencalculator.HISTORY_FILTER"
+        private const val KEY_DECIMAL_SEPARATOR = "darkempire78.opencalculator.DECIMAL_SEPARATOR"
+        private const val KEY_GROUPING_SEPARATOR = "darkempire78.opencalculator.GROUPING_SEPARATOR"
+        private const val KEY_PAYMENT_MODE = "darkempire78.opencalculator.FINANCIAL_PAYMENT_MODE"
+        private const val KEY_PAYMENTS_PER_YEAR = "darkempire78.opencalculator.FINANCIAL_PAYMENTS_PER_YEAR"
         private const val KEY_SHOW_ON_LOCK_SCREEN = "darkempire78.opencalculator.KEY_SHOW_ON_LOCK_SCREEN"
     }
 
@@ -109,6 +116,41 @@ class MyPreferences(context: Context) {
     var historyFilter: CalculatorMode?
         get() = preferences.getString(KEY_HISTORY_FILTER, null)?.let { name -> CalculatorMode.entries.firstOrNull { it.name == name } }
         set(value) = preferences.edit().putString(KEY_HISTORY_FILTER, value?.name).apply()
+
+    var decimalSeparatorSetting: DecimalSeparatorSetting
+        get() = SeparatorSettings.decimalFromName(preferences.getString(KEY_DECIMAL_SEPARATOR, null))
+        set(value) = preferences.edit().putString(KEY_DECIMAL_SEPARATOR, value.name).apply()
+
+    var groupingSetting: GroupingSetting
+        get() = SeparatorSettings.groupingFromName(preferences.getString(KEY_GROUPING_SEPARATOR, null))
+        set(value) = preferences.edit().putString(KEY_GROUPING_SEPARATOR, value.name).apply()
+
+    /** True when payments happen at the beginning of each period (BEG), false for the end (END). */
+    var financialBeginMode: Boolean
+        get() = preferences.getString(KEY_PAYMENT_MODE, "END") == "BEGIN"
+        set(value) = preferences.edit().putString(KEY_PAYMENT_MODE, if (value) "BEGIN" else "END").apply()
+
+    var paymentsPerYear: Int
+        get() = preferences.getString(KEY_PAYMENTS_PER_YEAR, "12")?.toIntOrNull()?.coerceIn(1, 365) ?: 12
+        set(value) = preferences.edit().putString(KEY_PAYMENTS_PER_YEAR, value.coerceIn(1, 365).toString()).apply()
+
+    /**
+     * Removes every user setting so defaults apply again. History, memory, financial registers
+     * and the active calculator mode are data, not settings, and are kept.
+     */
+    fun restoreDefaults() {
+        val settingKeys = listOf(
+            THEME, FORCE_DAY_NIGHT, KEY_VIBRATION_STATUS, KEY_PREVENT_PHONE_FROM_SLEEPING, KEY_HISTORY_SIZE,
+            KEY_SCIENTIFIC_MODE_ENABLED_BY_DEFAULT, KEY_RADIANS_INSTEAD_OF_DEGREES_BY_DEFAULT, KEY_NUMBER_PRECISION,
+            KEY_WRITE_NUMBER_INTO_SCIENTIC_NOTATION, KEY_LONG_CLICK_TO_COPY_VALUE, KEY_ADD_MODULO_BUTTON,
+            KEY_SPLIT_PARENTHESIS_BUTTON, KEY_DELETE_HISTORY_ON_SWIPE, KEY_AUTO_SAVE_CALCULATION_WITHOUT_EQUAL_BUTTON,
+            KEY_MOVE_BACK_BUTTON_LEFT, KEY_NUMBERING_SYSTEM, KEY_SHOW_ON_LOCK_SCREEN, KEY_FINANCIAL_DECIMALS,
+            KEY_DECIMAL_SEPARATOR, KEY_GROUPING_SEPARATOR, KEY_PAYMENT_MODE, KEY_PAYMENTS_PER_YEAR
+        )
+        val editor = preferences.edit()
+        settingKeys.forEach { editor.remove(it) }
+        editor.apply()
+    }
 
     var showOnLockScreen = preferences.getBoolean(KEY_SHOW_ON_LOCK_SCREEN, true)
         set(value) = preferences.edit().putBoolean(KEY_SHOW_ON_LOCK_SCREEN, value).apply()

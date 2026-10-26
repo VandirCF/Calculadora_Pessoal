@@ -75,6 +75,17 @@ object BigMath {
 
     fun sqrt(x: BigDecimal): BigDecimal {
         if (x.signum() < 0) fail(FinancialError.OUT_OF_RANGE, "square root of a negative number")
-        return x.sqrt(WORK_MC).round(MC)
+        if (x.signum() == 0) return BigDecimal.ZERO
+        // BigDecimal.sqrt needs API 33 and the app supports API 21: Newton iteration instead
+        val seed = Math.sqrt(x.toDouble())
+        var guess = if (seed.isFinite() && seed > 0.0) BigDecimal(seed, WORK_MC) else BigDecimal.ONE
+        val tolerance = BigDecimal.ONE.movePointLeft(45)
+        for (iteration in 0 until 500) {
+            val next = guess.add(x.divide(guess, WORK_MC), WORK_MC).divide(TWO, WORK_MC)
+            val converged = next.subtract(guess).abs() <= next.multiply(tolerance, WORK_MC)
+            guess = next
+            if (converged) break
+        }
+        return guess.round(MC)
     }
 }

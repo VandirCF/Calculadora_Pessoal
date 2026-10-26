@@ -62,6 +62,7 @@ import com.darkempire78.opencalculator.financial.FinancialViewModel
 import com.darkempire78.opencalculator.util.CalculatorMemory
 import com.darkempire78.opencalculator.util.CalculatorMode
 import com.darkempire78.opencalculator.util.PastedNumber
+import com.darkempire78.opencalculator.util.SeparatorSettings
 import com.darkempire78.opencalculator.util.SignToggle
 import com.darkempire78.opencalculator.util.ScientificMode
 import com.darkempire78.opencalculator.util.ScientificModeTypes
@@ -83,10 +84,9 @@ var currentTheme: Int = 0
 class MainActivity : AppCompatActivity() {
     private lateinit var view: View
 
-    private val decimalSeparatorSymbol =
-        DecimalFormatSymbols.getInstance().decimalSeparator.toString()
-    private val groupingSeparatorSymbol =
-        DecimalFormatSymbols.getInstance().groupingSeparator.toString()
+    // Resolved from the language and the user settings; refreshed in onResume
+    private var decimalSeparatorSymbol = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
+    private var groupingSeparatorSymbol = DecimalFormatSymbols.getInstance().groupingSeparator.toString()
 
     private var numberingSystem = NumberingSystem.INTERNATIONAL
     private var scientificModeType = ScientificModeTypes.NOT_ACTIVE
@@ -127,6 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         val fromPrefs = MyPreferences(this).numberingSystem
         numberingSystem = fromPrefs.toNumberingSystem()
+        refreshSeparators()
 
         currentTheme = themes.getTheme()
 
@@ -1476,6 +1477,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         applyCalculatorMode(calculatorMode)
+        val separatorsChanged = refreshSeparators()
+        syncFinancialSettings()
         financialPanel?.render()
 
         fixView()
@@ -1490,7 +1493,7 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.startActivity(this, this.intent, null)
         }
 
-        if (appLanguage != Locale.getDefault()) {
+        if (appLanguage != Locale.getDefault() || separatorsChanged) {
             appLanguage = Locale.getDefault()
             // Clear inputs to avoid conflicts with decimal & grouping separators
             binding.input.setText("")
@@ -1655,6 +1658,31 @@ class MainActivity : AppCompatActivity() {
         panel.render()
     }
 
+    /** Applies the user separator settings; returns true when they changed. */
+    private fun refreshSeparators(): Boolean {
+        val preferences = MyPreferences(this)
+        val symbols = DecimalFormatSymbols.getInstance()
+        val (decimal, grouping) = SeparatorSettings.resolve(
+            preferences.decimalSeparatorSetting, preferences.groupingSetting,
+            symbols.decimalSeparator.toString(), symbols.groupingSeparator.toString()
+        )
+        val changed = decimal != decimalSeparatorSymbol || grouping != groupingSeparatorSymbol
+        decimalSeparatorSymbol = decimal
+        groupingSeparatorSymbol = grouping
+        return changed
+    }
+
+    /** Settings are authoritative for payment mode and payments per year; the keys and dialogs write them back. */
+    private fun syncFinancialSettings() {
+        val preferences = MyPreferences(this)
+        val engine = financialViewModel.engine
+        if (engine.tvm.beginMode != preferences.financialBeginMode) {
+            engine.press(if (preferences.financialBeginMode) com.darkempire78.opencalculator.finance.rpn.RpnKey.BEGIN else com.darkempire78.opencalculator.finance.rpn.RpnKey.END)
+        }
+        val perYear = java.math.BigDecimal(preferences.paymentsPerYear)
+        if (engine.periodsPerYear.compareTo(perYear) != 0) engine.periodsPerYear = perYear
+    }
+
     private fun financialDisplaySettings() = FinancialDisplaySettings(
         decimals = MyPreferences(this).financialDecimals,
         decimalSeparator = decimalSeparatorSymbol,
@@ -1663,7 +1691,12 @@ class MainActivity : AppCompatActivity() {
     )
 
     private fun persistFinancialState() {
-        MyPreferences(this).financialState = FinancialStateStore.encode(financialViewModel.engine)
+        val preferences = MyPreferences(this)
+        val engine = financialViewModel.engine
+        preferences.financialState = FinancialStateStore.encode(engine)
+        // keep the settings screen in sync with the BEG/END keys and the payments-per-year dialog
+        preferences.financialBeginMode = engine.tvm.beginMode
+        engine.periodsPerYear.toInt().takeIf { it in 1..365 }?.let { preferences.paymentsPerYear = it }
     }
 
     /** Records a financial calculation in the unified history. */

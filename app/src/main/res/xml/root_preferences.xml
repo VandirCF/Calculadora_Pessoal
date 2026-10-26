@@ -135,6 +135,62 @@
             app:icon="@drawable/scientific_notation"
             app:widgetLayout="@drawable/material_switch" />
 
+        <ListPreference
+            app:key="darkempire78.opencalculator.DECIMAL_SEPARATOR"
+            app:title="@string/settings_formatting_decimal_separator"
+            app:entries="@array/decimal_separator_entries"
+            app:entryValues="@array/decimal_separator_values"
+            app:defaultValue="AUTO"
+            app:useSimpleSummaryProvider="true"
+            app:singleLineTitle="false"
+            app:icon="@drawable/numbering_system" />
+
+        <ListPreference
+            app:key="darkempire78.opencalculator.GROUPING_SEPARATOR"
+            app:title="@string/settings_formatting_grouping"
+            app:entries="@array/grouping_entries"
+            app:entryValues="@array/grouping_values"
+            app:defaultValue="AUTO"
+            app:summary="@string/settings_formatting_note"
+            app:singleLineTitle="false"
+            app:icon="@drawable/numbering_system" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_category_financial"
+        app:color="?attr/text_color">
+
+        <ListPreference
+            app:key="darkempire78.opencalculator.FINANCIAL_DECIMALS"
+            app:title="@string/settings_financial_decimals"
+            app:entries="@array/financial_decimals_values"
+            app:entryValues="@array/financial_decimals_values"
+            app:defaultValue="2"
+            app:useSimpleSummaryProvider="true"
+            app:singleLineTitle="false"
+            app:icon="@drawable/precision" />
+
+        <ListPreference
+            app:key="darkempire78.opencalculator.FINANCIAL_PAYMENT_MODE"
+            app:title="@string/settings_financial_payment_mode"
+            app:entries="@array/payment_mode_entries"
+            app:entryValues="@array/payment_mode_values"
+            app:defaultValue="END"
+            app:useSimpleSummaryProvider="true"
+            app:singleLineTitle="false"
+            app:icon="@drawable/auto" />
+
+        <ListPreference
+            app:key="darkempire78.opencalculator.FINANCIAL_PAYMENTS_PER_YEAR"
+            app:title="@string/settings_financial_payments_per_year"
+            app:entries="@array/payments_per_year_values"
+            app:entryValues="@array/payments_per_year_values"
+            app:defaultValue="12"
+            app:useSimpleSummaryProvider="true"
+            app:singleLineTitle="false"
+            app:icon="@drawable/auto" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -196,6 +252,20 @@
             app:singleLineTitle="false"
             app:defaultValue="false"
             app:widgetLayout="@drawable/material_switch" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_category_advanced"
+        app:color="?attr/text_color">
+
+        <Preference
+            app:key="darkempire78.opencalculator.RESTORE_DEFAULTS"
+            app:title="@string/settings_restore_defaults"
+            app:summary="@string/settings_restore_defaults_desc"
+            app:selectable="true"
+            app:singleLineTitle="false"
+            app:icon="@drawable/swap" />
 
     </PreferenceCategory>
 

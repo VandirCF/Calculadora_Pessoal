@@ -362,4 +362,26 @@
     <string name="hist_result_copied">Result copied</string>
     <string name="fin_history">History</string>
     <string name="fin_history_empty">No financial calculations yet</string>
+
+    <!-- Settings -->
+    <string name="settings_category_financial">Financial calculator</string>
+    <string name="settings_financial_decimals">Decimal places for money</string>
+    <string name="settings_financial_payment_mode">Payments</string>
+    <string name="settings_financial_payment_mode_desc">Beginning or end of each period (same as the BEG and END keys)</string>
+    <string name="settings_financial_payments_per_year">Payments per year</string>
+    <string name="settings_formatting_decimal_separator">Decimal separator</string>
+    <string name="settings_formatting_grouping">Thousands separator</string>
+    <string name="settings_formatting_note">Changing separators does not alter entries already saved in the history</string>
+    <string name="settings_restore_defaults">Restore default settings</string>
+    <string name="settings_restore_defaults_desc">Your history, memory and financial registers are kept</string>
+    <string name="settings_restore_confirm_title">Restore default settings?</string>
+    <string name="settings_restore_confirm_message">Theme, formats and options return to their defaults. The history and the financial registers are not changed.</string>
+    <string name="settings_restore_confirm">Restore</string>
+    <string name="payment_mode_end">End of period</string>
+    <string name="payment_mode_begin">Beginning of period</string>
+    <string name="sep_auto">Automatic (follow the language)</string>
+    <string name="sep_dot">Dot (.)</string>
+    <string name="sep_comma">Comma (,)</string>
+    <string name="sep_space">Space</string>
+    <string name="sep_none">None</string>
 </resources>
