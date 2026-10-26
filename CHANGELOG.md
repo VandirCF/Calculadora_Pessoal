@@ -1,10 +1,41 @@
 # Changelog
 
-Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões ainda não publicadas.
+Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). Versões ainda não distribuídas.
 
-## [0.1.0] — não publicada
+## [0.1.0] — projeto pessoal, instalado por APK
 
-Primeira versão derivada do OpenCalc 3.2.1 (commit `0584d61`), sob GPL-3.0.
+### Mudança de escopo
+O aplicativo é **pessoal e não será publicado em loja**. Saíram do projeto: `store/` (textos, capturas e declarações de loja), a lista de conferência de publicação, a configuração de AAB, o ícone de loja do OpenCalc (`ic_launcher-playstore.png`), os atalhos de doação, avaliação, tradução, Discord e política em página web, e a classe `DonationDialog`. Entrou `docs/GERAR_APK.md` e os scripts `tools/gerar-apk.ps1` e `tools/criar-chave-release.ps1`.
+
+### Adicionado
+- **Dois temas escuros, Flamengo e Cleveland Cavaliers**, por atributos de tema (`calc_*`) e uma paleta por tema em `colors.xml`; seletor com logotipo e prévia, troca imediata e tema lembrado ao reabrir. Logotipos fornecidos pelo dono do projeto em `res/drawable-nodpi`; `tools/prepare_logos.py` os torna transparentes (`docs/TEMAS.md`).
+- **Formato brasileiro por padrão** (`1.234.567,89`), com testes de que os cálculos nunca usam texto localizado (`docs/FORMATACAO_NUMERICA.md`).
+- **Rótulos das teclas financeiras em português** (2ª, INÍCIO, FIM, GRAVAR, CHAMAR, ÚLT X, LIMPAR, LIMP. REG), dica ao tocar e segurar cada tecla e linha de ajuda com o significado ("PV — Valor presente"). A tecla do decimal mostra a vírgula.
+- `BaseActivity`: todas as telas recebem um contexto pt-BR, mesmo com o celular em inglês.
+- `docs/AUDITORIA_PORTUGUES.md`, `docs/AUDITORIA_PRIVACIDADE.md`, `docs/TEMAS.md`, `docs/FORMATACAO_NUMERICA.md`, `docs/GERAR_APK.md`.
+- Testes: `ThemeResourcesTest` (paletas completas, contraste WCAG ≥ 4,5, sem cor fixa no código, logotipos transparentes), `FormatoBrasileiroTest`, `LayoutConsistencyTest`, `StringResourcesTest` reescrito (um só idioma, sem texto fixo, sem inglês), e 7 testes de interface novos (tema padrão, troca, restauração, três modos nos dois temas, idioma e formato).
+
+### Alterado
+- **Idioma único: português do Brasil.** `values/strings.xml` agora é o pt-BR; os 60 outros idiomas, o seletor de idioma e `locales_config.xml` foram removidos. Sete textos que o OpenCalc não tinha em pt-BR foram traduzidos.
+- Tela *Sobre* refeita (logotipo do tema, versão, crédito ao OpenCalc, licença e privacidade como texto local).
+- Configurações: removidas as linhas *Idioma*, *Sistema de numeração* (indiano) e *Modo científico padrão* (conflitava com o seletor de modo); *Tema* agora abre o novo seletor.
+- Mensagem "mais de uma solução" lista os valores encontrados em vez de repetir um texto de desenvolvedor em inglês.
+- "Limpar Histórico" → "Limpar histórico"; "offline" → "sem internet"; rótulo da tela de configurações (aparecia como `SettingsActivity`) → "Configurações".
+
+### Corrigido
+- **Travamento ao digitar rápido**: o cursor do visor podia valer −1 e derrubar o aplicativo (`StringIndexOutOfBoundsException`); agora é sempre válido.
+- Colar `1,234.5` (formato americano) era lido como `1,2345`; agora é recusado.
+- Ordem de inicialização do painel financeiro (a tela não abria ao usar um mapa de rótulos declarado depois de `build()`).
+
+### Removido
+- Temas Claro, Escuro, AMOLED e Material You, `values-night` e o modo claro.
+- Dependência `androidx.compose.runtime` e o plugin do compilador do Compose (sem uso): APK de release de 2,36 MB para 2,08 MB, depois de testar.
+
+---
+
+## Histórico anterior (fases 1 a 15)
+
+Base: OpenCalc 3.2.1 (commit `0584d61`), sob GPL-3.0. Itens de loja descritos abaixo foram removidos pela mudança de escopo acima.
 
 ### Adicionado
 - **Três modos** no mesmo aplicativo (Básica, Científica, Financeira RPN) com seletor segmentado; o último modo usado é restaurado.

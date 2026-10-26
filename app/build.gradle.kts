@@ -26,8 +26,8 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        // Provisional id (see docs/RELEASE_CHECKLIST.md). It must be decided before the first
-        // publication and can never change afterwards.
+        // Personal app, installed from an APK (see docs/GERAR_APK.md). Changing this id creates a
+        // different app on the phone, without the data of the previous one.
         applicationId = "io.github.vandircf.calculadorafinanceira"
         resourceConfigurations += listOf("pt-rBR")
         minSdk = 21

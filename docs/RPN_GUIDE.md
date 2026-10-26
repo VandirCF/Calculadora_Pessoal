@@ -24,9 +24,9 @@ A pilha tem quatro níveis. **X** é o valor mostrado; Y, Z e T ficam acima dele
 | Operação com um número (`√x`, `1/x`, `%`, `Δ%`) | Calcula sobre X, guarda LAST X, ativa a elevação. |
 | `x⇄y` | Troca X e Y. |
 | `R↓` / `R↑` (2ª) | Gira a pilha para baixo ou para cima. |
-| `LSTx` (2ª, tecla 6) | Traz de volta o último valor de X usado por uma operação. |
+| `ÚLT X` (2ª, tecla 6) | Traz de volta o último valor de X usado por uma operação. |
 | `CLx` | Zera X e **desativa** a elevação. |
-| `CLR` (2ª, tecla `R↓`) | Zera X, Y, Z e T (não apaga registradores). |
+| `LIMPAR` (2ª, tecla `R↓`) | Zera X, Y, Z e T (não apaga registradores). |
 | `⌫` | Apaga o último dígito digitado; sem digitação em andamento, zera X. |
 
 Depois de um **erro**, a pilha e os registradores ficam como estavam, a mensagem aparece abaixo dos registradores, e a próxima tecla limpa o erro e funciona normalmente.
@@ -79,7 +79,7 @@ PMT          →  88,85
 
 ### Pagamento no início ou no final
 
-`BEG` (2ª, tecla 4) calcula com pagamentos no **início** de cada período; `END` (2ª, tecla 5), no **final**. A etiqueta **INÍCIO** aparece no visor quando o modo início está ativo. O mesmo ajuste existe em Configurações.
+`INÍCIO` (2ª, tecla 4) calcula com pagamentos no **início** de cada período; `FIM` (2ª, tecla 5), no **final**. A etiqueta **INÍCIO** aparece no visor quando o modo início está ativo. O mesmo ajuste existe em Configurações.
 
 ### Pagamentos por ano
 
@@ -124,11 +124,11 @@ Chamadas seguintes continuam a partir do próximo período. A **tabela completa*
 
 ## Memória
 
-`STO` (2ª, tecla 1) seguida de um dígito 0–9 guarda X; `RCL` (2ª, tecla 2) e um dígito trazem o valor de volta. O quadro de registradores (⋯ → *Registradores e fluxo de caixa*) lista tudo.
+`GRAVAR` (2ª, tecla 1) seguida de um dígito 0–9 guarda X; `CHAMAR` (2ª, tecla 2) e um dígito trazem o valor de volta. O quadro de registradores (⋯ → *Registradores e fluxo de caixa*) lista tudo.
 
 ## Segunda função (2ª)
 
-A tecla `2nd` ativa a função escrita **acima** de cada tecla. Quando ela está ativa, aparece a etiqueta **2ª** no visor, a tecla fica destacada, os rótulos trocam de lugar (o da função ativa fica grande) e a mensagem de ajuda explica. Ela vale para **uma** tecla e depois se desativa.
+A tecla `2ª` ativa a função escrita **acima** de cada tecla. Quando ela está ativa, aparece a etiqueta **2ª** no visor, a tecla fica destacada, os rótulos trocam de lugar (o da função ativa fica grande) e a mensagem de ajuda explica. Ela vale para **uma** tecla e depois se desativa.
 
 ## Limpar
 
@@ -136,7 +136,7 @@ A tecla `2nd` ativa a função escrita **acima** de cada tecla. Quando ela está
 |---|---|
 | `CLx` | zera X |
 | `CLR` (2ª) | zera a pilha |
-| `CLRƒ` (2ª sobre `CLx`) ou ⋯ → *Limpar registradores* | zera n, i, PV, PMT, FV, a lista de fluxos e o progresso da amortização (**pede confirmação**; mantém pilha e memória) |
+| `LIMP. REG` (2ª sobre `CLx`) ou ⋯ → *Limpar registradores* | zera n, i, PV, PMT, FV, a lista de fluxos e o progresso da amortização (**pede confirmação**; mantém pilha e memória) |
 | ⋯ → *Limpar tudo* | zera também a pilha e a memória (**pede confirmação**) |
 
 Os registradores **são mantidos ao fechar o aplicativo**; só deixam de existir quando você os limpa.
@@ -144,3 +144,8 @@ Os registradores **são mantidos ao fechar o aplicativo**; só deixam de existir
 ## Taxas
 
 ⋯ → *Conversão de taxas* converte entre taxa nominal e efetiva e entre periodicidades com capitalização composta. O resultado mostra taxa e periodicidade de origem, taxa e periodicidade de destino, o método e se a taxa é nominal ou efetiva. **Dividir 12 % ao ano por 12 não dá a taxa efetiva mensal** (isso seria 1 %; a equivalente composta é 0,9489 %).
+
+
+## Nomes das teclas em português
+
+Os botões mantêm as siglas das calculadoras financeiras (`n`, `i`, `PV`, `PMT`, `FV`, `NPV`, `IRR`, `CHS`, `CF0`, `CFj`, `Nj`, `AMORT`) e os demais rótulos estão em português. **Toque e segure** qualquer tecla para ver o nome completo (por exemplo, `PV` → "Valor presente"), ou olhe a linha de ajuda abaixo dos registradores, que mostra o significado da última tecla pressionada.

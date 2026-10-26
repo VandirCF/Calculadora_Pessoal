@@ -188,6 +188,23 @@ Conclusão: build compila; a suíte existente **não está verde** e o lint não
 | 12 Internacionalização | concluída para EN e pt-BR | `StringResourcesTest` |
 | 13 Testes e qualidade | concluída; sem verificação de formatação (não há ktlint no projeto) | `app/src/test`, `app/src/androidTest` |
 | 14 Documentação | concluída | `README.md`, `docs/` |
-| 15 Distribuição | **preparada, não publicada**; pendentes decisões do responsável (applicationId definitivo, chave de upload, URL da política) | `docs/RELEASE_CHECKLIST.md` |
+| 15 Distribuição | **substituída**: o app é pessoal e sai como APK; ver seção 15 | `docs/GERAR_APK.md` |
 
 Desvios em relação ao plano original: a seleção de modo usa seletor segmentado (como previsto); o modo financeiro é um painel construído em código em vez de um Fragment (menos duplicação entre as variações de layout); o histórico do modo financeiro tem lista própria porque o painel deslizante fica sob o painel financeiro.
+
+
+## 15. Mudança de escopo: projeto pessoal, APK, pt-BR, dois temas
+
+Decisões do dono do projeto que substituem requisitos anteriores:
+
+| Antes | Agora |
+|---|---|
+| preparar publicação (Play Store, AAB, ficha, capturas, classificação, política em URL) | **removido**; só APK instalado à mão (`docs/GERAR_APK.md`) |
+| inglês e português do Brasil, idiomas herdados | **somente pt-BR**, sem seletor |
+| separador decimal pelo idioma do aparelho | **formato brasileiro por padrão**, separando entrada, motor e exibição |
+| temas Claro, Escuro, AMOLED e Material You | **Flamengo e Cleveland Cavaliers** (`docs/TEMAS.md`) |
+| `applicationId` definitivo e chave de upload | identificador livre (app não publicado); chave só para assinar o APK de release |
+
+Etapas executadas, nesta ordem: A auditoria do estado; B remoção do escopo de loja; C interface 100 % em português; D formatação brasileira; E a H arquitetura de temas, Flamengo, Cleveland Cavaliers e seletor; I revisão visual dos três modos em retrato e paisagem; J auditoria de conectividade e dependências; K testes; L APK e documentação. Os logotipos foram fornecidos pelo dono do projeto e estão em `res/drawable-nodpi`.
+
+Documentos novos: `GERAR_APK.md`, `TEMAS.md`, `FORMATACAO_NUMERICA.md`, `AUDITORIA_PORTUGUES.md`, `AUDITORIA_PRIVACIDADE.md`.

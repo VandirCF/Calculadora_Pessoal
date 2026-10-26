@@ -21,14 +21,14 @@ MainActivity ── seletor segmentado (MaterialButtonToggleGroup) no topo
                                   │                               └─ RateConversions
                                   └─ FinancialStateStore (JSON versionado) → MyPreferences
 
-Compartilhados: MyPreferences (SharedPreferences) · Themes · History/HistoryAdapter · strings (EN e pt-BR)
+Compartilhados: MyPreferences (SharedPreferences) · Themes (Flamengo | Cleveland Cavaliers) · History/HistoryAdapter · strings (pt-BR)
 ```
 
 ## Pacotes
 
 | Pacote | Conteúdo |
 |---|---|
-| `activities` | `MainActivity`, `SettingsActivity`, `AboutActivity`, `CalculatorModeViewModel` |
+| `activities` | `BaseActivity` (contexto pt-BR), `MainActivity`, `SettingsActivity`, `AboutActivity`, `CalculatorModeViewModel` |
 | `calculator`, `calculator.parser` | motor algébrico (básico e científico) |
 | `finance` | domínio financeiro **sem Android**: `BigMath`, `Tvm`, `CashFlows` (VPL e TIR), `Amortization`, `RateConversions`, `RootFinder`, `RpnFormatter`, resultados e erros |
 | `finance.rpn` | `RpnEngine`, `RpnKey`, `RpnEvent`, `RpnSnapshot` |
@@ -53,6 +53,12 @@ Compartilhados: MyPreferences (SharedPreferences) · Themes · History/HistoryAd
 **Estado de erro do motor algébrico.** O motor original usa variáveis globais de erro. `Calculator.evaluateSafe` devolve `CalcResult` (valor ou erro tipado), zera as flags antes e depois e serializa o acesso. A interface atual ainda usa `evaluate` com as flags (migração completa fica como melhoria futura, para não arriscar regressões).
 
 **Compatibilidade com API 21.** Nenhuma API acima de 21 sem salvaguarda: a raiz quadrada de `BigDecimal` é calculada por Newton (a função nativa exige API 33), verificado pelo lint.
+
+**Temas.** Dois temas escuros (Flamengo, Cleveland Cavaliers), só dados: `colors.xml` guarda as paletas, `styles.xml` liga cada cor a um atributo `calc_*`, e as telas leem atributos. `Themes.kt` guarda o tema escolhido e o aplica com `setTheme()` antes de inflar; ao trocar, a tela é recriada. Os motores de cálculo não conhecem o tema. Detalhes em [TEMAS.md](TEMAS.md).
+
+**Idioma e números.** Um único idioma (pt-BR): os recursos padrão são o português e `BaseActivity` dá a cada tela um contexto pt-BR. O número interno (`BigDecimal`, texto com `.`) nunca é localizado; vírgula e ponto de milhares só aparecem na exibição ([FORMATACAO_NUMERICA.md](FORMATACAO_NUMERICA.md)).
+
+**Distribuição.** Só APK, instalado à mão ([GERAR_APK.md](GERAR_APK.md)). Sem loja, AAB, anúncios, conta ou rede ([AUDITORIA_PRIVACIDADE.md](AUDITORIA_PRIVACIDADE.md)).
 
 ## Testes
 
