@@ -24,6 +24,21 @@ enum class RpnKey {
     CF0, CFJ, NJ, NPV, IRR, AMORT
 }
 
+enum class RpnEventType { OPERATION, TVM, NPV, IRR, AMORTIZATION }
+
+/**
+ * Describes the last successful computation so the UI can record it in the history.
+ * [label] is the operator symbol or register name; amounts are full precision values.
+ */
+data class RpnEvent(
+    val type: RpnEventType,
+    val label: String,
+    val inputs: List<Pair<String, BigDecimal>>,
+    val result: BigDecimal,
+    val extra: List<Pair<String, BigDecimal>> = emptyList(),
+    val beginMode: Boolean = false
+)
+
 /**
  * RPN (reverse Polish notation) engine with a four level stack X, Y, Z, T.
  *
@@ -57,6 +72,9 @@ class RpnEngine {
     var errorDetail: String = ""; private set
     var warnings: List<com.darkempire78.opencalculator.finance.FinancialWarning> = emptyList(); private set
 
+    /** Last successful computation, cleared at the start of every key press. */
+    var lastEvent: RpnEvent? = null; private set
+
     val memory: Array<BigDecimal> = Array(MEMORY_SIZE) { BigDecimal.ZERO }
 
     var tvm: TvmRegisters = TvmRegisters(); private set
@@ -77,6 +95,7 @@ class RpnEngine {
         error = null
         errorDetail = ""
         warnings = emptyList()
+        lastEvent = null
         try {
             execute(key)
         } catch (e: com.darkempire78.opencalculator.finance.FinancialException) {
@@ -144,21 +163,21 @@ class RpnEngine {
                 t = z; z = y; y = x
                 liftEnabled = false
             }
-            RpnKey.ADD -> binary { a, b -> a.add(b, WORK_MC) }
-            RpnKey.SUB -> binary { a, b -> a.subtract(b, WORK_MC) }
-            RpnKey.MUL -> binary { a, b -> a.multiply(b, WORK_MC) }
-            RpnKey.DIV -> binary { a, b ->
+            RpnKey.ADD -> binary("+") { a, b -> a.add(b, WORK_MC) }
+            RpnKey.SUB -> binary("-") { a, b -> a.subtract(b, WORK_MC) }
+            RpnKey.MUL -> binary("x") { a, b -> a.multiply(b, WORK_MC) }
+            RpnKey.DIV -> binary("/") { a, b ->
                 if (b.signum() == 0) com.darkempire78.opencalculator.finance.fail(FinancialError.DIVISION_BY_ZERO, "division by zero")
                 a.divide(b, WORK_MC)
             }
-            RpnKey.POW -> binary { a, b -> BigMath.pow(a, b) }
-            RpnKey.RECIPROCAL -> unary { v ->
+            RpnKey.POW -> binary("^") { a, b -> BigMath.pow(a, b) }
+            RpnKey.RECIPROCAL -> unary("1/x") { v ->
                 if (v.signum() == 0) com.darkempire78.opencalculator.finance.fail(FinancialError.DIVISION_BY_ZERO, "1/0")
                 BigDecimal.ONE.divide(v, WORK_MC)
             }
-            RpnKey.SQRT -> unary { v -> BigMath.sqrt(v) }
-            RpnKey.PERCENT -> unary { v -> y.multiply(v, WORK_MC).divide(HUNDRED, WORK_MC) }
-            RpnKey.DELTA_PERCENT -> unary { v ->
+            RpnKey.SQRT -> unary("sqrt") { v -> BigMath.sqrt(v) }
+            RpnKey.PERCENT -> unary("%") { v -> y.multiply(v, WORK_MC).divide(HUNDRED, WORK_MC) }
+            RpnKey.DELTA_PERCENT -> unary("delta%") { v ->
                 if (y.signum() == 0) com.darkempire78.opencalculator.finance.fail(FinancialError.DIVISION_BY_ZERO, "base is zero")
                 v.subtract(y, WORK_MC).divide(y, WORK_MC).multiply(HUNDRED, WORK_MC)
             }
@@ -208,11 +227,15 @@ class RpnEngine {
             RpnKey.NPV -> {
                 commitEntry()
                 val rate = tvm.i ?: com.darkempire78.opencalculator.finance.fail(FinancialError.MISSING_REGISTER, "i")
-                publish(Npv.compute(cashFlows, rate))
+                val flows = cashFlows
+                publish(Npv.compute(flows, rate))
+                if (error == null) lastEvent = RpnEvent(RpnEventType.NPV, "NPV", flowInputs(flows) + ("i" to rate), x)
             }
             RpnKey.IRR -> {
                 commitEntry()
-                publish(Irr.compute(cashFlows))
+                val flows = cashFlows
+                publish(Irr.compute(flows))
+                if (error == null) lastEvent = RpnEvent(RpnEventType.IRR, "IRR", flowInputs(flows), x)
             }
             RpnKey.AMORT -> amortize()
         }
@@ -289,9 +312,10 @@ class RpnEngine {
 
     // ---- arithmetic ------------------------------------------------------------------------
 
-    private fun binary(operation: (BigDecimal, BigDecimal) -> BigDecimal) {
+    private fun binary(symbol: String, operation: (BigDecimal, BigDecimal) -> BigDecimal) {
         commitEntry()
         val result = operation(y, x)
+        lastEvent = RpnEvent(RpnEventType.OPERATION, symbol, listOf("Y" to y, "X" to x), result.round(MC))
         lastX = x
         x = result.round(MC)
         y = z
@@ -299,9 +323,11 @@ class RpnEngine {
         liftEnabled = true
     }
 
-    private fun unary(operation: (BigDecimal) -> BigDecimal) {
+    private fun unary(symbol: String, operation: (BigDecimal) -> BigDecimal) {
         commitEntry()
         val result = operation(x)
+        val inputs = if (symbol == "%" || symbol == "delta%") listOf("Y" to y, "X" to x) else listOf("X" to x)
+        lastEvent = RpnEvent(RpnEventType.OPERATION, symbol, inputs, result.round(MC))
         lastX = x
         x = result.round(MC)
         liftEnabled = true
@@ -324,15 +350,26 @@ class RpnEngine {
                 else -> Tvm.solveFv(tvm)
             }
             if (result is FinancialResult.Success) {
+                val inputs = registerInputs(excluding = key)
                 storeRegister(key, result.value)
                 liftIfEnabled()
                 x = result.value
                 liftEnabled = true
+                lastEvent = RpnEvent(RpnEventType.TVM, registerName(key), inputs, result.value, beginMode = tvm.beginMode)
             } else {
                 publish(result)
             }
         }
     }
+
+    private fun registerName(key: RpnKey) = when (key) {
+        RpnKey.N -> "n"; RpnKey.I -> "i"; RpnKey.PV -> "PV"; RpnKey.PMT -> "PMT"; else -> "FV"
+    }
+
+    private fun registerInputs(excluding: RpnKey): List<Pair<String, BigDecimal>> =
+        listOf(RpnKey.N to tvm.n, RpnKey.I to tvm.i, RpnKey.PV to tvm.pv, RpnKey.PMT to tvm.pmt, RpnKey.FV to tvm.fv)
+            .filter { it.first != excluding }
+            .mapNotNull { (k, v) -> v?.let { registerName(k) to it } }
 
     private fun storeRegister(key: RpnKey, value: BigDecimal) {
         tvm = when (key) {
@@ -350,6 +387,9 @@ class RpnEngine {
         x = value ?: BigDecimal.ZERO
         liftEnabled = true
     }
+
+    private fun flowInputs(flows: CashFlows): List<Pair<String, BigDecimal>> =
+        listOf("CF0" to flows.cf0) + flows.flows.mapIndexed { index, flow -> "CF${index + 1}x${flow.count}" to flow.amount }
 
     /** Puts a computed value in X (with stack lift) or raises the error. */
     private fun publish(result: FinancialResult<BigDecimal>) {
@@ -390,7 +430,23 @@ class RpnEngine {
         z = s.balance.multiply(balanceSign)
         y = s.totalPrincipal.multiply(paymentSign)
         x = s.totalInterest.multiply(paymentSign)
+        lastEvent = RpnEvent(
+            RpnEventType.AMORTIZATION, "AMORT",
+            listOf("PV" to pv, "PMT" to pmt, "i" to rate, "periods" to BigDecimal(count), "from" to BigDecimal(from)),
+            x, extra = listOf("principal" to y, "balance" to z), beginMode = tvm.beginMode
+        )
         liftEnabled = true
+    }
+
+    /** Pushes an externally computed value (e.g. a converted rate) into X, like recalling a register. */
+    fun enterValue(value: BigDecimal) {
+        error = null
+        errorDetail = ""
+        commitEntry()
+        liftIfEnabled()
+        x = value.round(MC)
+        liftEnabled = true
+        previousKeyWasFinancial = false
     }
 
     // ---- state -----------------------------------------------------------------------------

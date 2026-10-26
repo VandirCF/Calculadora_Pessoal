@@ -724,7 +724,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menuButton" />
+        app:layout_constraintTop_toBottomOf="@+id/modeSwitcherInclude" />
 
     <include
         android:id="@+id/modeSwitcherInclude"

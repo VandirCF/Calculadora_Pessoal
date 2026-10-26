@@ -65,7 +65,9 @@ class HistoryAdapter(
                             result = nextHistoryElement.result,
                             time = historyElement.time,
                             id = nextHistoryElement.id,
-                            mode = nextHistoryElement.mode
+                            mode = nextHistoryElement.mode,
+                            type = nextHistoryElement.type,
+                            details = nextHistoryElement.details
                         )
                     }
                 }

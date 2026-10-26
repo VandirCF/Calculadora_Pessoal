@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Container of the financial RPN calculator; FinancialPanel adds its views at runtime. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/financialPlaceholder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/background_color"
     android:clickable="true"
-    android:focusable="true"
-    android:visibility="gone">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="24dp"
-        android:text="@string/mode_financial_placeholder"
-        android:textAlignment="center"
-        android:textColor="?attr/text_second_color"
-        android:textSize="18sp" />
-</FrameLayout>
+    android:focusable="false"
+    android:visibility="gone" />

@@ -52,6 +52,11 @@ import com.darkempire78.opencalculator.databinding.ActivityMainBinding
 import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.history.HistoryAdapter
+import com.darkempire78.opencalculator.financial.FinancialDisplaySettings
+import com.darkempire78.opencalculator.financial.FinancialHistoryEvent
+import com.darkempire78.opencalculator.financial.FinancialPanel
+import com.darkempire78.opencalculator.financial.FinancialStateStore
+import com.darkempire78.opencalculator.financial.FinancialViewModel
 import com.darkempire78.opencalculator.util.CalculatorMemory
 import com.darkempire78.opencalculator.util.CalculatorMode
 import com.darkempire78.opencalculator.util.PastedNumber
@@ -86,6 +91,8 @@ class MainActivity : AppCompatActivity() {
 
     private var calculatorMode = CalculatorMode.DEFAULT
     private lateinit var modeViewModel: CalculatorModeViewModel
+    private lateinit var financialViewModel: FinancialViewModel
+    private var financialPanel: FinancialPanel? = null
     private var isInvButtonClicked = false
     private var isEqualLastAction = false
     private var isDegreeModeActivated = true // Set degree by default
@@ -134,6 +141,7 @@ class MainActivity : AppCompatActivity() {
         calculatorMode = modeViewModel.mode ?: MyPreferences(this).calculatorMode
         modeViewModel.mode = calculatorMode
         setupModeSwitcher()
+        setupFinancialPanel()
 
         // Disable the keyboard on display EditText
         binding.input.showSoftInputOnFocus = false
@@ -1350,6 +1358,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         applyCalculatorMode(calculatorMode)
+        financialPanel?.render()
 
         fixView()
 
@@ -1501,6 +1510,62 @@ class MainActivity : AppCompatActivity() {
         val formatted = NumberFormatter.format(newLeft + right, decimalSeparatorSymbol, groupingSeparatorSymbol, numberingSystem)
         binding.input.setText(formatted)
         binding.input.setSelection((formatted.length - right.length).coerceIn(0, formatted.length))
+    }
+
+    private fun setupFinancialPanel() {
+        financialViewModel = ViewModelProvider(this)[FinancialViewModel::class.java]
+        if (!financialViewModel.restored) {
+            FinancialStateStore.decodeInto(financialViewModel.engine, MyPreferences(this).financialState)
+            financialViewModel.restored = true
+        }
+        val panel = FinancialPanel(
+            context = this,
+            viewModel = financialViewModel,
+            settings = { financialDisplaySettings() },
+            onHistory = { addFinancialHistory(it) },
+            onStateChanged = { persistFinancialState() },
+            onKeyFeedback = { keyVibration(it) }
+        )
+        val container = binding.financialPlaceholderInclude.root as android.widget.FrameLayout
+        container.removeAllViews()
+        container.addView(panel.root)
+        financialPanel = panel
+        panel.render()
+    }
+
+    private fun financialDisplaySettings() = FinancialDisplaySettings(
+        decimals = MyPreferences(this).financialDecimals,
+        decimalSeparator = decimalSeparatorSymbol,
+        groupingSeparator = groupingSeparatorSymbol,
+        grouping = true
+    )
+
+    private fun persistFinancialState() {
+        MyPreferences(this).financialState = FinancialStateStore.encode(financialViewModel.engine)
+    }
+
+    /** Records a financial calculation in the unified history. */
+    private fun addFinancialHistory(event: FinancialHistoryEvent) {
+        val entry = History(
+            calculation = event.calculation,
+            result = event.result,
+            time = System.currentTimeMillis().toString(),
+            id = UUID.randomUUID().toString(),
+            mode = CalculatorMode.FINANCIAL_RPN.name,
+            type = event.type.name,
+            details = event.details
+        )
+        val preferences = MyPreferences(this)
+        val stored = preferences.getHistory()
+        stored.add(entry)
+        preferences.saveHistory(stored)
+        historyAdapter.appendOneHistoryElement(entry)
+        checkEmptyHistoryForNoHistoryLabel()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        persistFinancialState()
     }
 
     private fun setupModeSwitcher() {
