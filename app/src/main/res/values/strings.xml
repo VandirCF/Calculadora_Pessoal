@@ -184,4 +184,6 @@
     <string name="mode_financial">Financial RPN calculator</string>
     <string name="mode_switcher_description">Calculator mode</string>
     <string name="mode_financial_placeholder">Financial RPN calculator\nComing soon</string>
+    <string name="paste_invalid_number">Clipboard does not contain a valid number</string>
+    <string name="toggle_sign_action">Change sign of current number</string>
 </resources>

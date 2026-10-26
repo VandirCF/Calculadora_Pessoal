@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -52,6 +53,8 @@ import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.history.HistoryAdapter
 import com.darkempire78.opencalculator.util.CalculatorMode
+import com.darkempire78.opencalculator.util.PastedNumber
+import com.darkempire78.opencalculator.util.SignToggle
 import com.darkempire78.opencalculator.util.ScientificMode
 import com.darkempire78.opencalculator.util.ScientificModeTypes
 import com.sothree.slidinguppanel.PanelSlideListener
@@ -284,6 +287,32 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // Paste: accept only a well-formed number
+        ViewCompat.setOnReceiveContentListener(binding.input, arrayOf("text/*")) { _, payload ->
+            val clip = payload.clip
+            val pasted = StringBuilder()
+            for (i in 0 until clip.itemCount) pasted.append(clip.getItemAt(i).coerceToText(this))
+            val number = PastedNumber.parse(pasted, decimalSeparatorSymbol, groupingSeparatorSymbol)
+            if (number != null) {
+                updateDisplay(view, number)
+            } else {
+                Toast.makeText(this, R.string.paste_invalid_number, Toast.LENGTH_SHORT).show()
+            }
+            null
+        }
+
+        // Long press on "-" inverts the sign of the current number
+        binding.subtractButton.setOnLongClickListener {
+            toggleSign()
+            true
+        }
+        ViewCompat.replaceAccessibilityAction(
+            binding.subtractButton,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getString(R.string.toggle_sign_action),
+            null
+        )
 
         // Handle changes into input to update resultDisplay
         binding.input.addTextChangedListener(object : TextWatcher {
@@ -1402,6 +1431,18 @@ class MainActivity : AppCompatActivity() {
             binding.noHistoryText.visibility = View.GONE
             binding.historyRecylcleView.visibility = View.VISIBLE
         }
+    }
+
+    private fun toggleSign() {
+        val text = binding.input.text.toString()
+        val cursor = binding.input.selectionStart.let { if (it < 0) text.length else it.coerceAtMost(text.length) }
+        val left = text.substring(0, cursor)
+        val right = text.substring(cursor)
+        val newLeft = SignToggle.toggle(left, decimalSeparatorSymbol, groupingSeparatorSymbol)
+        if (newLeft == left) return
+        val formatted = NumberFormatter.format(newLeft + right, decimalSeparatorSymbol, groupingSeparatorSymbol, numberingSystem)
+        binding.input.setText(formatted)
+        binding.input.setSelection((formatted.length - right.length).coerceIn(0, formatted.length))
     }
 
     private fun setupModeSwitcher() {

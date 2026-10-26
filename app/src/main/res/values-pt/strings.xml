@@ -93,4 +93,6 @@
     <string name="mode_financial">Calculadora financeira RPN</string>
     <string name="mode_switcher_description">Modo da calculadora</string>
     <string name="mode_financial_placeholder">Calculadora financeira RPN\nEm breve</string>
+    <string name="paste_invalid_number">A área de transferência não contém um número válido</string>
+    <string name="toggle_sign_action">Inverter o sinal do número atual</string>
 </resources>
