@@ -14,12 +14,32 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.darkempire78.opencalculator.MyPreferences
 import com.darkempire78.opencalculator.R
+import com.darkempire78.opencalculator.util.CalculatorMode
 
 class HistoryAdapter(
-    private var history: MutableList<History>,
+    initialHistory: MutableList<History>,
     private val onElementClick: (value: String) -> Unit,
-    private val context: Context
+    private val context: Context,
+    private val onDetailRequested: (History) -> Unit = {}
     ) : RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
+
+        /** Every stored entry; [history] is the subset shown for the active mode filter. */
+        private var allHistory: MutableList<History> = initialHistory
+        private var filter: CalculatorMode? = null
+        private var history: MutableList<History> = visibleOf(allHistory)
+
+        private fun visibleOf(list: List<History>): MutableList<History> =
+            list.filter { filter == null || it.origin == filter }.toMutableList()
+
+        /** Shows only entries of [mode], or everything when null. */
+        @android.annotation.SuppressLint("NotifyDataSetChanged")
+        fun setFilter(mode: CalculatorMode?) {
+            filter = mode
+            history = visibleOf(allHistory)
+            notifyDataSetChanged()
+        }
+
+        fun currentFilter(): CalculatorMode? = filter
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
             val view = LayoutInflater
@@ -34,15 +54,16 @@ class HistoryAdapter(
             holder.bind(history[position], position)
         }
 
+        @android.annotation.SuppressLint("NotifyDataSetChanged")
         fun appendHistory(historyList: List<History>) {
-            this.history.addAll(historyList)
-            notifyItemRangeInserted(
-                this.history.size,
-                historyList.size - 1
-            )
+            allHistory.addAll(historyList)
+            this.history = visibleOf(allHistory)
+            notifyDataSetChanged()
         }
 
         fun appendOneHistoryElement(history: History) {
+            allHistory.add(history)
+            if (filter != null && history.origin != filter) return
             this.history.add(history)
             // Update the last 2 elements to avoid to have the same date and bar separator
             if (this.history.size > 1) {
@@ -53,7 +74,9 @@ class HistoryAdapter(
             }
         }
 
-        fun removeHistoryElement(position: Int){
+        /** Removes the entry shown at [position] and returns its id (null if the position is invalid). */
+        fun removeHistoryElement(position: Int): String? {
+            if (position !in history.indices) return null
             // No idea why, but time.isNotEmpty() is not working, only time.isNullOrEmpty() works
             val historyElement = history[position]
             if (!historyElement.time.isNullOrEmpty()){
@@ -73,12 +96,20 @@ class HistoryAdapter(
                 }
             }
             this.history.removeAt(position)
+            allHistory.removeAll { it.id == historyElement.id }
             notifyItemRemoved(position)
+            return historyElement.id
         }
 
+        /** Removes an entry by id wherever it is (used by the detail dialog). */
+        fun removeHistoryElementById(id: String) {
+            val position = history.indexOfFirst { it.id == id }
+            if (position >= 0) removeHistoryElement(position) else allHistory.removeAll { it.id == id }
+        }
 
         fun updateHistoryList() {
-            this.history = MyPreferences(context).getHistory()
+            allHistory = MyPreferences(context).getHistory()
+            history = visibleOf(allHistory)
         }
         fun updateHistoryElement(historyElement: History) {
             updateHistoryList()
@@ -90,11 +121,18 @@ class HistoryAdapter(
         }
 
         fun removeFirstHistoryElement() {
-            this.history.removeAt(0)
-            notifyItemRemoved(0)
+            if (allHistory.isEmpty()) return
+            val oldest = allHistory.removeAt(0)
+            val position = history.indexOfFirst { it.id == oldest.id }
+            if (position >= 0) {
+                history.removeAt(position)
+                notifyItemRemoved(position)
+            }
         }
 
+        @android.annotation.SuppressLint("NotifyDataSetChanged")
         fun clearHistory() {
+            allHistory.clear()
             this.history.clear()
             notifyDataSetChanged()
         }
@@ -103,6 +141,7 @@ class HistoryAdapter(
             private val calculation: TextView = itemView.findViewById(R.id.history_item_calculation)
             private val result: TextView = itemView.findViewById(R.id.history_item_result)
             private val time: TextView = itemView.findViewById(R.id.history_time)
+            private val typeLabel: TextView = itemView.findViewById(R.id.history_item_type)
             private val separator: View = itemView.findViewById(R.id.history_separator)
             private val sameDateSeparator: View = itemView.findViewById(R.id.history_same_date_separator)
 
@@ -119,6 +158,11 @@ class HistoryAdapter(
                 // Set calculation, result and time
                 calculation.text = historyElement.calculation
                 result.text = historyElement.result
+                // Financial entries are longer sentences: smaller text than the 35sp used for expressions
+                calculation.textSize = if (historyElement.origin == CalculatorMode.FINANCIAL_RPN) 18f else 35f
+                typeLabel.text = typeDescription(context, historyElement)
+                typeLabel.contentDescription = context.getString(R.string.hist_open_detail, typeDescription(context, historyElement))
+                typeLabel.setOnClickListener { onDetailRequested(historyElement) }
                 // To avoid crashes with former histories that do not have stored dates
                 if (historyElement.time.isNullOrEmpty()) {
                     time.visibility = View.GONE
@@ -206,3 +250,22 @@ class HistoryAdapter(
             }
         }
     }
+
+fun historyTypeLabel(context: Context, type: HistoryType): String = context.getString(
+    when (type) {
+        HistoryType.BASIC -> R.string.mode_basic_short
+        HistoryType.SCIENTIFIC -> R.string.mode_scientific_short
+        HistoryType.RPN_OPERATION -> R.string.hist_type_rpn
+        HistoryType.TVM -> R.string.hist_type_tvm
+        HistoryType.NPV -> R.string.hist_type_npv
+        HistoryType.IRR -> R.string.hist_type_irr
+        HistoryType.AMORTIZATION -> R.string.hist_type_amortization
+        HistoryType.RATE_CONVERSION -> R.string.hist_type_rate_conversion
+    }
+)
+
+/** Type plus its relevant settings (e.g. "TVM - end of period"), shown under each entry. */
+fun typeDescription(context: Context, entry: History): String {
+    val label = historyTypeLabel(context, entry.entryType)
+    return if (entry.details.isNullOrBlank()) label else "$label \u00B7 ${entry.details}"
+}

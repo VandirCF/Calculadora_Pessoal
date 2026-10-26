@@ -35,6 +35,7 @@ class MyPreferences(context: Context) {
         private const val KEY_MEMORY = "darkempire78.opencalculator.MEMORY_VALUE"
         private const val KEY_FINANCIAL_STATE = "darkempire78.opencalculator.FINANCIAL_STATE"
         private const val KEY_FINANCIAL_DECIMALS = "darkempire78.opencalculator.FINANCIAL_DECIMALS"
+        private const val KEY_HISTORY_FILTER = "darkempire78.opencalculator.HISTORY_FILTER"
         private const val KEY_SHOW_ON_LOCK_SCREEN = "darkempire78.opencalculator.KEY_SHOW_ON_LOCK_SCREEN"
     }
 
@@ -103,6 +104,11 @@ class MyPreferences(context: Context) {
     var financialDecimals: Int
         get() = preferences.getString(KEY_FINANCIAL_DECIMALS, "2")?.toIntOrNull()?.coerceIn(0, 8) ?: 2
         set(value) = preferences.edit().putString(KEY_FINANCIAL_DECIMALS, value.coerceIn(0, 8).toString()).apply()
+
+    /** Mode whose history is shown; null shows every mode. */
+    var historyFilter: CalculatorMode?
+        get() = preferences.getString(KEY_HISTORY_FILTER, null)?.let { name -> CalculatorMode.entries.firstOrNull { it.name == name } }
+        set(value) = preferences.edit().putString(KEY_HISTORY_FILTER, value?.name).apply()
 
     var showOnLockScreen = preferences.getBoolean(KEY_SHOW_ON_LOCK_SCREEN, true)
         set(value) = preferences.edit().putBoolean(KEY_SHOW_ON_LOCK_SCREEN, value).apply()

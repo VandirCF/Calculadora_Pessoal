@@ -51,6 +51,8 @@ import com.darkempire78.opencalculator.calculator.syntax_error
 import com.darkempire78.opencalculator.databinding.ActivityMainBinding
 import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
+import com.darkempire78.opencalculator.history.HistoryType
+import com.darkempire78.opencalculator.history.historyTypeLabel
 import com.darkempire78.opencalculator.history.HistoryAdapter
 import com.darkempire78.opencalculator.financial.FinancialDisplaySettings
 import com.darkempire78.opencalculator.financial.FinancialHistoryEvent
@@ -181,9 +183,11 @@ class MainActivity : AppCompatActivity() {
             { value ->
                 updateDisplay(window.decorView, value)
             },
-            this // Assuming this is an Activity or Fragment with a Context
+            this, // Assuming this is an Activity or Fragment with a Context
+            { entry -> showHistoryDetail(entry) }
         )
         historyAdapter.updateHistoryList()
+        historyAdapter.setFilter(MyPreferences(this).historyFilter)
         binding.historyRecylcleView.adapter = historyAdapter
 
         // Scroll to the bottom of the recycle view
@@ -434,9 +438,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.bindingAdapterPosition
-                historyAdapter.removeHistoryElement(position)
+                val removedId = historyAdapter.removeHistoryElement(position)
                 checkEmptyHistoryForNoHistoryLabel()
-                deleteElementFromHistory(position)
+                if (removedId != null) deleteElementFromHistory(removedId)
             }
         }
 
@@ -444,10 +448,10 @@ class MainActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.historyRecylcleView)
     }
 
-    private fun deleteElementFromHistory(position: Int) {
+    private fun deleteElementFromHistory(id: String) {
         lifecycleScope.launch(Dispatchers.Default) {
             val history = MyPreferences(this@MainActivity).getHistory()
-            history.removeAt(position)
+            history.removeAll { it.id == id }
             MyPreferences(this@MainActivity).saveHistory(history)
         }
     }
@@ -474,11 +478,121 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clearHistory(menuItem: MenuItem) {
-        // Clear preferences
-        MyPreferences(this@MainActivity).saveHistory(mutableListOf())
-        // Clear drawer
-        historyAdapter.clearHistory()
-        checkEmptyHistoryForNoHistoryLabel()
+        // Deleting everything needs a confirmation
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.hist_clear_title)
+            .setMessage(R.string.hist_clear_message)
+            .setNegativeButton(R.string.fin_cancel, null)
+            .setPositiveButton(R.string.hist_clear_confirm) { _, _ ->
+                // Clear preferences
+                MyPreferences(this@MainActivity).saveHistory(mutableListOf())
+                // Clear drawer
+                historyAdapter.clearHistory()
+                checkEmptyHistoryForNoHistoryLabel()
+            }
+            .show()
+    }
+
+    /** Lets the user show the history of one mode or of all modes. */
+    fun filterHistory(menuItem: MenuItem) {
+        val modes = listOf<CalculatorMode?>(null) + CalculatorMode.entries
+        val names = modes.map { mode ->
+            when (mode) {
+                null -> getString(R.string.hist_filter_all)
+                CalculatorMode.BASIC -> getString(R.string.mode_basic)
+                CalculatorMode.SCIENTIFIC -> getString(R.string.mode_scientific)
+                CalculatorMode.FINANCIAL_RPN -> getString(R.string.mode_financial)
+            }
+        }.toTypedArray()
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.hist_filter_title)
+            .setSingleChoiceItems(names, modes.indexOf(historyAdapter.currentFilter())) { dialog, which ->
+                MyPreferences(this).historyFilter = modes[which]
+                historyAdapter.setFilter(modes[which])
+                checkEmptyHistoryForNoHistoryLabel()
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.fin_close, null)
+            .show()
+    }
+
+    /** Detail of one history entry with copy, reuse and delete actions. */
+    private fun showHistoryDetail(entry: History, onDeleted: (() -> Unit)? = null) {
+        val modeName = when (entry.origin) {
+            CalculatorMode.BASIC -> getString(R.string.mode_basic)
+            CalculatorMode.SCIENTIFIC -> getString(R.string.mode_scientific)
+            CalculatorMode.FINANCIAL_RPN -> getString(R.string.mode_financial)
+        }
+        val timeText = entry.time.toLongOrNull()?.let {
+            java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT).format(java.util.Date(it))
+        }
+        val message = buildString {
+            append(getString(R.string.hist_detail_type)).append(": ").append(historyTypeLabel(this@MainActivity, entry.entryType)).append('\n')
+            append(getString(R.string.hist_detail_mode)).append(": ").append(modeName).append('\n')
+            if (timeText != null) append(getString(R.string.hist_detail_time)).append(": ").append(timeText).append('\n')
+            if (!entry.details.isNullOrBlank()) append(getString(R.string.hist_detail_settings)).append(": ").append(entry.details).append('\n')
+            append('\n').append(getString(R.string.hist_detail_calc)).append(":\n").append(entry.calculation)
+            append("\n\n").append(getString(R.string.hist_detail_result)).append(":\n").append(entry.result)
+        }
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.hist_detail_title)
+            .setMessage(message)
+            .setNegativeButton(R.string.hist_detail_delete) { _, _ ->
+                historyAdapter.removeHistoryElementById(entry.id)
+                deleteElementFromHistory(entry.id)
+                checkEmptyHistoryForNoHistoryLabel()
+                onDeleted?.invoke()
+            }
+            .setNeutralButton(R.string.hist_detail_copy) { _, _ ->
+                val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.hist_detail_result), entry.result))
+                Toast.makeText(this, R.string.hist_result_copied, Toast.LENGTH_SHORT).show()
+            }
+            .setPositiveButton(R.string.hist_detail_reuse) { _, _ -> reuseHistoryResult(entry) }
+            .show()
+    }
+
+    /** The sliding history panel is hidden behind the financial calculator, so it has its own list. */
+    private fun showFinancialHistory() {
+        val recycler = RecyclerView(this).apply { layoutManager = LinearLayoutManager(this@MainActivity) }
+        var dialog: androidx.appcompat.app.AlertDialog? = null
+        lateinit var adapter: HistoryAdapter
+        adapter = HistoryAdapter(
+            MyPreferences(this).getHistory(),
+            { value ->
+                reuseHistoryText(value.trim('(', ')'))
+                dialog?.dismiss()
+            },
+            this,
+            { entry -> showHistoryDetail(entry) { adapter.removeHistoryElementById(entry.id) } }
+        )
+        adapter.setFilter(CalculatorMode.FINANCIAL_RPN)
+        recycler.adapter = adapter
+        if (adapter.itemCount > 0) recycler.scrollToPosition(adapter.itemCount - 1)
+        val builder = com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.fin_history)
+            .setNegativeButton(R.string.fin_close, null)
+        if (adapter.itemCount == 0) builder.setMessage(R.string.fin_history_empty) else builder.setView(recycler)
+        dialog = builder.show()
+    }
+
+    private fun reuseHistoryText(text: String) = reuseHistoryResult(
+        History(calculation = text, result = text, time = "")
+    )
+
+    /** Puts the numeric part of a history result back into the active calculator. */
+    private fun reuseHistoryResult(entry: History) {
+        val number = PastedNumber.parse(entry.result.removeSuffix("%").trim(), decimalSeparatorSymbol, groupingSeparatorSymbol)
+        if (number == null) {
+            showMessage(R.string.hist_reuse_invalid)
+            return
+        }
+        if (calculatorMode == CalculatorMode.FINANCIAL_RPN) {
+            val value = number.replace(decimalSeparatorSymbol, ".").toBigDecimalOrNull()
+            if (value == null) showMessage(R.string.hist_reuse_invalid) else financialPanel?.pushValue(value)
+        } else {
+            updateDisplay(view, number)
+        }
     }
 
     private fun keyVibration(view: View) {
@@ -744,6 +858,7 @@ class MainActivity : AppCompatActivity() {
                                         result = formattedResult,
                                         time = currentTime,
                                         mode = calculatorMode.name,
+                                        type = algebraicHistoryType().name,
                                         id = historyElementId
                                     )
                                 )
@@ -761,6 +876,7 @@ class MainActivity : AppCompatActivity() {
                                             result = formattedResult,
                                             time = currentTime,
                                         mode = calculatorMode.name,
+                                        type = algebraicHistoryType().name,
                                             id = UUID.randomUUID().toString() // Generate a random id
                                         )
                                     )
@@ -1139,6 +1255,7 @@ class MainActivity : AppCompatActivity() {
                                     result = formattedResult,
                                     time = currentTime,
                                         mode = calculatorMode.name,
+                                        type = algebraicHistoryType().name,
                                     id = historyElementId // Generate a random id
                                 )
                             )
@@ -1155,6 +1272,7 @@ class MainActivity : AppCompatActivity() {
                                         result = formattedResult,
                                         time = currentTime,
                                         mode = calculatorMode.name,
+                                        type = algebraicHistoryType().name,
                                         id = UUID.randomUUID().toString() // Generate a random id
                                     )
                                 )
@@ -1500,6 +1618,9 @@ class MainActivity : AppCompatActivity() {
         updateDisplay(view, number)
     }
 
+    private fun algebraicHistoryType() =
+        if (calculatorMode == CalculatorMode.SCIENTIFIC) HistoryType.SCIENTIFIC else HistoryType.BASIC
+
     private fun toggleSign() {
         val text = binding.input.text.toString()
         val cursor = binding.input.selectionStart.let { if (it < 0) text.length else it.coerceAtMost(text.length) }
@@ -1524,7 +1645,8 @@ class MainActivity : AppCompatActivity() {
             settings = { financialDisplaySettings() },
             onHistory = { addFinancialHistory(it) },
             onStateChanged = { persistFinancialState() },
-            onKeyFeedback = { keyVibration(it) }
+            onKeyFeedback = { keyVibration(it) },
+            onShowHistory = { showFinancialHistory() }
         )
         val container = binding.financialPlaceholderInclude.root as android.widget.FrameLayout
         container.removeAllViews()

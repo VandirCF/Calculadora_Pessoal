@@ -72,7 +72,8 @@ class FinancialPanel(
     private val settings: () -> FinancialDisplaySettings,
     private val onHistory: (FinancialHistoryEvent) -> Unit,
     private val onStateChanged: () -> Unit,
-    private val onKeyFeedback: (View) -> Unit
+    private val onKeyFeedback: (View) -> Unit,
+    private val onShowHistory: () -> Unit = {}
 ) {
     private val engine: RpnEngine get() = viewModel.engine
 
@@ -213,6 +214,16 @@ class FinancialPanel(
             background = roundedBackground(color(R.attr.button_equals_color), 8)
         }
         val spacer = View(context)
+        val history = TextView(context).apply {
+            text = context.getString(R.string.fin_history)
+            textSize = 13f
+            gravity = Gravity.CENTER
+            setTextColor(textColor)
+            setPadding(dp(10), 0, dp(10), 0)
+            minimumHeight = dp(48)
+            contentDescription = context.getString(R.string.fin_history)
+            setOnClickListener { onShowHistory() }
+        }
         val menu = TextView(context).apply {
             text = "⋯"
             textSize = 24f
@@ -227,6 +238,7 @@ class FinancialPanel(
         header.addView(beginBadge, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
         header.addView(secondBadge, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
         header.addView(spacer, LinearLayout.LayoutParams(0, 1, 1f))
+        header.addView(history)
         header.addView(menu)
         box.addView(header)
 
@@ -508,6 +520,13 @@ class FinancialPanel(
         FinancialError.EMPTY_CASH_FLOWS -> context.getString(R.string.fin_err_empty_cash_flows)
         FinancialError.NO_SIGN_CHANGE -> context.getString(R.string.fin_err_no_sign_change)
         FinancialError.MISSING_REGISTER -> context.getString(R.string.fin_err_missing_register, detail)
+    }
+
+    /** Pushes a value (e.g. reused from the history) into X. */
+    fun pushValue(value: BigDecimal) {
+        engine.enterValue(value)
+        onStateChanged()
+        render()
     }
 
     // ---- history ----------------------------------------------------------------------------------------

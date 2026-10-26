@@ -22,6 +22,11 @@
         android:onClick="insertPreviousResult" />
 
     <item
+        android:id="@+id/app_menu_filter_history_button"
+        android:title="@string/menu_filter_history"
+        android:onClick="filterHistory" />
+
+    <item
         android:id="@+id/app_menu_clear_history_button"
         android:title="@string/menu_clear_history"
         android:onClick="clearHistory" />

@@ -333,4 +333,33 @@
     <string name="fin_help_title">How to use</string>
     <string name="fin_help_body">RPN: type the numbers first, then the operation. ENTER separates two numbers.\n\n2 ENTER 3 +  gives 5\n\nLoan payment: 1000 CHS PV, 12 n, 1 i, 0 FV, then PMT.\nCHS changes the sign. Cash in is positive and cash out is negative, so PV and PMT must have opposite signs.\n\nPressing n, i, PV, PMT or FV after typing a number stores it. Pressing one of them again with nothing typed calculates it.\n\n2nd gives the function written above each key. STO and RCL work with memory 0-9.\n\nCash flows: CF0 for the initial flow, CFj for the next ones, Nj to repeat the last one. Set i, then NPV, or press IRR.</string>
     <string name="fin_hist_amort_result">Interest %1$s | Principal %2$s | Balance %3$s</string>
+
+    <!-- Unified history -->
+    <string name="hist_type_rpn">RPN</string>
+    <string name="hist_type_tvm">TVM</string>
+    <string name="hist_type_npv">NPV</string>
+    <string name="hist_type_irr">IRR</string>
+    <string name="hist_type_amortization">Amortization</string>
+    <string name="hist_type_rate_conversion">Rate conversion</string>
+    <string name="hist_open_detail">Open details: %1$s</string>
+    <string name="menu_filter_history">Filter history</string>
+    <string name="hist_filter_title">Show history of</string>
+    <string name="hist_filter_all">All modes</string>
+    <string name="hist_clear_title">Clear history?</string>
+    <string name="hist_clear_message">Every entry will be deleted. This cannot be undone.</string>
+    <string name="hist_clear_confirm">Delete all</string>
+    <string name="hist_detail_title">History entry</string>
+    <string name="hist_detail_type">Type</string>
+    <string name="hist_detail_mode">Mode</string>
+    <string name="hist_detail_time">Date</string>
+    <string name="hist_detail_calc">Entry</string>
+    <string name="hist_detail_result">Result</string>
+    <string name="hist_detail_settings">Settings</string>
+    <string name="hist_detail_copy">Copy result</string>
+    <string name="hist_detail_reuse">Use result</string>
+    <string name="hist_detail_delete">Delete</string>
+    <string name="hist_reuse_invalid">This result cannot be used as a number</string>
+    <string name="hist_result_copied">Result copied</string>
+    <string name="fin_history">History</string>
+    <string name="fin_history_empty">No financial calculations yet</string>
 </resources>

@@ -235,4 +235,33 @@
     <string name="fin_help_title">Como usar</string>
     <string name="fin_help_body">RPN: digite primeiro os números e depois a operação. ENTER separa dois números.\n\n2 ENTER 3 +  resulta em 5\n\nParcela de um financiamento: 1000 CHS PV, 12 n, 1 i, 0 FV e depois PMT.\nCHS troca o sinal. Entrada de caixa é positiva e saída é negativa, então PV e PMT precisam ter sinais opostos.\n\nPressionar n, i, PV, PMT ou FV depois de digitar um número o guarda. Pressionar de novo sem digitar nada calcula o valor.\n\nA tecla 2ª dá a função escrita acima de cada tecla. STO e RCL usam a memória 0-9.\n\nFluxo de caixa: CF0 para o fluxo inicial, CFj para os próximos e Nj para repetir o último. Informe i e use NPV, ou pressione IRR.</string>
     <string name="fin_hist_amort_result">Juros %1$s | Principal %2$s | Saldo %3$s</string>
+
+    <!-- Unified history -->
+    <string name="hist_type_rpn">RPN</string>
+    <string name="hist_type_tvm">TVM</string>
+    <string name="hist_type_npv">VPL</string>
+    <string name="hist_type_irr">TIR</string>
+    <string name="hist_type_amortization">Amortização</string>
+    <string name="hist_type_rate_conversion">Conversão de taxa</string>
+    <string name="hist_open_detail">Abrir detalhes: %1$s</string>
+    <string name="menu_filter_history">Filtrar histórico</string>
+    <string name="hist_filter_title">Mostrar histórico de</string>
+    <string name="hist_filter_all">Todos os modos</string>
+    <string name="hist_clear_title">Limpar histórico?</string>
+    <string name="hist_clear_message">Todos os itens serão excluídos. Esta ação não pode ser desfeita.</string>
+    <string name="hist_clear_confirm">Excluir tudo</string>
+    <string name="hist_detail_title">Item do histórico</string>
+    <string name="hist_detail_type">Tipo</string>
+    <string name="hist_detail_mode">Modo</string>
+    <string name="hist_detail_time">Data</string>
+    <string name="hist_detail_calc">Entrada</string>
+    <string name="hist_detail_result">Resultado</string>
+    <string name="hist_detail_settings">Configurações</string>
+    <string name="hist_detail_copy">Copiar resultado</string>
+    <string name="hist_detail_reuse">Usar resultado</string>
+    <string name="hist_detail_delete">Excluir</string>
+    <string name="hist_reuse_invalid">Este resultado não pode ser usado como número</string>
+    <string name="hist_result_copied">Resultado copiado</string>
+    <string name="fin_history">Histórico</string>
+    <string name="fin_history_empty">Nenhum cálculo financeiro ainda</string>
 </resources>
