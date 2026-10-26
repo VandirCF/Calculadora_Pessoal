@@ -602,18 +602,39 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
+    <include
+        android:id="@+id/financialPlaceholderInclude"
+        layout="@layout/view_financial_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menuButton" />
+
+    <include
+        android:id="@+id/modeSwitcherInclude"
+        layout="@layout/view_mode_switcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/degreeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="0dp"
         style="@style/RobotoFontCondensedMedium"
         android:textSize="20sp"
         android:text="DEG"
         android:textColor="?attr/text_third_color"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/modeSwitcherInclude"
+        app:layout_constraintTop_toTopOf="@+id/modeSwitcherInclude"
+        app:layout_constraintBottom_toBottomOf="@+id/modeSwitcherInclude" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.preference.PreferenceManager
 import com.darkempire78.opencalculator.history.History
+import com.darkempire78.opencalculator.util.CalculatorMode
 import com.google.gson.Gson
 
 class MyPreferences(context: Context) {
@@ -30,6 +31,7 @@ class MyPreferences(context: Context) {
         private const val KEY_AUTO_SAVE_CALCULATION_WITHOUT_EQUAL_BUTTON = "darkempire78.opencalculator.AUTO_SAVE_CALCULATION_WITHOUT_EQUAL_BUTTON"
         private const val KEY_MOVE_BACK_BUTTON_LEFT = "darkempire78.opencalculator.MOVE_BACK_BUTTON_LEFT"
         private const val KEY_NUMBERING_SYSTEM = "darkempire78.opencalculator.NUMBERING_SYSTEM"
+        private const val KEY_CALCULATOR_MODE = "darkempire78.opencalculator.CALCULATOR_MODE"
         private const val KEY_SHOW_ON_LOCK_SCREEN = "darkempire78.opencalculator.KEY_SHOW_ON_LOCK_SCREEN"
     }
 
@@ -74,6 +76,15 @@ class MyPreferences(context: Context) {
 
     var numberingSystem = preferences.getInt(KEY_NUMBERING_SYSTEM, 0)
         set(value) = preferences.edit().putInt(KEY_NUMBERING_SYSTEM, value).apply()
+
+    /**
+     * Last used calculator mode. Until the user picks one, it is derived from the legacy
+     * scientific-mode preference so existing users keep the behaviour they had.
+     */
+    var calculatorMode: CalculatorMode
+        get() = preferences.getString(KEY_CALCULATOR_MODE, null)?.let { CalculatorMode.fromName(it) }
+            ?: CalculatorMode.fromLegacyScientificMode(scientificMode)
+        set(value) = preferences.edit().putString(KEY_CALCULATOR_MODE, value.name).apply()
 
     var showOnLockScreen = preferences.getBoolean(KEY_SHOW_ON_LOCK_SCREEN, true)
         set(value) = preferences.edit().putBoolean(KEY_SHOW_ON_LOCK_SCREEN, value).apply()

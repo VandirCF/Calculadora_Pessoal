@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButtonToggleGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/modeSwitcher"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:selectionRequired="true"
+    app:singleSelection="true">
+
+    <Button
+        android:id="@+id/modeBasicButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minWidth="48dp"
+        android:paddingHorizontal="10dp"
+        android:text="@string/mode_basic_short"
+        android:textColor="?attr/text_color"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/modeScientificButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minWidth="48dp"
+        android:paddingHorizontal="10dp"
+        android:text="@string/mode_scientific_short"
+        android:textColor="?attr/text_color"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/modeFinancialButton"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minWidth="48dp"
+        android:paddingHorizontal="10dp"
+        android:text="@string/mode_financial_short"
+        android:textColor="?attr/text_color"
+        android:textSize="13sp" />
+</com.google.android.material.button.MaterialButtonToggleGroup>

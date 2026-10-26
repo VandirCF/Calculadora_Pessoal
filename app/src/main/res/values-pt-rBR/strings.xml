@@ -79,4 +79,14 @@
     <string name="menu_donate">Apoie-nos</string>
     <string name="about_dialog_donation_close">Fechar</string>
     <string name="log2Desc">logaritmo de base 2</string>
+
+    <!-- Calculator modes -->
+    <string name="mode_basic_short">Básica</string>
+    <string name="mode_scientific_short">Científica</string>
+    <string name="mode_financial_short">Financeira</string>
+    <string name="mode_basic">Calculadora básica</string>
+    <string name="mode_scientific">Calculadora científica</string>
+    <string name="mode_financial">Calculadora financeira RPN</string>
+    <string name="mode_switcher_description">Modo da calculadora</string>
+    <string name="mode_financial_placeholder">Calculadora financeira RPN\nEm breve</string>
 </resources>

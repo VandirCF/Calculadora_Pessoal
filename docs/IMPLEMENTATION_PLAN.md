@@ -159,3 +159,14 @@ Comando: `./gradlew.bat --no-daemon assembleDebug testDebugUnitTest lintDebug --
 | `lintDebug` | **Falha: 23 erros, 202 avisos** — 21× `InvalidVectorPath`, 2× `NewApi` (`MyTileService` exige API 24 com minSdk 21). Pré-existentes. Não há `ktlint`/`detekt` configurados |
 
 Conclusão: build compila; a suíte existente **não está verde** e o lint não passa. Antes de declarar qualquer fase concluída, será necessário corrigir as 4 falhas (ou documentá-las como comportamento esperado) e criar um baseline de lint.
+
+## 13. Fase 1 — decisões (multimodo)
+
+- **Modelo:** `util/CalculatorMode` (`BASIC`, `SCIENTIFIC`, `FINANCIAL_RPN`), Kotlin puro e testado em JVM.
+- **Navegação escolhida:** seletor segmentado (`MaterialButtonToggleGroup`) no topo, à esquerda do menu ⋮, incluído via `view_mode_switcher.xml` nos 3 layouts existentes (retrato, paisagem, sw720dp-land). Sempre visível, com `contentDescription` por botão; não usa gestos laterais (evita conflito com o painel de histórico e gestos do sistema).
+- **Estado:** `CalculatorModeViewModel` (sobrevive a rotação/tema/idioma) + `MyPreferences.calculatorMode` (último modo restaurado ao abrir).
+- **Migração:** enquanto o usuário não escolher um modo, o inicial deriva da preferência antiga `scientificMode` (`ACTIVE` → `SCIENTIFIC`, demais → `BASIC`). A preferência antiga é mantida só como valor inicial. **Mudança de comportamento documentada:** o modo escolhido no seletor passa a mandar sobre a configuração antiga (que antes era reaplicada a cada `onResume` em retrato); em paisagem o básico agora oculta as linhas científicas, e o científico as mostra.
+- **Histórico:** `History` ganhou o campo opcional `mode`; entradas antigas (sem o campo) são lidas como `BASIC` via `History.origin`. Nenhuma migração destrutiva.
+- **Financeiro:** painel provisório "Em breve" (substituído na Fase 9); indicador DEG oculto nesse modo.
+- **Lint:** criado `app/lint-baseline.xml` com os 23 erros pré-existentes, para que apenas problemas novos falhem o lint.
+- **Testes:** corrigido `ExpressionUnitTest` (dependia do locale da máquina; agora `Locale.US`) e criado `CalculatorModeTest`.

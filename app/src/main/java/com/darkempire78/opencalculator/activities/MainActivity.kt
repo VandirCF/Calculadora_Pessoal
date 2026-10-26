@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,6 +51,7 @@ import com.darkempire78.opencalculator.databinding.ActivityMainBinding
 import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.history.HistoryAdapter
+import com.darkempire78.opencalculator.util.CalculatorMode
 import com.darkempire78.opencalculator.util.ScientificMode
 import com.darkempire78.opencalculator.util.ScientificModeTypes
 import com.sothree.slidinguppanel.PanelSlideListener
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity() {
     private var numberingSystem = NumberingSystem.INTERNATIONAL
     private var scientificModeType = ScientificModeTypes.NOT_ACTIVE
 
+    private var calculatorMode = CalculatorMode.DEFAULT
+    private lateinit var modeViewModel: CalculatorModeViewModel
     private var isInvButtonClicked = false
     private var isEqualLastAction = false
     private var isDegreeModeActivated = true // Set degree by default
@@ -120,6 +124,12 @@ class MainActivity : AppCompatActivity() {
         fixView()
 
         setContentView(view)
+
+        // Active mode: kept in a ViewModel across configuration changes, persisted across launches
+        modeViewModel = ViewModelProvider(this)[CalculatorModeViewModel::class.java]
+        calculatorMode = modeViewModel.mode ?: MyPreferences(this).calculatorMode
+        modeViewModel.mode = calculatorMode
+        setupModeSwitcher()
 
         // Disable the keyboard on display EditText
         binding.input.showSoftInputOnFocus = false
@@ -695,6 +705,7 @@ class MainActivity : AppCompatActivity() {
                                         calculation = calculation,
                                         result = formattedResult,
                                         time = currentTime,
+                                        mode = calculatorMode.name,
                                         id = historyElementId
                                     )
                                 )
@@ -711,6 +722,7 @@ class MainActivity : AppCompatActivity() {
                                             calculation = calculation,
                                             result = formattedResult,
                                             time = currentTime,
+                                        mode = calculatorMode.name,
                                             id = UUID.randomUUID().toString() // Generate a random id
                                         )
                                     )
@@ -1082,6 +1094,7 @@ class MainActivity : AppCompatActivity() {
                                     calculation = calculation,
                                     result = formattedResult,
                                     time = currentTime,
+                                        mode = calculatorMode.name,
                                     id = historyElementId // Generate a random id
                                 )
                             )
@@ -1097,6 +1110,7 @@ class MainActivity : AppCompatActivity() {
                                         calculation = calculation,
                                         result = formattedResult,
                                         time = currentTime,
+                                        mode = calculatorMode.name,
                                         id = UUID.randomUUID().toString() // Generate a random id
                                     )
                                 )
@@ -1299,12 +1313,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            // scientific mode enabled by default in portrait mode (if option enabled)
-            val storedType = MyPreferences(this).scientificMode
-            scientificModeType = ScientificMode.getScientificModeType(storedType)
-            manageScientificMode(scientificModeType)
-        }
+        applyCalculatorMode(calculatorMode)
 
         fixView()
 
@@ -1392,6 +1401,45 @@ class MainActivity : AppCompatActivity() {
         }else {
             binding.noHistoryText.visibility = View.GONE
             binding.historyRecylcleView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun setupModeSwitcher() {
+        val switcher = binding.modeSwitcherInclude
+        switcher.root.contentDescription = getString(R.string.mode_switcher_description)
+        switcher.modeBasicButton.contentDescription = getString(R.string.mode_basic)
+        switcher.modeScientificButton.contentDescription = getString(R.string.mode_scientific)
+        switcher.modeFinancialButton.contentDescription = getString(R.string.mode_financial)
+        switcher.root.check(buttonIdFor(calculatorMode))
+        switcher.root.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                calculatorMode = modeForButtonId(checkedId)
+                modeViewModel.mode = calculatorMode
+                MyPreferences(this).calculatorMode = calculatorMode
+                applyCalculatorMode(calculatorMode)
+            }
+        }
+    }
+
+    private fun buttonIdFor(mode: CalculatorMode) = when (mode) {
+        CalculatorMode.BASIC -> R.id.modeBasicButton
+        CalculatorMode.SCIENTIFIC -> R.id.modeScientificButton
+        CalculatorMode.FINANCIAL_RPN -> R.id.modeFinancialButton
+    }
+
+    private fun modeForButtonId(id: Int) = when (id) {
+        R.id.modeScientificButton -> CalculatorMode.SCIENTIFIC
+        R.id.modeFinancialButton -> CalculatorMode.FINANCIAL_RPN
+        else -> CalculatorMode.BASIC
+    }
+
+    /** Shows the keyboard that belongs to [mode]. Basic and scientific share the algebraic engine. */
+    private fun applyCalculatorMode(mode: CalculatorMode) {
+        binding.financialPlaceholderInclude.root.isVisible = mode == CalculatorMode.FINANCIAL_RPN
+        when (mode) {
+            CalculatorMode.BASIC -> hideScientificMode()
+            CalculatorMode.SCIENTIFIC -> enableOrDisableScientistMode(true)
+            CalculatorMode.FINANCIAL_RPN -> binding.degreeTextView.visibility = View.GONE
         }
     }
 

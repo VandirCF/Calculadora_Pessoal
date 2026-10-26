@@ -83,4 +83,14 @@
     <string name="menu_donate">Apoie-nos</string>
     <string name="no_history_available">Nenhum histórico disponível</string>
     <string name="show_on_lock_screen">Mostrar no ecrã de bloqueio</string>
+
+    <!-- Calculator modes -->
+    <string name="mode_basic_short">Básica</string>
+    <string name="mode_scientific_short">Científica</string>
+    <string name="mode_financial_short">Financeira</string>
+    <string name="mode_basic">Calculadora básica</string>
+    <string name="mode_scientific">Calculadora científica</string>
+    <string name="mode_financial">Calculadora financeira RPN</string>
+    <string name="mode_switcher_description">Modo da calculadora</string>
+    <string name="mode_financial_placeholder">Calculadora financeira RPN\nEm breve</string>
 </resources>

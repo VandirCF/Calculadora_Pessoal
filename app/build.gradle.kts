@@ -35,6 +35,11 @@ android {
         }
     }
 
+    lint {
+        // Pre-existing issues from upstream (InvalidVectorPath, NewApi); only new issues fail the build
+        baseline = file("lint-baseline.xml")
+    }
+
     viewBinding {
         enable = true
     }
