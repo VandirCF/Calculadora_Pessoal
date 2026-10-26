@@ -286,4 +286,13 @@
     <string name="sep_comma">Vírgula (,)</string>
     <string name="sep_space">Espaço</string>
     <string name="sep_none">Nenhum</string>
+
+    <!-- Distribution -->
+    <string name="about_based_on">Baseado no OpenCalc (GPL-3.0)</string>
+    <string name="about_license_title">Licença e créditos</string>
+    <string name="about_license_text">Este aplicativo é software livre: você pode redistribuí-lo e modificá-lo sob os termos da Licença Pública Geral GNU, versão 3, publicada pela Free Software Foundation. Ele é fornecido sem garantia.\n\nÉ uma obra derivada do OpenCalc, de Darkempire78 e colaboradores (https://github.com/Darkempire78/OpenCalc), também licenciado sob a GPL-3.0. Os avisos de direitos autorais originais foram mantidos.\n\nO nome e o ícone deste aplicativo são originais e não têm relação com nenhuma calculadora comercial ou fabricante.\n\nBibliotecas: AndroidX, Material Components e Gson (Licença Apache 2.0), AndroidSlidingUpPanel (Licença Apache 2.0).</string>
+    <string name="about_license_open">Abrir texto da GPL-3.0</string>
+    <string name="privacy_title">Política de privacidade</string>
+    <string name="privacy_text">Este aplicativo funciona totalmente offline. Não tem acesso à internet, conta, anúncios, compras, análise de uso nem rastreamento.\n\nSuas configurações, histórico, memória da calculadora e registradores financeiros ficam no seu aparelho, no armazenamento privado do aplicativo. Eles só entram no backup do Android da sua própria conta Google se o backup do aparelho estiver ativado; o desenvolvedor nunca os recebe.\n\nO aplicativo pede uma única permissão: vibração, para o retorno das teclas (pode ser desativada em Configurações).\n\nVocê pode apagar o histórico no menu do aplicativo e os registradores financeiros com 2ª + CLx, ou apagar tudo limpando o armazenamento do aplicativo nas configurações do Android.</string>
+    <string name="privacy_close">Fechar</string>
 </resources>

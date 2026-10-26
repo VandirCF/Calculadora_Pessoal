@@ -3,6 +3,7 @@ package com.darkempire78.opencalculator.financial
 import com.darkempire78.opencalculator.finance.rpn.RpnEngine
 import com.darkempire78.opencalculator.finance.rpn.RpnSnapshot
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 
 /**
  * Serializes the engine state as versioned JSON.
@@ -15,7 +16,10 @@ object FinancialStateStore {
     const val CURRENT_VERSION = 1
     private val gson = Gson()
 
-    private data class Envelope(val version: Int = CURRENT_VERSION, val state: RpnSnapshot? = null)
+    private data class Envelope(
+        @SerializedName("version") val version: Int = CURRENT_VERSION,
+        @SerializedName("state") val state: RpnSnapshot? = null
+    )
 
     fun encode(engine: RpnEngine): String = gson.toJson(Envelope(CURRENT_VERSION, engine.snapshot()))
 

@@ -170,3 +170,24 @@ Conclusão: build compila; a suíte existente **não está verde** e o lint não
 - **Financeiro:** painel provisório "Em breve" (substituído na Fase 9); indicador DEG oculto nesse modo.
 - **Lint:** criado `app/lint-baseline.xml` com os 23 erros pré-existentes, para que apenas problemas novos falhem o lint.
 - **Testes:** corrigido `ExpressionUnitTest` (dependia do locale da máquina; agora `Locale.US`) e criado `CalculatorModeTest`.
+
+
+## 14. Estado final das fases
+
+| Fase | Estado | Onde ver |
+|---|---|---|
+| 0 Auditoria | concluída | este documento |
+| 1 Multimodo | concluída | seção 13, `CalculatorMode` |
+| 2 Básica | concluída | `docs/BASIC_MODE.md` |
+| 3 Científica | concluída | `docs/SCIENTIFIC_MODE.md` |
+| 4–5 Motor financeiro e pilha RPN | concluídas | `docs/FINANCIAL_FUNCTIONS.md`, `docs/RPN_GUIDE.md` |
+| 6–8 TVM, VPL/TIR, amortização e taxas | concluídas | `docs/FINANCIAL_TEST_CASES.md` |
+| 9 Interface financeira | concluída | `financial/FinancialPanel.kt` |
+| 10 Histórico unificado | concluída | `history/` |
+| 11 Configurações | concluída, **sem som de teclas** (não havia infraestrutura) | `root_preferences.xml` |
+| 12 Internacionalização | concluída para EN e pt-BR | `StringResourcesTest` |
+| 13 Testes e qualidade | concluída; sem verificação de formatação (não há ktlint no projeto) | `app/src/test`, `app/src/androidTest` |
+| 14 Documentação | concluída | `README.md`, `docs/` |
+| 15 Distribuição | **preparada, não publicada**; pendentes decisões do responsável (applicationId definitivo, chave de upload, URL da política) | `docs/RELEASE_CHECKLIST.md` |
+
+Desvios em relação ao plano original: a seleção de modo usa seletor segmentado (como previsto); o modo financeiro é um painel construído em código em vez de um Fragment (menos duplicação entre as variações de layout); o histórico do modo financeiro tem lista própria porque o painel deslizante fica sob o painel financeiro.

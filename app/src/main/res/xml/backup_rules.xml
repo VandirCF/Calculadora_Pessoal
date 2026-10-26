@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and lower. Only the app preferences (settings, history, financial registers) are
+     backed up, to the user's own Google account backup. Nothing is sent anywhere else. -->
+<full-backup-content>
+    <include domain="sharedpref" path="." />
+</full-backup-content>

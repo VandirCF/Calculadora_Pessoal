@@ -1,9 +1,10 @@
 package com.darkempire78.opencalculator.finance
 
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 /** One cash flow repeated [count] consecutive periods. */
-data class CashFlow(val amount: BigDecimal, val count: Int = 1)
+data class CashFlow(@SerializedName("amount") val amount: BigDecimal, @SerializedName("count") val count: Int = 1)
 
 /**
  * Cash flow list: CF0 at time 0 followed by CF1..CFn, each repeated `count` times.

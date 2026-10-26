@@ -12,6 +12,7 @@ import com.darkempire78.opencalculator.finance.Npv
 import com.darkempire78.opencalculator.finance.Tvm
 import com.darkempire78.opencalculator.finance.TvmRegisters
 import com.darkempire78.opencalculator.finance.WORK_MC
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 /** Keys of the RPN financial calculator. UI buttons map one-to-one to these. */
@@ -503,8 +504,17 @@ class RpnEngine {
 }
 
 data class RpnSnapshot(
-    val x: BigDecimal, val y: BigDecimal, val z: BigDecimal, val t: BigDecimal, val lastX: BigDecimal,
-    val entry: String?, val liftEnabled: Boolean, val memory: List<BigDecimal>,
-    val tvm: TvmRegisters, val periodsPerYear: BigDecimal,
-    val cashFlowEntries: List<CashFlow>, val cashFlow0: BigDecimal, val amortizedPeriods: Int
+    @SerializedName("x") val x: BigDecimal,
+    @SerializedName("y") val y: BigDecimal,
+    @SerializedName("z") val z: BigDecimal,
+    @SerializedName("t") val t: BigDecimal,
+    @SerializedName("lastX") val lastX: BigDecimal,
+    @SerializedName("entry") val entry: String?,
+    @SerializedName("liftEnabled") val liftEnabled: Boolean,
+    @SerializedName("memory") val memory: List<BigDecimal>,
+    @SerializedName("tvm") val tvm: TvmRegisters,
+    @SerializedName("periodsPerYear") val periodsPerYear: BigDecimal,
+    @SerializedName("cashFlowEntries") val cashFlowEntries: List<CashFlow>,
+    @SerializedName("cashFlow0") val cashFlow0: BigDecimal,
+    @SerializedName("amortizedPeriods") val amortizedPeriods: Int
 )

@@ -139,7 +139,7 @@
     <string name="about_other_privacy_policy">Privacy policy</string>
     <string name="about_other_version">Version</string>
 
-    <string name="about_easter_egg">Thanks for using OpenCalc ❤️</string>
+    <string name="about_easter_egg">Thanks for using this calculator ❤️</string>
     <string name="about_made_in_france">Made with ❤️ in France</string>
 
     <!-- Theme choices -->
@@ -384,4 +384,14 @@
     <string name="sep_comma">Comma (,)</string>
     <string name="sep_space">Space</string>
     <string name="sep_none">None</string>
+
+    <!-- Distribution -->
+    <string name="app_label" translatable="false">Calculadora Financeira RPN</string>
+    <string name="about_based_on">Based on OpenCalc (GPL-3.0)</string>
+    <string name="about_license_title">License and credits</string>
+    <string name="about_license_text">This app is free software: you can redistribute it and modify it under the terms of the GNU General Public License, version 3, as published by the Free Software Foundation. It comes with no warranty.\n\nIt is a derivative work of OpenCalc by Darkempire78 and contributors (https://github.com/Darkempire78/OpenCalc), also licensed under GPL-3.0. The original copyright notices are kept.\n\nThe name and the icon of this app are original and are not related to any commercial calculator or manufacturer.\n\nLibraries: AndroidX, Material Components and Gson (Apache License 2.0), AndroidSlidingUpPanel (Apache License 2.0).</string>
+    <string name="about_license_open">Open GPL-3.0 text</string>
+    <string name="privacy_title">Privacy policy</string>
+    <string name="privacy_text">This app works completely offline. It has no internet access, no account, no ads, no purchases, no analytics and no tracking.\n\nYour settings, history, calculator memory and financial registers stay on your device, in the app private storage. They are only included in the Android backup of your own Google account if you have device backup turned on; the developer never receives them.\n\nThe app asks for one permission: vibration, for key feedback (it can be turned off in Settings).\n\nYou can delete the history in the app menu and the financial registers with 2nd + CLx, or erase everything by clearing the app storage in Android settings.</string>
+    <string name="privacy_close">Close</string>
 </resources>

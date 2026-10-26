@@ -17,6 +17,7 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.darkempire78.opencalculator", appContext.packageName)
+        // the debug build adds the ".debug" suffix, so compare with the build configuration instead of a literal
+        assertEquals(BuildConfig.APPLICATION_ID, appContext.packageName)
     }
 }

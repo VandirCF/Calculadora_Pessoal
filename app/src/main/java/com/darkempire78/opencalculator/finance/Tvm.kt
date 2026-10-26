@@ -1,5 +1,6 @@
 package com.darkempire78.opencalculator.finance
 
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
 /**
@@ -14,13 +15,13 @@ import java.math.BigDecimal
  *     PV + PMT n + FV = 0                                             (r == 0)
  */
 data class TvmRegisters(
-    val n: BigDecimal? = null,
+    @SerializedName("n") val n: BigDecimal? = null,
     /** Interest rate per period, in percent. */
-    val i: BigDecimal? = null,
-    val pv: BigDecimal? = null,
-    val pmt: BigDecimal? = null,
-    val fv: BigDecimal? = null,
-    val beginMode: Boolean = false
+    @SerializedName("i") val i: BigDecimal? = null,
+    @SerializedName("pv") val pv: BigDecimal? = null,
+    @SerializedName("pmt") val pmt: BigDecimal? = null,
+    @SerializedName("fv") val fv: BigDecimal? = null,
+    @SerializedName("beginMode") val beginMode: Boolean = false
 )
 
 object Tvm {

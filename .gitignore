@@ -27,3 +27,14 @@ app/release/output-metadata.json
 
 *.salive
 /app/release/*
+
+# Release signing: never commit keys or passwords
+keystore.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# Release outputs
+/app/release/
+*.aab

@@ -1,0 +1,21 @@
+Uma calculadora completa em um só aplicativo, com três modos que você troca com um toque:
+
+• BÁSICA: as quatro operações, porcentagem, parênteses, inverter sinal, histórico e copiar/colar números.
+• CIENTÍFICA: trigonometria em graus ou radianos, logaritmos, potências, raízes de qualquer índice, fatorial, constantes, memória e resultado anterior.
+• FINANCEIRA RPN: pilha X, Y, Z e T, valor presente, valor futuro, pagamento, número de períodos e taxa por período, fluxo de caixa, valor presente líquido (VPL), taxa interna de retorno (TIR), amortização e conversão de taxas.
+
+Pensada para quem faz contas financeiras:
+• Cálculos com 34 dígitos de precisão, sem erros de arredondamento de ponto flutuante.
+• Convenção de sinais clara: entradas e saídas de caixa têm sinais opostos, e o aplicativo explica quando isso não é respeitado, sem trocar nenhum sinal por conta própria.
+• TIR com alerta quando existe mais de uma solução, em vez de mostrar um resultado enganoso.
+• Tabela de amortização, pagamento no início ou no final do período e conversão correta entre taxa nominal, efetiva e equivalente.
+• Histórico unificado, com filtro por modo, detalhe, copiar, reutilizar e excluir.
+• Registradores financeiros preservados ao fechar o aplicativo, com ação explícita e confirmação para limpar.
+
+Privacidade em primeiro lugar:
+• Funciona 100% offline: sem internet, sem conta, sem anúncios, sem compras e sem rastreamento.
+• Única permissão: vibração (opcional).
+
+Temas claro, escuro, AMOLED e Material You, retrato e paisagem, textos em português do Brasil e inglês, e acessibilidade para leitores de tela.
+
+Software livre sob a licença GPL-3.0, baseado no projeto OpenCalc. Veja o código-fonte e as licenças dentro do aplicativo.

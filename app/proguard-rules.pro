@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ---- Gson models persisted as JSON in SharedPreferences ----------------------------------------
+# Field names are also fixed with @SerializedName; these rules keep the classes and generic types
+# intact so saved history and financial state keep loading after R8 shrinking.
+-keepattributes Signature, *Annotation*
+-keep class com.darkempire78.opencalculator.history.History { <init>(...); <fields>; }
+-keep class com.darkempire78.opencalculator.finance.rpn.RpnSnapshot { <init>(...); <fields>; }
+-keep class com.darkempire78.opencalculator.finance.TvmRegisters { <init>(...); <fields>; }
+-keep class com.darkempire78.opencalculator.finance.CashFlow { <init>(...); <fields>; }
+-keep class com.darkempire78.opencalculator.financial.FinancialStateStore$Envelope { <init>(...); <fields>; }

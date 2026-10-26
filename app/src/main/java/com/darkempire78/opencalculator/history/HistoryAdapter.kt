@@ -142,6 +142,8 @@ class HistoryAdapter(
             private val result: TextView = itemView.findViewById(R.id.history_item_result)
             private val time: TextView = itemView.findViewById(R.id.history_time)
             private val typeLabel: TextView = itemView.findViewById(R.id.history_item_type)
+            // text size chosen by the screen-size specific layout; financial entries use half of it
+            private val layoutCalculationSize: Float = calculation.textSize
             private val separator: View = itemView.findViewById(R.id.history_separator)
             private val sameDateSeparator: View = itemView.findViewById(R.id.history_same_date_separator)
 
@@ -159,7 +161,10 @@ class HistoryAdapter(
                 calculation.text = historyElement.calculation
                 result.text = historyElement.result
                 // Financial entries are longer sentences: smaller text than the 35sp used for expressions
-                calculation.textSize = if (historyElement.origin == CalculatorMode.FINANCIAL_RPN) 18f else 35f
+                calculation.setTextSize(
+                    android.util.TypedValue.COMPLEX_UNIT_PX,
+                    if (historyElement.origin == CalculatorMode.FINANCIAL_RPN) layoutCalculationSize * 0.5f else layoutCalculationSize
+                )
                 typeLabel.text = typeDescription(context, historyElement)
                 typeLabel.contentDescription = context.getString(R.string.hist_open_detail, typeDescription(context, historyElement))
                 typeLabel.setOnClickListener { onDetailRequested(historyElement) }

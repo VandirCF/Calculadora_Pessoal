@@ -147,6 +147,13 @@ class FinancialPanel(
 
     // ---- views -----------------------------------------------------------------------------------
     private val isLandscape = context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    /** Text grows on tablets so the keypad and the display stay readable. */
+    private val textScale = context.resources.configuration.smallestScreenWidthDp
+        .let { if (it >= 720) 2.0f else if (it >= 600) 1.5f else 1f }
+    private fun sp(value: Float) = value * textScale
+    private fun spInt(value: Int) = (value * textScale).toInt()
+    private val compactScreen = context.resources.configuration.screenHeightDp
+        .let { it < COMPACT_HEIGHT_DP || (!isLandscape && it < COMPACT_PORTRAIT_HEIGHT_DP) }
     private val buttons = ArrayList<Pair<KeySpec, MaterialButton>>()
     private lateinit var stackValues: List<TextView> // T, Z, Y, X
     private lateinit var beginBadge: TextView
@@ -182,7 +189,7 @@ class FinancialPanel(
             container.addView(display, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f).apply { marginEnd = dp(8) })
             container.addView(keypad, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1.3f))
         } else {
-            container.addView(display, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 0.85f).apply { bottomMargin = dp(6) })
+            container.addView(display, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, if (compactScreen) 1.15f else 0.85f).apply { bottomMargin = dp(6) })
             container.addView(keypad, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.6f))
         }
         return container
@@ -190,7 +197,7 @@ class FinancialPanel(
 
     private fun badge(text: String): TextView = TextView(context).apply {
         this.text = text
-        textSize = 11f
+        textSize = sp(11f)
         setTypeface(typeface, Typeface.BOLD)
         setTextColor(color(R.attr.text_color))
         setPadding(dp(8), dp(2), dp(8), dp(2))
@@ -216,7 +223,7 @@ class FinancialPanel(
         val spacer = View(context)
         val history = TextView(context).apply {
             text = context.getString(R.string.fin_history)
-            textSize = 13f
+            textSize = sp(13f)
             gravity = Gravity.CENTER
             setTextColor(textColor)
             setPadding(dp(10), 0, dp(10), 0)
@@ -226,7 +233,7 @@ class FinancialPanel(
         }
         val menu = TextView(context).apply {
             text = "⋯"
-            textSize = 24f
+            textSize = sp(24f)
             gravity = Gravity.CENTER
             setTextColor(textColor)
             minimumWidth = dp(48)
@@ -246,12 +253,14 @@ class FinancialPanel(
         val labels = listOf("T", "Z", "Y", "X")
         val descriptions = listOf(R.string.fin_stack_t, R.string.fin_stack_z, R.string.fin_stack_y, R.string.fin_stack_x)
         val values = ArrayList<TextView>()
+        // Short screens (landscape phones): keep only Y and X so nothing is squeezed
+        val compact = compactScreen
         for ((index, label) in labels.withIndex()) {
             val isX = index == 3
             val row = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
             val name = TextView(context).apply {
                 text = label
-                textSize = if (isX) 18f else 13f
+                textSize = if (isX) sp(18f) else sp(13f)
                 setTextColor(dim)
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             }
@@ -263,14 +272,15 @@ class FinancialPanel(
                 contentDescription = null
                 ViewCompat.setAccessibilityLiveRegion(this, if (isX) ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE else ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE)
                 if (isX) {
-                    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, 18, 44, 2, TypedValue.COMPLEX_UNIT_SP)
+                    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(18), spInt(44), 2, TypedValue.COMPLEX_UNIT_SP)
                 } else {
-                    textSize = 15f
+                    textSize = sp(15f)
                 }
             }
             row.addView(name, LinearLayout.LayoutParams(dp(20), ViewGroup.LayoutParams.WRAP_CONTENT))
             row.addView(value, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f))
             val rowWeight = if (isX) 1.6f else 0.7f
+            if (compact && index < 2) row.visibility = View.GONE
             box.addView(row, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, rowWeight))
             value.tag = descriptions[index]
             values.add(value)
@@ -287,7 +297,8 @@ class FinancialPanel(
         for ((key, label) in listOf(RpnKey.N to "n", RpnKey.I to "i", RpnKey.PV to "PV", RpnKey.PMT to "PMT", RpnKey.FV to "FV")) {
             val chip = TextView(context).apply {
                 tag = label
-                textSize = 11f
+                TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(8), spInt(12), 1, TypedValue.COMPLEX_UNIT_SP)
+                maxLines = 2
                 gravity = Gravity.CENTER
                 setTextColor(textColor)
                 setPadding(dp(4), dp(2), dp(4), dp(2))
@@ -303,10 +314,10 @@ class FinancialPanel(
 
         // contextual help / error line
         messageView = TextView(context).apply {
-            textSize = 12f
+            textSize = sp(12f)
             setTextColor(dim)
             ViewCompat.setAccessibilityLiveRegion(this, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
-            minLines = 2
+            minLines = if (compactScreen) 1 else 2
         }
         box.addView(messageView, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
         return box
@@ -341,8 +352,9 @@ class FinancialPanel(
                         strokeColor = ColorStateList.valueOf(color(R.attr.text_third_color))
                     }
                     setTextColor(color(R.attr.text_color))
-                    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, 10, 20, 1, TypedValue.COMPLEX_UNIT_SP)
+                    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(10), spInt(20), 1, TypedValue.COMPLEX_UNIT_SP)
                     maxLines = 2
+                    tag = "key:" + spec.main // stable handle for UI tests, independent of the language
                     setOnClickListener { onKey(spec, it) }
                 }
                 buttons.add(spec to button)
@@ -890,5 +902,7 @@ class FinancialPanel(
 
     companion object {
         private const val MAX_TABLE_ROWS = 120
+        private const val COMPACT_HEIGHT_DP = 400
+        private const val COMPACT_PORTRAIT_HEIGHT_DP = 700
     }
 }

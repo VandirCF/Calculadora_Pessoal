@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -50,63 +51,39 @@ class AboutActivity : AppCompatActivity() {
             finish()
         }
 
-        // Translate
-        binding.aboutTranslate.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://hosted.weblate.org/engage/opencalc/")
-            )
-            startActivity(browserIntent)
-        }
+        // This derivative app has no store page, translation project, donation page or community of its own yet:
+        // the upstream shortcuts (rate, translate, donate, Discord) are hidden so they do not point to another app.
+        listOf(
+            binding.aboutHelp, binding.aboutTranslate, binding.aboutRate,
+            binding.categoryHelpUsSeparator, binding.aboutDiscord, binding.categorySocialSeparator
+        ).forEach { it.visibility = android.view.View.GONE }
+        binding.aboutAboutMadeInFrance.visibility = android.view.View.GONE
 
-        // Rate
-        binding.aboutRate.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://play.google.com/store/apps/details?id=com.darkempire78.opencalculator")
-            )
-            startActivity(browserIntent)
-        }
-
-        // Donation
-        /*binding.aboutDonate.setOnClickListener {
-            DonationDialog(this, layoutInflater).openDonationDialog()
-        }*/
-
-        // Github
+        // Credit to the original project (GPL-3.0 attribution)
+        binding.aboutGithub.text = getString(R.string.about_based_on)
         binding.aboutGithub.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://github.com/Darkempire78/OpenCalc")
-            )
-            startActivity(browserIntent)
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Darkempire78/OpenCalc")))
         }
 
-        // Discord
-        binding.aboutDiscord.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://discord.com/invite/sPvJmY7mcV")
-            )
-            startActivity(browserIntent)
-        }
-
-        // Privacy policy
+        // Privacy policy (bundled text: the app works offline)
         binding.aboutPrivacyPolicy.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://gist.githubusercontent.com/clementwzk/1688314e8b75d5d32ac0503a97ec77a0/raw/2dcc4cf13f9755405e486e51e4658626c289986a/OpenCalc%2520Privacy%2520Policy.md")
-            )
-            startActivity(browserIntent)
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.privacy_title)
+                .setMessage(R.string.privacy_text)
+                .setPositiveButton(R.string.privacy_close, null)
+                .show()
         }
 
-        // License
+        // License and credits
         binding.aboutLicense.setOnClickListener {
-            val browserIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://github.com/Darkempire78/OpenCalc/blob/main/LICENSE")
-            )
-            startActivity(browserIntent)
+            MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.about_license_title)
+                .setMessage(R.string.about_license_text)
+                .setNeutralButton(R.string.about_license_open) { _, _ ->
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gnu.org/licenses/gpl-3.0.html")))
+                }
+                .setPositiveButton(R.string.privacy_close, null)
+                .show()
         }
 
         // Easter egg

@@ -1,0 +1,21 @@
+A complete calculator in a single app, with three modes you switch with one tap:
+
+• BASIC: the four operations, percent, parentheses, sign change, history and copy/paste of numbers.
+• SCIENTIFIC: trigonometry in degrees or radians, logarithms, powers, roots of any index, factorial, constants, memory and previous result.
+• FINANCIAL RPN: X, Y, Z and T stack, present value, future value, payment, number of periods and rate per period, cash flows, net present value (NPV), internal rate of return (IRR), amortization and rate conversion.
+
+Built for real financial math:
+• 34-digit precision with no floating point rounding surprises.
+• A clear sign convention: cash in and cash out have opposite signs, and the app explains when that is not respected, without ever changing a sign for you.
+• IRR warns when more than one solution exists instead of showing a misleading result.
+• Amortization table, payments at the beginning or end of the period, and correct conversion between nominal, effective and equivalent rates.
+• Unified history with filter by mode, detail, copy, reuse and delete.
+• Financial registers are kept when you close the app, with an explicit, confirmed action to clear them.
+
+Privacy first:
+• 100% offline: no internet, no account, no ads, no purchases, no tracking.
+• Only one permission: vibration (optional).
+
+Light, dark, AMOLED and Material You themes, portrait and landscape, English and Brazilian Portuguese texts, and screen reader accessibility.
+
+Free software under the GPL-3.0 license, based on the OpenCalc project. See the source code and licenses inside the app.
