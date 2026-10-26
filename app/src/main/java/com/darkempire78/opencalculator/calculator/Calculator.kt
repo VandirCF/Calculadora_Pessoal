@@ -27,6 +27,13 @@ var syntax_error = false
 var is_infinity = false
 var require_real_number = false
 
+enum class CalcError { SYNTAX, DOMAIN, REQUIRE_REAL, DIVISION_BY_ZERO, INFINITY }
+
+sealed class CalcResult {
+    data class Value(val value: BigDecimal) : CalcResult()
+    data class Error(val error: CalcError) : CalcResult()
+}
+
 class Calculator(
         private val numberPrecisionDecimal: Int
     ) {
@@ -132,6 +139,86 @@ class Calculator(
             }
         }
         return value
+    }
+
+    /** Trigonometric results this close to zero are floating point noise (sin(180 deg) = 1.2e-16). */
+    private fun snapNoise(value: BigDecimal): BigDecimal =
+        if (value.abs() < NOISE_THRESHOLD) BigDecimal.ZERO else value
+
+    private fun isTangentUndefined(angle: BigDecimal, degrees: Boolean): Boolean {
+        val radians = if (degrees) Math.toRadians(angle.toDouble()) else angle.toDouble()
+        return abs(cos(radians)) < TANGENT_UNDEFINED_THRESHOLD
+    }
+
+    /** n-th root of [radicand]. Odd integer indexes accept negative radicands. */
+    private fun nthRoot(index: BigDecimal, radicand: BigDecimal): BigDecimal {
+        if (index.signum() == 0) {
+            domain_error = true
+            return BigDecimal.ZERO
+        }
+        val isIntegerIndex = index.stripTrailingZeros().scale() <= 0
+        if (radicand.signum() < 0) {
+            val isOddIndex = isIntegerIndex && index.toBigInteger().testBit(0)
+            if (!isOddIndex) {
+                require_real_number = true
+                return BigDecimal.ZERO
+            }
+            return nthRoot(index, radicand.negate()).negate()
+        }
+        if (radicand.signum() == 0) return BigDecimal.ZERO
+        val root = radicand.toDouble().pow(1.0 / index.toDouble())
+        if (root.isInfinite() || root.isNaN()) {
+            is_infinity = true
+            return BigDecimal.ZERO
+        }
+        // Return an exact integer when the root is exact (e.g. 3 root of 27 = 3)
+        if (isIntegerIndex && index.abs() <= BigDecimal(1000)) {
+            val candidate = BigDecimal(round(root))
+            if (candidate.pow(index.toInt()).compareTo(radicand) == 0) return candidate
+        }
+        return BigDecimal(root, MathContext.DECIMAL64)
+    }
+
+    /**
+     * Evaluates [equation] and reports the outcome as a value instead of through the global
+     * error flags. Flags are reset before and after, and access is serialized, so results of
+     * different evaluations cannot leak into each other.
+     */
+    fun evaluateSafe(equation: String, isDegreeModeActivated: Boolean): CalcResult = synchronized(FLAGS_LOCK) {
+        resetErrorFlags()
+        val value = try {
+            evaluate(equation, isDegreeModeActivated)
+        } catch (e: ArithmeticException) {
+            resetErrorFlags()
+            return CalcResult.Error(CalcError.DOMAIN)
+        } catch (e: NumberFormatException) {
+            resetErrorFlags()
+            return CalcResult.Error(CalcError.SYNTAX)
+        }
+        val error = when {
+            syntax_error -> CalcError.SYNTAX
+            domain_error -> CalcError.DOMAIN
+            require_real_number -> CalcError.REQUIRE_REAL
+            division_by_0 -> CalcError.DIVISION_BY_ZERO
+            is_infinity -> CalcError.INFINITY
+            else -> null
+        }
+        resetErrorFlags()
+        if (error != null) CalcResult.Error(error) else CalcResult.Value(value)
+    }
+
+    private fun resetErrorFlags() {
+        division_by_0 = false
+        domain_error = false
+        syntax_error = false
+        is_infinity = false
+        require_real_number = false
+    }
+
+    companion object {
+        private val FLAGS_LOCK = Any()
+        private val NOISE_THRESHOLD = BigDecimal("1.0E-14")
+        private const val TANGENT_UNDEFINED_THRESHOLD = 1.0E-12
     }
 
     fun bigDecimalSqrtFormerAndroidVersion(value: BigDecimal, mathContext: MathContext): BigDecimal {
@@ -273,6 +360,9 @@ class Calculator(
                             }
 
                         }
+                        "abs" -> {
+                            x = x.abs()
+                        }
                         "factorial" -> {
                             x = factorial(x)
                         }
@@ -319,9 +409,7 @@ class Calculator(
                             } else {
                                 x = sin(x.toDouble()).toBigDecimal()
                             }
-                            if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                x = round(x.toDouble()).toBigDecimal()
-                            }
+                            x = snapNoise(x)
                         }
                         "cos" -> {
                             if (x > Double.MAX_VALUE.toBigDecimal()) {
@@ -332,16 +420,14 @@ class Calculator(
                             } else {
                                 x = cos(x.toDouble()).toBigDecimal()
                             }
-                            if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                x = round(x.toDouble()).toBigDecimal()
-                            }
+                            x = snapNoise(x)
                         }
                         "tan" -> {
                             if (x > Double.MAX_VALUE.toBigDecimal()) {
                                 is_infinity = true
                                 x = BigDecimal.ZERO
-                            } else if (Math.toDegrees(x.toDouble()) == 90.0) {
-                                // Tangent is defined for R\{(2k+1)π/2, with k ∈ Z}
+                            } else if (isTangentUndefined(x, isDegreeModeActivated)) {
+                                // Tangent is undefined where cos = 0: (2k+1)*90 degrees, (2k+1)*pi/2 radians
                                 domain_error = true
                                 x = BigDecimal.ZERO
                             } else {
@@ -350,9 +436,7 @@ class Calculator(
                                 } else {
                                     tan(x.toDouble()).toBigDecimal()
                                 }
-                                if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                    x = round(x.toDouble()).toBigDecimal()
-                                }
+                                x = snapNoise(x)
                             }
                         }
                         "arcsi" -> {
@@ -365,9 +449,7 @@ class Calculator(
                                 } else {
                                     asin(x.toDouble()).toBigDecimal()
                                 }
-                                if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                    x = round(x.toDouble()).toBigDecimal()
-                                }
+                                x = snapNoise(x)
                             }
                         }
                         "arcco" -> {
@@ -380,9 +462,7 @@ class Calculator(
                                 } else {
                                     acos(x.toDouble()).toBigDecimal()
                                 }
-                                if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                    x = round(x.toDouble()).toBigDecimal()
-                                }
+                                x = snapNoise(x)
                             }
 
                         }
@@ -395,9 +475,7 @@ class Calculator(
                             } else {
                                 x =atan(x.toDouble()).toBigDecimal()
                             }
-                            if (x > BigDecimal.ZERO && x < BigDecimal(1.0E-14)) {
-                                x = round(x.toDouble()).toBigDecimal()
-                            }
+                            x = snapNoise(x)
                         }
                         else -> {
                             syntax_error = true
@@ -409,6 +487,8 @@ class Calculator(
                 }
                 if (eat('^'.code)) {
                     x = exponentiation(x, parseFactor())
+                } else if (eat('@'.code)) { // nth root: index @ radicand (e.g. 3@27 = 3)
+                    x = nthRoot(x, parseFactor())
                 }
                 return x
             }

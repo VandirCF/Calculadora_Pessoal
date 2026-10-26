@@ -32,6 +32,7 @@ class MyPreferences(context: Context) {
         private const val KEY_MOVE_BACK_BUTTON_LEFT = "darkempire78.opencalculator.MOVE_BACK_BUTTON_LEFT"
         private const val KEY_NUMBERING_SYSTEM = "darkempire78.opencalculator.NUMBERING_SYSTEM"
         private const val KEY_CALCULATOR_MODE = "darkempire78.opencalculator.CALCULATOR_MODE"
+        private const val KEY_MEMORY = "darkempire78.opencalculator.MEMORY_VALUE"
         private const val KEY_SHOW_ON_LOCK_SCREEN = "darkempire78.opencalculator.KEY_SHOW_ON_LOCK_SCREEN"
     }
 
@@ -85,6 +86,11 @@ class MyPreferences(context: Context) {
         get() = preferences.getString(KEY_CALCULATOR_MODE, null)?.let { CalculatorMode.fromName(it) }
             ?: CalculatorMode.fromLegacyScientificMode(scientificMode)
         set(value) = preferences.edit().putString(KEY_CALCULATOR_MODE, value.name).apply()
+
+    /** Calculator memory register (M+/M-/MR/MC), persisted as plain decimal text. */
+    var memoryValue: String?
+        get() = preferences.getString(KEY_MEMORY, null)
+        set(value) = preferences.edit().putString(KEY_MEMORY, value).apply()
 
     var showOnLockScreen = preferences.getBoolean(KEY_SHOW_ON_LOCK_SCREEN, true)
         set(value) = preferences.edit().putBoolean(KEY_SHOW_ON_LOCK_SCREEN, value).apply()

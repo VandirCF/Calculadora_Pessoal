@@ -91,4 +91,19 @@
     <string name="mode_financial_placeholder">Calculadora financeira RPN\nEm breve</string>
     <string name="paste_invalid_number">A área de transferência não contém um número válido</string>
     <string name="toggle_sign_action">Inverter o sinal do número atual</string>
+
+    <!-- Scientific extras -->
+    <string name="nthRootDesc">raiz de índice n</string>
+    <string name="reciprocalDesc">inverso</string>
+    <string name="absoluteValueDesc">módulo</string>
+    <string name="menu_memory_add">Memória: somar (M+)</string>
+    <string name="menu_memory_subtract">Memória: subtrair (M−)</string>
+    <string name="menu_memory_recall">Memória: recuperar (MR)</string>
+    <string name="menu_memory_clear">Memória: limpar (MC)</string>
+    <string name="menu_insert_previous_result">Inserir resultado anterior (Ans)</string>
+    <string name="memory_stored">Memória: %1$s</string>
+    <string name="memory_empty">A memória está vazia</string>
+    <string name="memory_cleared">Memória limpa</string>
+    <string name="memory_nothing_to_store">Digite um cálculo válido primeiro</string>
+    <string name="no_previous_result">Nenhum resultado anterior</string>
 </resources>

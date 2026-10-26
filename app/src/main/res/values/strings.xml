@@ -186,4 +186,22 @@
     <string name="mode_financial_placeholder">Financial RPN calculator\nComing soon</string>
     <string name="paste_invalid_number">Clipboard does not contain a valid number</string>
     <string name="toggle_sign_action">Change sign of current number</string>
+
+    <!-- Scientific extras -->
+    <string name="nthRoot" translatable="false">ⁿ√</string>
+    <string name="reciprocal" translatable="false">1/x</string>
+    <string name="absoluteValue" translatable="false">|x|</string>
+    <string name="nthRootDesc">n-th root</string>
+    <string name="reciprocalDesc">reciprocal</string>
+    <string name="absoluteValueDesc">absolute value</string>
+    <string name="menu_memory_add">Memory add (M+)</string>
+    <string name="menu_memory_subtract">Memory subtract (M−)</string>
+    <string name="menu_memory_recall">Memory recall (MR)</string>
+    <string name="menu_memory_clear">Memory clear (MC)</string>
+    <string name="menu_insert_previous_result">Insert previous result (Ans)</string>
+    <string name="memory_stored">Memory: %1$s</string>
+    <string name="memory_empty">Memory is empty</string>
+    <string name="memory_cleared">Memory cleared</string>
+    <string name="memory_nothing_to_store">Enter a valid calculation first</string>
+    <string name="no_previous_result">No previous result</string>
 </resources>

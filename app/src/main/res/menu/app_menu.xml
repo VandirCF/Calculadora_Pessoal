@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/app_menu_memory_add"
+        android:title="@string/menu_memory_add"
+        android:onClick="memoryAdd" />
+    <item
+        android:id="@+id/app_menu_memory_subtract"
+        android:title="@string/menu_memory_subtract"
+        android:onClick="memorySubtract" />
+    <item
+        android:id="@+id/app_menu_memory_recall"
+        android:title="@string/menu_memory_recall"
+        android:onClick="memoryRecall" />
+    <item
+        android:id="@+id/app_menu_memory_clear"
+        android:title="@string/menu_memory_clear"
+        android:onClick="memoryClear" />
+    <item
+        android:id="@+id/app_menu_insert_previous_result"
+        android:title="@string/menu_insert_previous_result"
+        android:onClick="insertPreviousResult" />
+
+    <item
         android:id="@+id/app_menu_clear_history_button"
         android:title="@string/menu_clear_history"
         android:onClick="clearHistory" />

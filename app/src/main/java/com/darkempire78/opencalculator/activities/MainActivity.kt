@@ -52,6 +52,7 @@ import com.darkempire78.opencalculator.databinding.ActivityMainBinding
 import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.history.HistoryAdapter
+import com.darkempire78.opencalculator.util.CalculatorMemory
 import com.darkempire78.opencalculator.util.CalculatorMode
 import com.darkempire78.opencalculator.util.PastedNumber
 import com.darkempire78.opencalculator.util.SignToggle
@@ -947,7 +948,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun eButton(view: View) {
-        updateDisplay(view, "e")
+        updateDisplay(view, if (isInvButtonClicked) "^(-1)" else "e")
     }
 
     fun naturalLogarithmButton(view: View) {
@@ -975,11 +976,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun piButton(view: View) {
-        updateDisplay(view, "π")
+        updateDisplay(view, if (isInvButtonClicked) "ⁿ√" else "π")
     }
 
     fun factorialButton(view: View) {
-        addSymbol(view, "!")
+        if (isInvButtonClicked) updateDisplay(view, "abs(") else addSymbol(view, "!")
     }
 
     fun squareButton(view: View) {
@@ -1019,6 +1020,9 @@ class MainActivity : AppCompatActivity() {
             binding.naturalLogarithmButton.setText(R.string.naturalLogarithmInv)
             binding.logarithmButton.setText(R.string.logarithmInv)
             binding.log2Button?.setText(R.string.logtwoInv)
+            setInvLabel(binding.piButton, R.string.nthRoot, R.string.nthRootDesc)
+            setInvLabel(binding.eButton, R.string.reciprocal, R.string.reciprocalDesc)
+            setInvLabel(binding.factorialButton, R.string.absoluteValue, R.string.absoluteValueDesc)
             if (MyPreferences(this).addModuloButton) {
                 binding.squareButton.setText(R.string.squareInvModuloVersion)
             } else {
@@ -1035,6 +1039,9 @@ class MainActivity : AppCompatActivity() {
             binding.naturalLogarithmButton.setText(R.string.naturalLogarithm)
             binding.logarithmButton.setText(R.string.logarithm)
             binding.log2Button?.setText(R.string.logtwo)
+            setInvLabel(binding.piButton, R.string.pi, R.string.piDesc)
+            setInvLabel(binding.eButton, R.string.e, R.string.eDesc)
+            setInvLabel(binding.factorialButton, R.string.factorial, R.string.factorialDesc)
             binding.squareButton.setText(R.string.square)
         }
     }
@@ -1431,6 +1438,57 @@ class MainActivity : AppCompatActivity() {
             binding.noHistoryText.visibility = View.GONE
             binding.historyRecylcleView.visibility = View.VISIBLE
         }
+    }
+
+    private fun setInvLabel(button: Button, text: Int, description: Int) {
+        button.setText(text)
+        button.contentDescription = getString(description)
+    }
+
+    private fun memoryRegister() = CalculatorMemory.fromStored(MyPreferences(this).memoryValue)
+
+    private fun currentValueOrNull(): BigDecimal? {
+        val hasError = division_by_0 || domain_error || syntax_error || is_infinity || require_real_number
+        return if (binding.input.text.isNullOrEmpty() || hasError) null else calculationResult
+    }
+
+    private fun showMessage(resId: Int, vararg args: Any) =
+        Toast.makeText(this, getString(resId, *args), Toast.LENGTH_SHORT).show()
+
+    private fun displayText(value: BigDecimal) =
+        NumberFormatter.format(value.stripTrailingZeros().toPlainString().replace(".", decimalSeparatorSymbol),
+            decimalSeparatorSymbol, groupingSeparatorSymbol, numberingSystem)
+
+    fun memoryAdd(menuItem: MenuItem) {
+        val amount = currentValueOrNull() ?: return showMessage(R.string.memory_nothing_to_store)
+        val memory = memoryRegister().also { it.add(amount) }
+        MyPreferences(this).memoryValue = memory.value?.toPlainString()
+        showMessage(R.string.memory_stored, displayText(memory.value!!))
+    }
+
+    fun memorySubtract(menuItem: MenuItem) {
+        val amount = currentValueOrNull() ?: return showMessage(R.string.memory_nothing_to_store)
+        val memory = memoryRegister().also { it.subtract(amount) }
+        MyPreferences(this).memoryValue = memory.value?.toPlainString()
+        showMessage(R.string.memory_stored, displayText(memory.value!!))
+    }
+
+    fun memoryRecall(menuItem: MenuItem) {
+        val stored = memoryRegister().recall() ?: return showMessage(R.string.memory_empty)
+        updateDisplay(view, displayText(stored))
+    }
+
+    fun memoryClear(menuItem: MenuItem) {
+        MyPreferences(this).memoryValue = null
+        showMessage(R.string.memory_cleared)
+    }
+
+    /** Ans: the result of the most recent history entry. */
+    fun insertPreviousResult(menuItem: MenuItem) {
+        val last = MyPreferences(this).getHistory().lastOrNull()?.result
+        val number = PastedNumber.parse(last, decimalSeparatorSymbol, groupingSeparatorSymbol)
+            ?: return showMessage(R.string.no_previous_result)
+        updateDisplay(view, number)
     }
 
     private fun toggleSign() {
