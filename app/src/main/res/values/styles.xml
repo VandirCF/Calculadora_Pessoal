@@ -1,113 +1,141 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Default application theme. The dark version of the theme needs to override these properties -->
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
-        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
-        <!--<item name="materialSwitchStyle">@style/Widget.App.Switch</item>-->
-    </style>
-
-    <!-- Base application theme. Colors are overridden depending on dark/light -->
-    <style name="AppTheme.Base" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Base of both themes: always dark, Material 3. Colors come from the per-theme styles below. -->
+    <style name="Theme.Calc.Base" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:windowActionBarOverlay">true</item>
-
-        <item name="android:statusBarColor">@color/foreground_color</item>
-        <item name="android:navigationBarColor">@color/background_color</item>
-
-        <item name="foreground_color">@color/foreground_color</item>
-        <item name="background_color">@color/background_color</item>
-        <item name="popup_background_color">@color/popup_background_color</item>
-        <item name="android:colorBackground">@color/background_color</item>
-        <item name="history_background_color">@color/history_background_color</item>
-
-        <item name="text_color">@color/text_color</item>
-        <item name="text_second_color">@color/text_second_color</item>
-        <item name="text_third_color">@color/text_third_color</item>
-        <item name="text_category_color">@color/text_category_color</item>
-
-        <item name="button_color">@color/button_color</item>
-        <item name="button_symbol_color">@color/button_symbol_color</item>
-        <item name="button_clear_color">@color/button_clear_color</item>
-        <item name="button_equals_color">@color/button_equals_color</item>
-        <item name="button_ripple_color">@color/button_ripple_color</item>
-
-        <item name="separator_color">@color/background_color</item>
-        <item name="about_button_color">@color/button_color</item>
-
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
-
-        <item name="colorSecondary">@color/text_third_color</item>
-
         <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
     </style>
 
-    <!-- Amoled theme. Based on Theme.Material3.Dark. Therefore its always dark -->
-    <style name="AmoledTheme" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:windowActionBarOverlay">true</item>
+    <!-- Tema Flamengo -->
+    <style name="Theme.Calc.Flamengo" parent="Theme.Calc.Base">
+        <item name="android:statusBarColor">@color/flamengo_display</item>
+        <item name="android:navigationBarColor">@color/flamengo_background</item>
+        <item name="android:colorBackground">@color/flamengo_background</item>
 
-        <item name="android:statusBarColor">@color/amoled_foreground_color</item>
-        <item name="android:navigationBarColor">@color/amoled_background_color</item>
+        <!-- semantic tokens -->
+        <item name="calc_background">@color/flamengo_background</item>
+        <item name="calc_surface">@color/flamengo_surface</item>
+        <item name="calc_surface_variant">@color/flamengo_surface_variant</item>
+        <item name="calc_display_background">@color/flamengo_display</item>
+        <item name="calc_primary">@color/flamengo_primary</item>
+        <item name="calc_secondary">@color/flamengo_secondary</item>
+        <item name="calc_accent">@color/flamengo_accent</item>
+        <item name="calc_text_primary">@color/flamengo_text_primary</item>
+        <item name="calc_text_secondary">@color/flamengo_text_secondary</item>
+        <item name="calc_key_number">@color/flamengo_key_number</item>
+        <item name="calc_key_operator">@color/flamengo_key_operator</item>
+        <item name="calc_key_function">@color/flamengo_key_function</item>
+        <item name="calc_key_danger">@color/flamengo_key_danger</item>
+        <item name="calc_key_financial">@color/flamengo_key_financial</item>
+        <item name="calc_key_enter">@color/flamengo_key_enter</item>
+        <item name="calc_outline">@color/flamengo_outline</item>
+        <item name="calc_logo">@drawable/logo_flamengo</item>
+        <item name="calc_error">@color/calculation_error_color</item>
 
-        <item name="colorSurface">@color/amoled_background_color</item>
-        <item name="android:colorBackground">@color/amoled_background_color</item>
+        <!-- legacy attributes used by the inherited layouts and drawables -->
+        <item name="foreground_color">@color/flamengo_display</item>
+        <item name="background_color">@color/flamengo_background</item>
+        <item name="popup_background_color">@color/flamengo_surface_variant</item>
+        <item name="history_background_color">@color/flamengo_surface</item>
+        <item name="text_color">@color/flamengo_text_primary</item>
+        <item name="text_second_color">@color/flamengo_text_secondary</item>
+        <item name="text_third_color">@color/flamengo_accent</item>
+        <item name="text_category_color">@color/flamengo_accent</item>
+        <item name="button_color">@color/flamengo_key_number</item>
+        <item name="button_symbol_color">@color/flamengo_key_operator</item>
+        <item name="button_clear_color">@color/flamengo_key_danger</item>
+        <item name="button_equals_color">@color/flamengo_key_enter</item>
+        <item name="button_ripple_color">@color/flamengo_ripple</item>
+        <item name="separator_color">@color/flamengo_background</item>
+        <item name="about_button_color">@color/flamengo_key_number</item>
 
-        <item name="foreground_color">@color/amoled_foreground_color</item>
-        <item name="background_color">@color/amoled_background_color</item>
-        <item name="popup_background_color">@color/amoled_popup_background_color</item>
-        <item name="history_background_color">@color/amoled_history_background_color</item>
-
-        <item name="text_color">@color/amoled_text_color</item>
-        <item name="text_second_color">@color/amoled_text_second_color</item>
-        <item name="text_third_color">@color/amoled_text_third_color</item>
-        <item name="text_category_color">@color/amoled_text_category_color</item>
-
-        <item name="button_color">@color/amoled_button_color</item>
-        <item name="button_symbol_color">@color/amoled_button_symbol_color</item>
-        <item name="button_clear_color">@color/amoled_button_clear_color</item>
-        <item name="button_equals_color">@color/amoled_button_equals_color</item>
-        <item name="button_ripple_color">@color/amoled_button_ripple_color</item>
-
-        <item name="separator_color">@color/amoled_separator_color</item>
-        <item name="about_button_color">@color/amoled_text_third_color</item>
-
-        <item name="colorSecondary">@color/amoled_text_third_color</item>
-
-        <item name="colorPrimary">@color/amoled_switch_primary_color</item> <!-- Switch On Color -->
-        <item name="colorOnPrimary">@color/amoled_switch_on_primary_color</item>
+        <!-- Material components (dialogs, menus, switches, text buttons) -->
+        <item name="colorPrimary">@color/flamengo_accent</item>
+        <item name="colorOnPrimary">@color/flamengo_background</item>
+        <item name="colorPrimaryContainer">@color/flamengo_primary</item>
+        <item name="colorOnPrimaryContainer">@color/flamengo_text_primary</item>
+        <item name="colorSecondary">@color/flamengo_accent</item>
+        <item name="colorOnSecondary">@color/flamengo_background</item>
+        <item name="colorSurface">@color/flamengo_surface</item>
+        <item name="colorOnSurface">@color/flamengo_text_primary</item>
+        <item name="colorSurfaceVariant">@color/flamengo_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/flamengo_text_secondary</item>
+        <item name="colorSurfaceContainer">@color/flamengo_surface</item>
+        <item name="colorSurfaceContainerLow">@color/flamengo_surface</item>
+        <item name="colorSurfaceContainerLowest">@color/flamengo_background</item>
+        <item name="colorSurfaceContainerHigh">@color/flamengo_surface_variant</item>
+        <item name="colorSurfaceContainerHighest">@color/flamengo_surface_variant</item>
+        <item name="colorOutline">@color/flamengo_outline</item>
+        <item name="colorOutlineVariant">@color/flamengo_outline</item>
+        <item name="colorError">@color/calculation_error_color</item>
     </style>
 
-    <!-- Material You theme. Overrides some colors of the Default theme -->
-    <style name="MaterialYouTheme" parent="AppTheme">
-        <item name="android:statusBarColor">@color/material_dynamic_secondary90</item>
+    <!-- Tema Cleveland Cavaliers -->
+    <style name="Theme.Calc.Cavaliers" parent="Theme.Calc.Base">
+        <item name="android:statusBarColor">@color/cavaliers_display</item>
+        <item name="android:navigationBarColor">@color/cavaliers_background</item>
+        <item name="android:colorBackground">@color/cavaliers_background</item>
 
-        <item name="foreground_color">@color/material_dynamic_secondary90</item>
-        <item name="background_color">@color/background_color</item>
-        <item name="popup_background_color">@color/material_dynamic_secondary95</item>
-        <item name="history_background_color">@color/material_dynamic_secondary95</item>
+        <!-- semantic tokens -->
+        <item name="calc_background">@color/cavaliers_background</item>
+        <item name="calc_surface">@color/cavaliers_surface</item>
+        <item name="calc_surface_variant">@color/cavaliers_surface_variant</item>
+        <item name="calc_display_background">@color/cavaliers_display</item>
+        <item name="calc_primary">@color/cavaliers_primary</item>
+        <item name="calc_secondary">@color/cavaliers_secondary</item>
+        <item name="calc_accent">@color/cavaliers_accent</item>
+        <item name="calc_text_primary">@color/cavaliers_text_primary</item>
+        <item name="calc_text_secondary">@color/cavaliers_text_secondary</item>
+        <item name="calc_key_number">@color/cavaliers_key_number</item>
+        <item name="calc_key_operator">@color/cavaliers_key_operator</item>
+        <item name="calc_key_function">@color/cavaliers_key_function</item>
+        <item name="calc_key_danger">@color/cavaliers_key_danger</item>
+        <item name="calc_key_financial">@color/cavaliers_key_financial</item>
+        <item name="calc_key_enter">@color/cavaliers_key_enter</item>
+        <item name="calc_outline">@color/cavaliers_outline</item>
+        <item name="calc_logo">@drawable/logo_cavaliers</item>
+        <item name="calc_error">@color/calculation_error_color</item>
 
-        <item name="button_color">@color/material_dynamic_neutral95</item>
-        <item name="button_symbol_color">@color/material_dynamic_secondary90</item>
-        <item name="button_clear_color">@color/material_dynamic_tertiary90</item>
-        <item name="button_equals_color">@color/material_dynamic_primary90</item>
+        <!-- legacy attributes used by the inherited layouts and drawables -->
+        <item name="foreground_color">@color/cavaliers_display</item>
+        <item name="background_color">@color/cavaliers_background</item>
+        <item name="popup_background_color">@color/cavaliers_surface_variant</item>
+        <item name="history_background_color">@color/cavaliers_surface</item>
+        <item name="text_color">@color/cavaliers_text_primary</item>
+        <item name="text_second_color">@color/cavaliers_text_secondary</item>
+        <item name="text_third_color">@color/cavaliers_accent</item>
+        <item name="text_category_color">@color/cavaliers_accent</item>
+        <item name="button_color">@color/cavaliers_key_number</item>
+        <item name="button_symbol_color">@color/cavaliers_key_operator</item>
+        <item name="button_clear_color">@color/cavaliers_key_danger</item>
+        <item name="button_equals_color">@color/cavaliers_key_enter</item>
+        <item name="button_ripple_color">@color/cavaliers_ripple</item>
+        <item name="separator_color">@color/cavaliers_background</item>
+        <item name="about_button_color">@color/cavaliers_key_number</item>
 
-        <item name="text_category_color">@color/material_dynamic_primary70</item>
-
-        <item name="about_button_color">@color/material_dynamic_tertiary90</item>
-
-        <item name="colorSecondary">@color/material_dynamic_primary70</item>
-        <item name="materialSwitchStyle">@style/Widget.App.Switch.Light_Material</item>
-    </style>
-
-    <style name="Widget.App.Switch.Light_Material" parent="Widget.Material3.CompoundButton.MaterialSwitch">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch.Light_Material</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Switch.Light_Material" parent="">
-        <item name="colorPrimary">@color/material_dynamic_primary80</item> <!-- Switch On Color -->
-        <item name="colorSurfaceVariant">@color/switch_surface_variant_color</item><!-- Switch Off Color -->-->
-        <item name="colorOnPrimary">@color/switch_on_primary_color</item>
-        <item name="colorOutline">@color/switch_on_primary_color</item>
+        <!-- Material components (dialogs, menus, switches, text buttons) -->
+        <item name="colorPrimary">@color/cavaliers_accent</item>
+        <item name="colorOnPrimary">@color/cavaliers_background</item>
+        <item name="colorPrimaryContainer">@color/cavaliers_primary</item>
+        <item name="colorOnPrimaryContainer">@color/cavaliers_text_primary</item>
+        <item name="colorSecondary">@color/cavaliers_accent</item>
+        <item name="colorOnSecondary">@color/cavaliers_background</item>
+        <item name="colorSurface">@color/cavaliers_surface</item>
+        <item name="colorOnSurface">@color/cavaliers_text_primary</item>
+        <item name="colorSurfaceVariant">@color/cavaliers_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/cavaliers_text_secondary</item>
+        <item name="colorSurfaceContainer">@color/cavaliers_surface</item>
+        <item name="colorSurfaceContainerLow">@color/cavaliers_surface</item>
+        <item name="colorSurfaceContainerLowest">@color/cavaliers_background</item>
+        <item name="colorSurfaceContainerHigh">@color/cavaliers_surface_variant</item>
+        <item name="colorSurfaceContainerHighest">@color/cavaliers_surface_variant</item>
+        <item name="colorOutline">@color/cavaliers_outline</item>
+        <item name="colorOutlineVariant">@color/cavaliers_outline</item>
+        <item name="colorError">@color/calculation_error_color</item>
     </style>
 
     <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
@@ -115,10 +143,10 @@
     </style>
 
     <style name="ThemeOverlay.App.Switch" parent="">
-        <item name="colorPrimary">@color/switch_primary_color</item>--> <!-- Switch On Color -->
-        <item name="colorSurfaceVariant">@color/switch_surface_variant_color</item><!-- Switch Off Color -->-->
-        <item name="colorOnPrimary">@color/switch_on_primary_color</item>
-        <item name="colorOutline">@color/switch_on_primary_color</item>
+        <item name="colorPrimary">?attr/calc_accent</item> <!-- on: track -->
+        <item name="colorOnPrimary">?attr/calc_background</item> <!-- on: thumb -->
+        <item name="colorSurfaceVariant">?attr/calc_key_number</item> <!-- off: track -->
+        <item name="colorOutline">?attr/calc_text_secondary</item>
     </style>
 
     <style name="RobotoFontCondensedLight" parent="android:Widget.TextView">

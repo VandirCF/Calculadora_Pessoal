@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_icon_background_color">#4684E3</color>
+    <!-- Only the theme tokens below define colors. Every screen reads them through theme attributes (attrs.xml),
+         so Flamengo and Cleveland Cavaliers differ here and nowhere else. -->
+    <color name="calculation_error_color">#FF6B5E</color>
 
-    <color name="calculation_error_color">#F44B3F</color>
+    <!-- flamengo -->
+    <color name="flamengo_background">#0B0B0B</color>
+    <color name="flamengo_surface">#151515</color>
+    <color name="flamengo_surface_variant">#202020</color>
+    <color name="flamengo_display">#141414</color>
+    <color name="flamengo_primary">#E31B0C</color>
+    <color name="flamengo_secondary">#B3140A</color>
+    <color name="flamengo_accent">#FF5447</color>
+    <color name="flamengo_text_primary">#F5F5F5</color>
+    <color name="flamengo_text_secondary">#B8B8B8</color>
+    <color name="flamengo_key_number">#262626</color>
+    <color name="flamengo_key_operator">#5A1410</color>
+    <color name="flamengo_key_function">#1A1A1A</color>
+    <color name="flamengo_key_danger">#5C5C5C</color>
+    <color name="flamengo_key_financial">#3A1512</color>
+    <color name="flamengo_key_enter">#C8180A</color>
+    <color name="flamengo_ripple">#66FFFFFF</color>
+    <color name="flamengo_outline">#5F5F5F</color>
 
-    <!-- Normal Theme -->
-    <color name="foreground_color">#EFEFEF</color>
-    <color name="background_color">#fff</color>
-    <color name="popup_background_color">#fff</color>
-    <color name="history_background_color">#fff</color>
-    <color name="text_color">#000</color>
-    <color name="text_second_color">#595959</color>
-    <color name="text_third_color">#7E7E7E</color>
-    <color name="text_category_color">#595959</color>
-    <color name="button_color">#EFEFEF</color>
-    <color name="button_symbol_color">#B4D2E4</color>
-    <color name="button_clear_color">#B7DABD</color>
-    <color name="button_equals_color">#DCB5C5</color>
-    <color name="button_ripple_color">#C3C3C3</color>
-    <color name="switch_primary_color">#B4D2E4</color>
-    <color name="switch_on_primary_color">#FFFFFF</color>
-    <color name="switch_surface_variant_color">#636363</color>
+    <!-- cavaliers -->
+    <color name="cavaliers_background">#0A0A0A</color>
+    <color name="cavaliers_surface">#141414</color>
+    <color name="cavaliers_surface_variant">#1F1A1C</color>
+    <color name="cavaliers_display">#111111</color>
+    <color name="cavaliers_primary">#860038</color>
+    <color name="cavaliers_secondary">#FDBB30</color>
+    <color name="cavaliers_accent">#FDBB30</color>
+    <color name="cavaliers_text_primary">#F5F5F5</color>
+    <color name="cavaliers_text_secondary">#BDBDBD</color>
+    <color name="cavaliers_key_number">#242124</color>
+    <color name="cavaliers_key_operator">#6E002E</color>
+    <color name="cavaliers_key_function">#171717</color>
+    <color name="cavaliers_key_danger">#5C5C5C</color>
+    <color name="cavaliers_key_financial">#3A0F20</color>
+    <color name="cavaliers_key_enter">#A5003F</color>
+    <color name="cavaliers_ripple">#66FFFFFF</color>
+    <color name="cavaliers_outline">#6A6064</color>
 
-    <!-- AMOLED Theme -->
-    <color name="amoled_foreground_color">#000</color>
-    <color name="amoled_background_color">#000</color>
-    <color name="amoled_popup_background_color">#323232</color>
-    <color name="amoled_history_background_color">#000</color>
-    <color name="amoled_text_color">#EFEFEF</color>
-    <color name="amoled_text_second_color">#BDBDBD</color>
-    <color name="amoled_text_third_color">#B1B1B1</color>
-    <color name="amoled_text_category_color">#BDBDBD</color>
-    <color name="amoled_button_color">#000</color>
-    <color name="amoled_button_symbol_color">#000</color>
-    <color name="amoled_button_clear_color">#000</color>
-    <color name="amoled_button_equals_color">#000</color>
-    <color name="amoled_button_ripple_color">#9E9E9E</color>
-    <color name="amoled_separator_color">#EFEFEF</color>
-    <color name="amoled_switch_primary_color">#fff</color>
-    <color name="amoled_switch_on_primary_color">#D3D3D3</color>
 </resources>

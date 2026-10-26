@@ -127,11 +127,6 @@
 
 
     <!-- Theme choices -->
-    <string name="theme_material_you" translatable="false">Material You</string>
-    <string name="theme_system">Sistema</string>
-    <string name="theme_light">Claro</string>
-    <string name="theme_dark">Escuro</string>
-    <string name="theme_amoled">Amoled</string>
 
     <!-- Error messages -->
     <string name="division_by_0">Não é possível dividir por 0</string>
@@ -381,5 +376,9 @@
     <string name="privacy_title">Privacidade</string>
     <string name="privacy_text">Este aplicativo funciona totalmente offline. Não tem acesso à internet, conta, anúncios, compras, análise de uso nem rastreamento.\n\nSuas configurações, histórico, memória da calculadora e registradores financeiros ficam apenas no seu aparelho, no armazenamento privado do aplicativo.\n\nA única permissão é a vibração, usada no retorno das teclas (pode ser desativada em Configurações).\n\nVocê pode apagar o histórico no menu do aplicativo e os registradores financeiros com 2ª + CLx, ou apagar tudo limpando o armazenamento do aplicativo nas configurações do Android.</string>
     <string name="privacy_close">Fechar</string>
-    <string name="settings_general_numbering_system">Sistema de numeração</string>
+
+    <!-- Temas -->
+    <string name="theme_flamengo">Flamengo</string>
+    <string name="theme_cavaliers">Cleveland Cavaliers</string>
+    <string name="theme_selected">Selecionado</string>
 </resources>

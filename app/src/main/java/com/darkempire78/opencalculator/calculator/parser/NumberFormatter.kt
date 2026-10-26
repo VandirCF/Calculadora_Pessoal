@@ -133,8 +133,8 @@ object NumberFormatter {
 }
 
 enum class NumberingSystem(val value: Int, val description: String) {
-    INTERNATIONAL(0, "International Numbering System"),
-    INDIAN(1, "Indian Numbering System");
+    INTERNATIONAL(0, "Sistema numérico internacional"),
+    INDIAN(1, "Sistema numérico indiano");
 
     companion object {
         fun getDescription(value: Int): String {

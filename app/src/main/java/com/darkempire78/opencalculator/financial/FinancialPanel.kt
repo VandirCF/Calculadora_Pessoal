@@ -24,6 +24,7 @@ import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.TextViewCompat
 import com.darkempire78.opencalculator.R
@@ -86,7 +87,7 @@ class FinancialPanel(
         object ClearRegisters : Action()
     }
 
-    private enum class Style { DIGIT, OPERATOR, FUNCTION, CLEAR, ENTER, SHIFT }
+    private enum class Style { DIGIT, OPERATOR, FUNCTION, FINANCIAL, CLEAR, ENTER, SHIFT }
 
     private class KeySpec(
         val main: String,
@@ -104,11 +105,11 @@ class FinancialPanel(
 
     private val keyRows: List<List<KeySpec>> = listOf(
         listOf(
-            KeySpec("n", "12×", Action.Press(RpnKey.N), Action.Press(RpnKey.N_TIMES_PER_YEAR), R.string.fin_key_n, R.string.fin_key2_n, Style.FUNCTION),
-            KeySpec("i", "12÷", Action.Press(RpnKey.I), Action.Press(RpnKey.I_DIV_PER_YEAR), R.string.fin_key_i, R.string.fin_key2_i, Style.FUNCTION),
-            KeySpec("PV", "CF0", Action.Press(RpnKey.PV), Action.Press(RpnKey.CF0), R.string.fin_key_pv, R.string.fin_key2_cf0, Style.FUNCTION),
-            KeySpec("PMT", "CFj", Action.Press(RpnKey.PMT), Action.Press(RpnKey.CFJ), R.string.fin_key_pmt, R.string.fin_key2_cfj, Style.FUNCTION),
-            KeySpec("FV", "Nj", Action.Press(RpnKey.FV), Action.Press(RpnKey.NJ), R.string.fin_key_fv, R.string.fin_key2_nj, Style.FUNCTION)
+            KeySpec("n", "12×", Action.Press(RpnKey.N), Action.Press(RpnKey.N_TIMES_PER_YEAR), R.string.fin_key_n, R.string.fin_key2_n, Style.FINANCIAL),
+            KeySpec("i", "12÷", Action.Press(RpnKey.I), Action.Press(RpnKey.I_DIV_PER_YEAR), R.string.fin_key_i, R.string.fin_key2_i, Style.FINANCIAL),
+            KeySpec("PV", "CF0", Action.Press(RpnKey.PV), Action.Press(RpnKey.CF0), R.string.fin_key_pv, R.string.fin_key2_cf0, Style.FINANCIAL),
+            KeySpec("PMT", "CFj", Action.Press(RpnKey.PMT), Action.Press(RpnKey.CFJ), R.string.fin_key_pmt, R.string.fin_key2_cfj, Style.FINANCIAL),
+            KeySpec("FV", "Nj", Action.Press(RpnKey.FV), Action.Press(RpnKey.NJ), R.string.fin_key_fv, R.string.fin_key2_nj, Style.FINANCIAL)
         ),
         listOf(
             KeySpec("CHS", "√x", Action.Press(RpnKey.CHS), Action.Press(RpnKey.SQRT), R.string.fin_key_chs, R.string.fin_key2_sqrt, Style.FUNCTION),
@@ -160,6 +161,8 @@ class FinancialPanel(
     private lateinit var secondBadge: TextView
     private lateinit var messageView: TextView
     private val chips = LinkedHashMap<RpnKey, TextView>()
+    /** "PV - Valor presente": what the last technical key pressed means, so the notation is never a mystery. */
+    private var lastHint: String? = null
     val root: View = build()
 
     private fun dp(v: Int) = (v * context.resources.displayMetrics.density).toInt()
@@ -199,17 +202,17 @@ class FinancialPanel(
         this.text = text
         textSize = sp(11f)
         setTypeface(typeface, Typeface.BOLD)
-        setTextColor(color(R.attr.text_color))
+        setTextColor(color(R.attr.calc_text_primary))
         setPadding(dp(8), dp(2), dp(8), dp(2))
-        background = roundedBackground(color(R.attr.button_symbol_color), 8, color(R.attr.text_third_color))
+        background = roundedBackground(color(R.attr.calc_key_operator), 8, color(R.attr.calc_accent))
     }
 
     private fun buildDisplay(): View {
-        val textColor = color(R.attr.text_color)
-        val dim = color(R.attr.text_second_color)
+        val textColor = color(R.attr.calc_text_primary)
+        val dim = color(R.attr.calc_text_secondary)
         val box = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            background = roundedBackground(color(R.attr.foreground_color), 20)
+            background = roundedBackground(color(R.attr.calc_display_background), 20)
             setPadding(dp(12), dp(8), dp(12), dp(8))
         }
 
@@ -218,7 +221,7 @@ class FinancialPanel(
         val rpn = badge(context.getString(R.string.fin_badge_rpn))
         beginBadge = badge(context.getString(R.string.fin_badge_begin))
         secondBadge = badge(context.getString(R.string.fin_badge_second)).apply {
-            background = roundedBackground(color(R.attr.button_equals_color), 8)
+            background = roundedBackground(color(R.attr.calc_key_enter), 8)
         }
         val spacer = View(context)
         val history = TextView(context).apply {
@@ -302,10 +305,13 @@ class FinancialPanel(
                 gravity = Gravity.CENTER
                 setTextColor(textColor)
                 setPadding(dp(4), dp(2), dp(4), dp(2))
-                background = roundedBackground(color(R.attr.background_color), 10, dim)
+                background = roundedBackground(color(R.attr.calc_surface), 10, dim)
                 minimumHeight = dp(40)
                 isClickable = true
-                setOnClickListener { runKey(rclKeyFor(key), it) }
+                setOnClickListener {
+                    lastHint = label + " \u2014 " + context.getString(chipDescription(key))
+                    runKey(rclKeyFor(key), it)
+                }
             }
             chips[key] = chip
             strip.addView(chip, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = dp(3) })
@@ -321,6 +327,14 @@ class FinancialPanel(
         }
         box.addView(messageView, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
         return box
+    }
+
+    private fun chipDescription(key: RpnKey) = when (key) {
+        RpnKey.N -> R.string.fin_key_n
+        RpnKey.I -> R.string.fin_key_i
+        RpnKey.PV -> R.string.fin_key_pv
+        RpnKey.PMT -> R.string.fin_key_pmt
+        else -> R.string.fin_key_fv
     }
 
     private fun rclKeyFor(key: RpnKey) = when (key) {
@@ -346,15 +360,16 @@ class FinancialPanel(
                     setPadding(0, 0, 0, 0)
                     cornerRadius = dp(14)
                     backgroundTintList = ColorStateList.valueOf(buttonColor(spec.style))
-                    if (spec.style == Style.FUNCTION) {
+                    if (spec.style == Style.FUNCTION || spec.style == Style.FINANCIAL) {
                         // outlined, so the key is visible on any theme background
                         strokeWidth = dp(1)
-                        strokeColor = ColorStateList.valueOf(color(R.attr.text_third_color))
+                        strokeColor = ColorStateList.valueOf(color(if (spec.style == Style.FINANCIAL) R.attr.calc_accent else R.attr.calc_outline))
                     }
-                    setTextColor(color(R.attr.text_color))
+                    setTextColor(color(R.attr.calc_text_primary))
                     TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(10), spInt(20), 1, TypedValue.COMPLEX_UNIT_SP)
                     maxLines = 2
                     tag = "key:" + spec.main // stable handle for UI tests, independent of the language
+                    TooltipCompat.setTooltipText(this, listOfNotNull(describe(spec, false), spec.secondDescription?.let { context.getString(it) }).joinToString(" / "))
                     setOnClickListener { onKey(spec, it) }
                 }
                 buttons.add(spec to button)
@@ -366,12 +381,13 @@ class FinancialPanel(
     }
 
     private fun buttonColor(style: Style) = when (style) {
-        Style.DIGIT -> color(R.attr.button_color)
-        Style.OPERATOR -> color(R.attr.button_symbol_color)
-        Style.FUNCTION -> color(R.attr.background_color)
-        Style.CLEAR -> color(R.attr.button_clear_color)
-        Style.ENTER -> color(R.attr.button_equals_color)
-        Style.SHIFT -> color(R.attr.button_symbol_color)
+        Style.DIGIT -> color(R.attr.calc_key_number)
+        Style.OPERATOR -> color(R.attr.calc_key_operator)
+        Style.FUNCTION -> color(R.attr.calc_key_function)
+        Style.FINANCIAL -> color(R.attr.calc_key_financial)
+        Style.CLEAR -> color(R.attr.calc_key_danger)
+        Style.ENTER -> color(R.attr.calc_key_enter)
+        Style.SHIFT -> color(R.attr.calc_key_operator)
     }
 
     // ---- key handling ---------------------------------------------------------------------------------
@@ -379,6 +395,8 @@ class FinancialPanel(
         val second = viewModel.secondActive
         val action: Action = if (second && spec.secondAction != null) spec.secondAction else spec.mainAction
         if (action !is Action.Shift) viewModel.secondActive = false
+        val label = if (second && spec.second != null) spec.second else spec.main
+        lastHint = if (action is Action.Press && !label[0].isDigit() && label != "ENTER") "$label \u2014 ${describe(spec, second)}" else null
         when (action) {
             is Action.Shift -> {
                 viewModel.secondActive = !viewModel.secondActive
@@ -464,7 +482,7 @@ class FinancialPanel(
             button.text = keyLabel(spec, second)
             button.contentDescription = describe(spec, second)
             if (spec.style == Style.SHIFT) {
-                button.backgroundTintList = ColorStateList.valueOf(if (second) color(R.attr.button_equals_color) else color(R.attr.button_symbol_color))
+                button.backgroundTintList = ColorStateList.valueOf(if (second) color(R.attr.calc_key_enter) else color(R.attr.calc_key_operator))
             }
         }
         renderMessage()
@@ -488,7 +506,7 @@ class FinancialPanel(
         }
         val text = SpannableStringBuilder()
         text.append(small, RelativeSizeSpan(0.62f), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        text.setSpan(ForegroundColorSpan(color(R.attr.text_third_color)), 0, small.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text.setSpan(ForegroundColorSpan(color(R.attr.calc_accent)), 0, small.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         text.append("\n")
         text.append(big)
         return text
@@ -513,11 +531,12 @@ class FinancialPanel(
             viewModel.pendingMemory == PendingMemory.STORE -> text = context.getString(R.string.fin_help_sto)
             viewModel.pendingMemory == PendingMemory.RECALL -> text = context.getString(R.string.fin_help_rcl)
             viewModel.secondActive -> text = context.getString(R.string.fin_help_second)
+            lastHint != null -> text = lastHint!!
             e.tvm.pv == null && e.tvm.pmt == null && e.tvm.n == null && e.tvm.i == null && e.tvm.fv == null -> text = context.getString(R.string.fin_help_default)
             else -> text = context.getString(R.string.fin_help_tvm)
         }
         messageView.text = text
-        messageView.setTextColor(if (isError) 0xFFE53935.toInt() else color(R.attr.text_second_color))
+        messageView.setTextColor(if (isError) color(R.attr.calc_error) else color(R.attr.calc_text_secondary))
     }
 
     private fun errorText(error: FinancialError, detail: String): String = when (error) {

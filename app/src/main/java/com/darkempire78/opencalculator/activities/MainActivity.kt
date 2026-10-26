@@ -84,8 +84,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var view: View
 
     // Resolved from the language and the user settings; refreshed in onResume
-    private var decimalSeparatorSymbol = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
-    private var groupingSeparatorSymbol = DecimalFormatSymbols.getInstance().groupingSeparator.toString()
+    private var decimalSeparatorSymbol = DecimalFormatSymbols.getInstance(com.darkempire78.opencalculator.OpenCalcApp.BRAZIL).decimalSeparator.toString()
+    private var groupingSeparatorSymbol = DecimalFormatSymbols.getInstance(com.darkempire78.opencalculator.OpenCalcApp.BRAZIL).groupingSeparator.toString()
 
     private var numberingSystem = NumberingSystem.INTERNATIONAL
     private var scientificModeType = ScientificModeTypes.NOT_ACTIVE
@@ -121,7 +121,6 @@ class MainActivity : AppCompatActivity() {
 
         // Themes
         val themes = Themes(this)
-        themes.applyDayNightOverride()
         setTheme(themes.getTheme())
 
         val fromPrefs = MyPreferences(this).numberingSystem
@@ -620,13 +619,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 // Clear error color
                 else {
-                    binding.input.setTextColor(ContextCompat.getColor(this, R.color.text_color))
-                    binding.resultDisplay.setTextColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.text_second_color
-                        )
-                    )
+                    binding.input.setTextColor(themeColor(R.attr.calc_text_primary))
+                    binding.resultDisplay.setTextColor(themeColor(R.attr.calc_text_secondary))
                 }
                 errorStatusOld = errorStatus
             }
@@ -659,7 +653,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val formerValue = binding.input.text.toString()
-            val cursorPosition = binding.input.selectionStart
+            val cursorPosition = safeCursorPosition()
             val leftValue = formerValue.subSequence(0, cursorPosition).toString()
             val leftValueFormatted =
                 NumberFormatter.format(leftValue, decimalSeparatorSymbol, groupingSeparatorSymbol, numberingSystem)
@@ -923,7 +917,7 @@ class MainActivity : AppCompatActivity() {
         // If the input is not empty
         if (textLength > 0) {
             // Get cursor's current position
-            val cursorPosition = binding.input.selectionStart
+            val cursorPosition = safeCursorPosition()
 
             // Get next / previous characters relative to the cursor
             val nextChar =
@@ -1011,7 +1005,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pointButton(view: View) {
-        val cursorPosition = binding.input.selectionStart
+        val cursorPosition = safeCursorPosition()
         var currentNumber = ""
         if (binding.input.text.toString().isNotEmpty()) {
             var startPosition = 0
@@ -1330,7 +1324,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun parenthesesButton(view: View) {
-        val cursorPosition = binding.input.selectionStart
+        val cursorPosition = safeCursorPosition()
         val textLength = binding.input.text.length
 
         var openParentheses = 0
@@ -1364,7 +1358,7 @@ class MainActivity : AppCompatActivity() {
     fun backspaceButton(view: View) {
         keyVibration(view)
 
-        var cursorPosition = binding.input.selectionStart
+        var cursorPosition = safeCursorPosition()
         val textLength = binding.input.text.length
         var newValue = ""
         var isFunction = false
@@ -1460,7 +1454,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateInputDisplay() {
         val expression = binding.input.text.toString()
         val formatted = NumberFormatter.format(expression, decimalSeparatorSymbol, groupingSeparatorSymbol, numberingSystem)
-        val cursorPosition = binding.input.selectionStart
+        val cursorPosition = safeCursorPosition()
         binding.input.setText(formatted)
         // Set cursor to previous location before resume.
         // Setting text on resume resets cursor to position 0
@@ -1656,7 +1650,7 @@ class MainActivity : AppCompatActivity() {
     /** Applies the user separator settings; returns true when they changed. */
     private fun refreshSeparators(): Boolean {
         val preferences = MyPreferences(this)
-        val symbols = DecimalFormatSymbols.getInstance()
+        val symbols = DecimalFormatSymbols.getInstance(com.darkempire78.opencalculator.OpenCalcApp.BRAZIL)
         val (decimal, grouping) = SeparatorSettings.resolve(
             preferences.decimalSeparatorSetting, preferences.groupingSetting,
             symbols.decimalSeparator.toString(), symbols.groupingSeparator.toString()
@@ -1716,6 +1710,22 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         persistFinancialState()
+    }
+
+    /**
+     * Cursor of the input, never negative. EditText reports -1 when it has no selection (for example right
+     * after setText, before the cursor is restored); using it as an index crashed fast typing.
+     */
+    private fun safeCursorPosition(): Int {
+        val length = binding.input.text?.length ?: 0
+        return binding.input.selectionStart.let { if (it < 0) length else it.coerceAtMost(length) }
+    }
+
+    /** Color of a theme attribute of the active theme (Flamengo or Cleveland Cavaliers). */
+    private fun themeColor(attr: Int): Int {
+        val value = android.util.TypedValue()
+        theme.resolveAttribute(attr, value, true)
+        return value.data
     }
 
     private fun setupModeSwitcher() {

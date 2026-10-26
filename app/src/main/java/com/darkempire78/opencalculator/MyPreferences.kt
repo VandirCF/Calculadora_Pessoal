@@ -1,7 +1,6 @@
 package com.darkempire78.opencalculator
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.preference.PreferenceManager
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.util.CalculatorMode
@@ -16,8 +15,7 @@ class MyPreferences(context: Context) {
 
     // https://proandroiddev.com/dark-mode-on-android-app-with-kotlin-dc759fc5f0e1
     companion object {
-        private const val THEME = "darkempire78.opencalculator.THEME"
-        private const val FORCE_DAY_NIGHT = "darkempire78.opencalculator.FORCE_DAY_NIGHT"
+        private const val KEY_APP_THEME = "darkempire78.opencalculator.APP_THEME_ID"
 
         private const val KEY_VIBRATION_STATUS = "darkempire78.opencalculator.KEY_VIBRATION_STATUS"
         private const val KEY_HISTORY = "darkempire78.opencalculator.HISTORY_ELEMENTS"
@@ -48,10 +46,10 @@ class MyPreferences(context: Context) {
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    var theme = preferences.getInt(THEME, -1)
-        set(value) = preferences.edit().putInt(THEME, value).apply()
-    var forceDayNight = preferences.getInt(FORCE_DAY_NIGHT, MODE_NIGHT_UNSPECIFIED)
-        set(value) = preferences.edit().putInt(FORCE_DAY_NIGHT, value).apply()
+    /** Id of the selected theme (see ThemeOption); the last one used is restored on the next start. */
+    var appThemeId: String?
+        get() = preferences.getString(KEY_APP_THEME, null)
+        set(value) = preferences.edit().putString(KEY_APP_THEME, value).apply()
 
     var vibrationMode = preferences.getBoolean(KEY_VIBRATION_STATUS, true)
         set(value) = preferences.edit().putBoolean(KEY_VIBRATION_STATUS, value).apply()
@@ -140,7 +138,7 @@ class MyPreferences(context: Context) {
      */
     fun restoreDefaults() {
         val settingKeys = listOf(
-            THEME, FORCE_DAY_NIGHT, KEY_VIBRATION_STATUS, KEY_PREVENT_PHONE_FROM_SLEEPING, KEY_HISTORY_SIZE,
+            KEY_APP_THEME, KEY_VIBRATION_STATUS, KEY_PREVENT_PHONE_FROM_SLEEPING, KEY_HISTORY_SIZE,
             KEY_SCIENTIFIC_MODE_ENABLED_BY_DEFAULT, KEY_RADIANS_INSTEAD_OF_DEGREES_BY_DEFAULT, KEY_NUMBER_PRECISION,
             KEY_WRITE_NUMBER_INTO_SCIENTIC_NOTATION, KEY_LONG_CLICK_TO_COPY_VALUE, KEY_ADD_MODULO_BUTTON,
             KEY_SPLIT_PARENTHESIS_BUTTON, KEY_DELETE_HISTORY_ON_SWIPE, KEY_AUTO_SAVE_CALCULATION_WITHOUT_EQUAL_BUTTON,

@@ -17,4 +17,26 @@
         <attr name="separator_color" format="color"/>
         <attr name="about_button_color" format="color"/>
     </declare-styleable>
+
+    <!-- Semantic theme tokens (see docs/TEMAS.md). The legacy attributes above are mapped onto them. -->
+    <declare-styleable name="CalcTheme">
+        <attr name="calc_background" format="color"/>
+        <attr name="calc_surface" format="color"/>
+        <attr name="calc_surface_variant" format="color"/>
+        <attr name="calc_display_background" format="color"/>
+        <attr name="calc_primary" format="color"/>
+        <attr name="calc_secondary" format="color"/>
+        <attr name="calc_accent" format="color"/>
+        <attr name="calc_text_primary" format="color"/>
+        <attr name="calc_text_secondary" format="color"/>
+        <attr name="calc_key_number" format="color"/>
+        <attr name="calc_key_operator" format="color"/>
+        <attr name="calc_key_function" format="color"/>
+        <attr name="calc_key_danger" format="color"/>
+        <attr name="calc_key_financial" format="color"/>
+        <attr name="calc_key_enter" format="color"/>
+        <attr name="calc_outline" format="color"/>
+        <attr name="calc_error" format="color"/>
+        <attr name="calc_logo" format="reference"/>
+    </declare-styleable>
 </resources>
