@@ -81,69 +81,102 @@ class FinancialPanel(
     // ---- key model -------------------------------------------------------------------------------
     private sealed class Action {
         data class Press(val key: RpnKey) : Action()
-        object Shift : Action()
+        data class Shift(val layer: ShiftLayer) : Action()
         object Store : Action()
         object Recall : Action()
         object ClearRegisters : Action()
     }
 
-    private enum class Style { DIGIT, OPERATOR, FUNCTION, FINANCIAL, CLEAR, ENTER, SHIFT }
+    private enum class Style { DIGIT, OPERATOR, FUNCTION, FINANCIAL, CLEAR, ENTER, SHIFT_F, SHIFT_G }
 
+    /**
+     * One key of the keypad: [main] is printed on the key, [fLabel] (gold) above it and [gLabel] (blue) on the key,
+     * like the printed functions of a financial calculator.
+     */
     private class KeySpec(
         val main: String,
-        val second: String?,
         val mainAction: Action,
-        val secondAction: Action?,
         val mainDescription: Int,
-        val secondDescription: Int?,
         val style: Style,
-        val weight: Float = 1f
+        val fLabel: String? = null,
+        val fAction: Action? = null,
+        val fDescription: Int? = null,
+        val gLabel: String? = null,
+        val gAction: Action? = null,
+        val gDescription: Int? = null
     )
 
-    private fun digit(d: Int, second: String?, secondAction: Action?, secondDesc: Int?) =
-        KeySpec(d.toString(), second, Action.Press(RpnKey.valueOf("D$d")), secondAction, -1, secondDesc, Style.DIGIT)
+    /** Where a key sits in the grid; a null [spec] is the part of the grid covered by a taller key above. */
+    private class Slot(val spec: KeySpec?, val colSpan: Int = 1, val rowSpan: Int = 1)
 
-    private val keyRows: List<List<KeySpec>> = listOf(
-        listOf(
-            KeySpec("n", "12×", Action.Press(RpnKey.N), Action.Press(RpnKey.N_TIMES_PER_YEAR), R.string.fin_key_n, R.string.fin_key2_n, Style.FINANCIAL),
-            KeySpec("i", "12÷", Action.Press(RpnKey.I), Action.Press(RpnKey.I_DIV_PER_YEAR), R.string.fin_key_i, R.string.fin_key2_i, Style.FINANCIAL),
-            KeySpec("PV", "CF0", Action.Press(RpnKey.PV), Action.Press(RpnKey.CF0), R.string.fin_key_pv, R.string.fin_key2_cf0, Style.FINANCIAL),
-            KeySpec("PMT", "CFj", Action.Press(RpnKey.PMT), Action.Press(RpnKey.CFJ), R.string.fin_key_pmt, R.string.fin_key2_cfj, Style.FINANCIAL),
-            KeySpec("FV", "Nj", Action.Press(RpnKey.FV), Action.Press(RpnKey.NJ), R.string.fin_key_fv, R.string.fin_key2_nj, Style.FINANCIAL)
-        ),
-        listOf(
-            KeySpec("CHS", "√x", Action.Press(RpnKey.CHS), Action.Press(RpnKey.SQRT), R.string.fin_key_chs, R.string.fin_key2_sqrt, Style.FUNCTION),
-            digit(7, "NPV", Action.Press(RpnKey.NPV), R.string.fin_key2_npv),
-            digit(8, "IRR", Action.Press(RpnKey.IRR), R.string.fin_key2_irr),
-            digit(9, "AMORT", Action.Press(RpnKey.AMORT), R.string.fin_key2_amort),
-            KeySpec("÷", "1/x", Action.Press(RpnKey.DIV), Action.Press(RpnKey.RECIPROCAL), R.string.fin_key_div, R.string.fin_key2_recip, Style.OPERATOR)
-        ),
-        listOf(
-            KeySpec("x⇄y", "R↑", Action.Press(RpnKey.SWAP), Action.Press(RpnKey.ROLL_UP), R.string.fin_key_swap, R.string.fin_key2_rollup, Style.FUNCTION),
-            digit(4, "BEG", Action.Press(RpnKey.BEGIN), R.string.fin_key2_begin),
-            digit(5, "END", Action.Press(RpnKey.END), R.string.fin_key2_end),
-            digit(6, "LSTx", Action.Press(RpnKey.LAST_X), R.string.fin_key2_lastx),
-            KeySpec("×", "yˣ", Action.Press(RpnKey.MUL), Action.Press(RpnKey.POW), R.string.fin_key_mul, R.string.fin_key2_pow, Style.OPERATOR)
-        ),
-        listOf(
-            KeySpec("R↓", "CLR", Action.Press(RpnKey.ROLL_DOWN), Action.Press(RpnKey.CLEAR_STACK), R.string.fin_key_roll, R.string.fin_key2_clrstack, Style.FUNCTION),
-            digit(1, "STO", Action.Store, R.string.fin_key2_sto),
-            digit(2, "RCL", Action.Recall, R.string.fin_key2_rcl),
-            digit(3, "Δ%", Action.Press(RpnKey.DELTA_PERCENT), R.string.fin_key2_delta),
-            KeySpec("−", null, Action.Press(RpnKey.SUB), null, R.string.fin_key_sub, null, Style.OPERATOR)
-        ),
-        listOf(
-            KeySpec("CLx", "CLRƒ", Action.Press(RpnKey.CLX), Action.ClearRegisters, R.string.fin_key_clx, R.string.fin_key2_clrfin, Style.CLEAR),
-            digit(0, null, null, null),
-            KeySpec(".", null, Action.Press(RpnKey.DOT), null, R.string.fin_key_dot, null, Style.DIGIT),
-            KeySpec("%", null, Action.Press(RpnKey.PERCENT), null, R.string.fin_key_percent, null, Style.OPERATOR),
-            KeySpec("+", null, Action.Press(RpnKey.ADD), null, R.string.fin_key_add, null, Style.OPERATOR)
-        ),
-        listOf(
-            KeySpec("2nd", null, Action.Shift, null, R.string.fin_key_second, null, Style.SHIFT),
-            KeySpec("⌫", null, Action.Press(RpnKey.BACKSPACE), null, R.string.fin_key_backspace, null, Style.CLEAR),
-            KeySpec("ENTER", null, Action.Press(RpnKey.ENTER), null, R.string.fin_key_enter, null, Style.ENTER, weight = 3f)
-        )
+    private fun press(key: RpnKey) = Action.Press(key)
+
+    private fun digit(d: Int, gLabel: String? = null, gAction: Action? = null, gDesc: Int? = null) =
+        KeySpec(d.toString(), press(RpnKey.valueOf("D$d")), -1, Style.DIGIT, gLabel = gLabel, gAction = gAction, gDescription = gDesc)
+
+    private val kN = KeySpec("n", press(RpnKey.N), R.string.fin_key_n, Style.FINANCIAL,
+        fLabel = "AMORT", fAction = press(RpnKey.AMORT), fDescription = R.string.fin_key2_amort,
+        gLabel = "12×", gAction = press(RpnKey.N_TIMES_PER_YEAR), gDescription = R.string.fin_key2_n)
+    private val kI = KeySpec("i", press(RpnKey.I), R.string.fin_key_i, Style.FINANCIAL,
+        gLabel = "12÷", gAction = press(RpnKey.I_DIV_PER_YEAR), gDescription = R.string.fin_key2_i)
+    private val kPV = KeySpec("PV", press(RpnKey.PV), R.string.fin_key_pv, Style.FINANCIAL,
+        fLabel = "NPV", fAction = press(RpnKey.NPV), fDescription = R.string.fin_key2_npv,
+        gLabel = "CF0", gAction = press(RpnKey.CF0), gDescription = R.string.fin_key2_cf0)
+    private val kPMT = KeySpec("PMT", press(RpnKey.PMT), R.string.fin_key_pmt, Style.FINANCIAL,
+        gLabel = "CFj", gAction = press(RpnKey.CFJ), gDescription = R.string.fin_key2_cfj)
+    private val kFV = KeySpec("FV", press(RpnKey.FV), R.string.fin_key_fv, Style.FINANCIAL,
+        fLabel = "IRR", fAction = press(RpnKey.IRR), fDescription = R.string.fin_key2_irr,
+        gLabel = "Nj", gAction = press(RpnKey.NJ), gDescription = R.string.fin_key2_nj)
+    private val kChs = KeySpec("CHS", press(RpnKey.CHS), R.string.fin_key_chs, Style.FUNCTION)
+    private val kPow = KeySpec("yˣ", press(RpnKey.POW), R.string.fin_key2_pow, Style.FUNCTION,
+        gLabel = "√x", gAction = press(RpnKey.SQRT), gDescription = R.string.fin_key2_sqrt)
+    private val kRecip = KeySpec("1/x", press(RpnKey.RECIPROCAL), R.string.fin_key2_recip, Style.FUNCTION)
+    private val kPercentTotal = KeySpec("%T", press(RpnKey.PERCENT_TOTAL), R.string.fin_key_percent_total, Style.FUNCTION)
+    private val kDelta = KeySpec("Δ%", press(RpnKey.DELTA_PERCENT), R.string.fin_key2_delta, Style.FUNCTION)
+    private val kPercent = KeySpec("%", press(RpnKey.PERCENT), R.string.fin_key_percent, Style.FUNCTION)
+    private val kSqrt = KeySpec("√x", press(RpnKey.SQRT), R.string.fin_key2_sqrt, Style.FUNCTION)
+    private val kRollDown = KeySpec("R↓", press(RpnKey.ROLL_DOWN), R.string.fin_key_roll, Style.FUNCTION,
+        fLabel = "CLR", fAction = press(RpnKey.CLEAR_STACK), fDescription = R.string.fin_key2_clrstack,
+        gLabel = "R↑", gAction = press(RpnKey.ROLL_UP), gDescription = R.string.fin_key2_rollup)
+    private val kSwap = KeySpec("x⇄y", press(RpnKey.SWAP), R.string.fin_key_swap, Style.FUNCTION)
+    private val kClx = KeySpec("CLx", press(RpnKey.CLX), R.string.fin_key_clx, Style.CLEAR,
+        fLabel = "CLR\u0192", fAction = Action.ClearRegisters, fDescription = R.string.fin_key2_clrfin)
+    private val kBackspace = KeySpec("⌫", press(RpnKey.BACKSPACE), R.string.fin_key_backspace, Style.CLEAR)
+    private val kEnter = KeySpec("ENTER", press(RpnKey.ENTER), R.string.fin_key_enter, Style.ENTER)
+    private val kStore = KeySpec("STO", Action.Store, R.string.fin_key2_sto, Style.FUNCTION)
+    private val kRecall = KeySpec("RCL", Action.Recall, R.string.fin_key2_rcl, Style.FUNCTION)
+    private val kLastX = KeySpec("LSTx", press(RpnKey.LAST_X), R.string.fin_key2_lastx, Style.FUNCTION)
+    private val kF = KeySpec("f", Action.Shift(ShiftLayer.F), R.string.fin_key_f, Style.SHIFT_F)
+    private val kG = KeySpec("g", Action.Shift(ShiftLayer.G), R.string.fin_key_g, Style.SHIFT_G)
+    private val kDiv = KeySpec("÷", press(RpnKey.DIV), R.string.fin_key_div, Style.OPERATOR)
+    private val kMul = KeySpec("×", press(RpnKey.MUL), R.string.fin_key_mul, Style.OPERATOR)
+    private val kSub = KeySpec("−", press(RpnKey.SUB), R.string.fin_key_sub, Style.OPERATOR)
+    private val kAdd = KeySpec("+", press(RpnKey.ADD), R.string.fin_key_add, Style.OPERATOR)
+    private val kDot = KeySpec(".", press(RpnKey.DOT), R.string.fin_key_dot, Style.DIGIT)
+
+    private val kD7 = digit(7, "BEG", press(RpnKey.BEGIN), R.string.fin_key2_begin)
+    private val kD8 = digit(8, "END", press(RpnKey.END), R.string.fin_key2_end)
+
+    /** Landscape: 4 rows of 10 keys, with a tall ENTER (like the 10 x 4 layout of a financial calculator). */
+    private val landscapeRows: List<List<Slot>> = listOf(
+        listOf(kN, kI, kPV, kPMT, kFV, kChs, kD7, kD8, digit(9), kDiv).map { Slot(it) },
+        listOf(kPow, kRecip, kPercentTotal, kDelta, kPercent, kSqrt, digit(4), digit(5), digit(6), kMul).map { Slot(it) },
+        listOf(Slot(kRollDown), Slot(kSwap), Slot(kClx), Slot(kEnter, colSpan = 2, rowSpan = 2), Slot(kStore),
+            Slot(digit(1)), Slot(digit(2)), Slot(digit(3)), Slot(kSub)),
+        listOf(Slot(kF), Slot(kG), Slot(kBackspace), Slot(null, colSpan = 2), Slot(kRecall),
+            Slot(digit(0)), Slot(kDot), Slot(kLastX), Slot(kAdd))
+    )
+
+    /** Portrait: the same keys in 8 rows of 5, with a wide ENTER at the bottom. */
+    private val portraitRows: List<List<Slot>> = listOf(
+        listOf(kN, kI, kPV, kPMT, kFV).map { Slot(it) },
+        listOf(kChs, kD7, kD8, digit(9), kDiv).map { Slot(it) },
+        listOf(kPow, digit(4), digit(5), digit(6), kMul).map { Slot(it) },
+        listOf(kRecip, digit(1), digit(2), digit(3), kSub).map { Slot(it) },
+        listOf(kPercentTotal, digit(0), kDot, kLastX, kAdd).map { Slot(it) },
+        listOf(kDelta, kPercent, kSqrt, kRollDown, kSwap).map { Slot(it) },
+        listOf(kF, kG, kStore, kRecall, kClx).map { Slot(it) },
+        listOf(Slot(kBackspace), Slot(kEnter, colSpan = 4))
     )
 
     // ---- views -----------------------------------------------------------------------------------
@@ -156,16 +189,17 @@ class FinancialPanel(
     private val compactScreen = context.resources.configuration.screenHeightDp
         .let { it < COMPACT_HEIGHT_DP || (!isLandscape && it < COMPACT_PORTRAIT_HEIGHT_DP) }
     private val buttons = ArrayList<Pair<KeySpec, MaterialButton>>()
+    private val fLabels = ArrayList<Pair<KeySpec, TextView>>()
     private lateinit var stackValues: List<TextView> // T, Z, Y, X
     private lateinit var beginBadge: TextView
-    private lateinit var secondBadge: TextView
+    private lateinit var shiftBadge: TextView
     private lateinit var messageView: TextView
     private val chips = LinkedHashMap<RpnKey, TextView>()
     /** "PV - Valor presente": what the last technical key pressed means, so the notation is never a mystery. */
     private var lastHint: String? = null
     /** Text shown on a key: Portuguese labels for the English abbreviations, the decimal mark in use for ".". */
     private val labelResources = mapOf(
-        "2nd" to R.string.fin_label_second, "BEG" to R.string.fin_label_begin, "END" to R.string.fin_label_end,
+        "BEG" to R.string.fin_label_begin, "END" to R.string.fin_label_end,
         "STO" to R.string.fin_label_store, "RCL" to R.string.fin_label_recall, "LSTx" to R.string.fin_label_last_x,
         "CLR" to R.string.fin_label_clear_stack, "CLR\u0192" to R.string.fin_label_clear_registers
     )
@@ -228,9 +262,7 @@ class FinancialPanel(
         val header = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL }
         val rpn = badge(context.getString(R.string.fin_badge_rpn))
         beginBadge = badge(context.getString(R.string.fin_badge_begin))
-        secondBadge = badge(context.getString(R.string.fin_badge_second)).apply {
-            background = roundedBackground(color(R.attr.calc_key_enter), 8)
-        }
+        shiftBadge = badge(context.getString(R.string.fin_badge_f))
         val spacer = View(context)
         val history = TextView(context).apply {
             text = context.getString(R.string.fin_history)
@@ -254,7 +286,7 @@ class FinancialPanel(
         }
         header.addView(rpn)
         header.addView(beginBadge, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
-        header.addView(secondBadge, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
+        header.addView(shiftBadge, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(6) })
         header.addView(spacer, LinearLayout.LayoutParams(0, 1, 1f))
         header.addView(history)
         header.addView(menu)
@@ -354,38 +386,74 @@ class FinancialPanel(
     }
 
     private fun buildKeypad(): View {
-        val pad = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
-        for (row in keyRows) {
-            val line = LinearLayout(context).apply { orientation = LinearLayout.HORIZONTAL }
-            for (spec in row) {
-                val button = MaterialButton(context).apply {
-                    isAllCaps = false
-                    insetTop = 0
-                    insetBottom = 0
-                    minWidth = 0
-                    minHeight = dp(40)
-                    minimumHeight = dp(40)
-                    setPadding(0, 0, 0, 0)
-                    cornerRadius = dp(14)
-                    backgroundTintList = ColorStateList.valueOf(buttonColor(spec.style))
-                    if (spec.style == Style.FUNCTION || spec.style == Style.FINANCIAL) {
-                        // outlined, so the key is visible on any theme background
-                        strokeWidth = dp(1)
-                        strokeColor = ColorStateList.valueOf(color(if (spec.style == Style.FINANCIAL) R.attr.calc_accent else R.attr.calc_outline))
+        val grid = android.widget.GridLayout(context)
+        val rows = if (isLandscape) landscapeRows else portraitRows
+        grid.rowCount = rows.size
+        grid.columnCount = rows.first().sumOf { it.colSpan }
+        for ((rowIndex, row) in rows.withIndex()) {
+            var column = 0
+            for (slot in row) {
+                val spec = slot.spec
+                if (spec != null) {
+                    val params = android.widget.GridLayout.LayoutParams(
+                        android.widget.GridLayout.spec(rowIndex, slot.rowSpan, 1f),
+                        android.widget.GridLayout.spec(column, slot.colSpan, 1f)
+                    ).apply {
+                        width = 0
+                        height = 0
+                        setMargins(dp(2), dp(1), dp(2), dp(1))
                     }
-                    setTextColor(color(R.attr.calc_text_primary))
-                    TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(10), spInt(20), 1, TypedValue.COMPLEX_UNIT_SP)
-                    maxLines = 2
-                    tag = "key:" + spec.main // stable handle for UI tests, independent of the language
-                    TooltipCompat.setTooltipText(this, listOfNotNull(describe(spec, false), spec.secondDescription?.let { context.getString(it) }).joinToString(" / "))
-                    setOnClickListener { onKey(spec, it) }
+                    grid.addView(buildCell(spec), params)
                 }
-                buttons.add(spec to button)
-                line.addView(button, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, spec.weight).apply { setMargins(dp(2), dp(2), dp(2), dp(2)) })
+                column += slot.colSpan
             }
-            pad.addView(line, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
         }
-        return pad
+        return grid
+    }
+
+    /** A key with its gold f function printed above it. */
+    private fun buildCell(spec: KeySpec): View {
+        val button = buildButton(spec)
+        buttons.add(spec to button)
+        if (spec.style == Style.ENTER) return button
+        val cell = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        val fText = TextView(context).apply {
+            tag = "f:" + spec.main
+            textSize = sp(if (compactScreen) 8f else 9.5f)
+            setTypeface(typeface, Typeface.BOLD)
+            gravity = Gravity.CENTER
+            setTextColor(color(R.attr.calc_shift_f))
+            maxLines = 1
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            text = spec.fLabel?.let(::shown) ?: "\u00A0"
+        }
+        fLabels.add(spec to fText)
+        cell.addView(fText, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+        cell.addView(button, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+        return cell
+    }
+
+    private fun buildButton(spec: KeySpec) = MaterialButton(context).apply {
+        isAllCaps = false
+        insetTop = 0
+        insetBottom = 0
+        minWidth = 0
+        minHeight = 0
+        minimumHeight = 0
+        setPadding(0, 0, 0, 0)
+        cornerRadius = dp(12)
+        backgroundTintList = ColorStateList.valueOf(buttonColor(spec.style))
+        if (spec.style == Style.FUNCTION || spec.style == Style.FINANCIAL) {
+            // outlined, so the key is visible on any theme background
+            strokeWidth = dp(1)
+            strokeColor = ColorStateList.valueOf(color(if (spec.style == Style.FINANCIAL) R.attr.calc_accent else R.attr.calc_outline))
+        }
+        setTextColor(textColorFor(spec.style))
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this, spInt(9), spInt(if (spec.style == Style.ENTER) 20 else 18), 1, TypedValue.COMPLEX_UNIT_SP)
+        maxLines = if (spec.gLabel != null) 2 else 1
+        tag = "key:" + spec.main // stable handle for UI tests, independent of the language
+        TooltipCompat.setTooltipText(this, listOfNotNull(describe(spec, ShiftLayer.NONE), spec.fDescription?.let { "f: " + context.getString(it) }, spec.gDescription?.let { "g: " + context.getString(it) }).joinToString(" / "))
+        setOnClickListener { onKey(spec, it) }
     }
 
     private fun buttonColor(style: Style) = when (style) {
@@ -395,19 +463,42 @@ class FinancialPanel(
         Style.FINANCIAL -> color(R.attr.calc_key_financial)
         Style.CLEAR -> color(R.attr.calc_key_danger)
         Style.ENTER -> color(R.attr.calc_key_enter)
-        Style.SHIFT -> color(R.attr.calc_key_operator)
+        Style.SHIFT_F -> color(R.attr.calc_shift_f)
+        Style.SHIFT_G -> color(R.attr.calc_shift_g)
+    }
+
+    private fun textColorFor(style: Style) = when (style) {
+        Style.ENTER -> color(R.attr.calc_on_key_enter)
+        Style.SHIFT_F, Style.SHIFT_G -> color(R.attr.calc_background)
+        else -> color(R.attr.calc_text_primary)
     }
 
     // ---- key handling ---------------------------------------------------------------------------------
     private fun onKey(spec: KeySpec, view: View) {
-        val second = viewModel.secondActive
-        val action: Action = if (second && spec.secondAction != null) spec.secondAction else spec.mainAction
-        if (action !is Action.Shift) viewModel.secondActive = false
-        val label = if (second && spec.second != null) spec.second else spec.main
-        lastHint = if (action is Action.Press && !label[0].isDigit() && label != "ENTER") "${shown(label)} \u2014 ${describe(spec, second)}" else null
+        val layer = viewModel.shift
+        val action: Action? = when (layer) {
+            ShiftLayer.NONE -> spec.mainAction
+            ShiftLayer.F -> spec.fAction ?: if (spec.mainAction is Action.Shift) spec.mainAction else null
+            ShiftLayer.G -> spec.gAction ?: if (spec.mainAction is Action.Shift) spec.mainAction else null
+        }
+        viewModel.shift = ShiftLayer.NONE
+        if (action == null) {
+            // the key has no function on the active layer: the shift is just dropped
+            lastHint = null
+            onKeyFeedback(view)
+            render()
+            return
+        }
+        val label = when (layer) {
+            ShiftLayer.F -> spec.fLabel
+            ShiftLayer.G -> spec.gLabel
+            ShiftLayer.NONE -> null
+        } ?: spec.main
+        lastHint = if (action is Action.Press && !label[0].isDigit() && label != "ENTER") "${shown(label)} \u2014 ${describe(spec, layer)}" else null
         when (action) {
             is Action.Shift -> {
-                viewModel.secondActive = !viewModel.secondActive
+                // pressing the same shift key again turns it off
+                viewModel.shift = if (layer == action.layer) ShiftLayer.NONE else action.layer
                 viewModel.pendingMemory = PendingMemory.NONE
                 onKeyFeedback(view)
                 render()
@@ -465,7 +556,14 @@ class FinancialPanel(
         }
 
         beginBadge.visibility = if (e.tvm.beginMode) View.VISIBLE else View.GONE
-        secondBadge.visibility = if (viewModel.secondActive) View.VISIBLE else View.GONE
+        val layer = viewModel.shift
+        shiftBadge.visibility = if (layer == ShiftLayer.NONE) View.GONE else View.VISIBLE
+        if (layer != ShiftLayer.NONE) {
+            val isF = layer == ShiftLayer.F
+            shiftBadge.text = context.getString(if (isF) R.string.fin_badge_f else R.string.fin_badge_g)
+            shiftBadge.setTextColor(color(R.attr.calc_background))
+            shiftBadge.background = roundedBackground(color(if (isF) R.attr.calc_shift_f else R.attr.calc_shift_g), 8)
+        }
 
         // registers: n and i are shown with their natural digits, money values with fixed decimals
         for ((key, chip) in chips) {
@@ -484,14 +582,27 @@ class FinancialPanel(
             else context.getString(R.string.fin_reg_chip_set, label, shown)
         }
 
-        // shifted keys show their second label; the main label is dimmed so the active function is unmistakable
-        val second = viewModel.secondActive
+        // with f or g active, keys that have no function on that layer fade, so the usable ones stand out
         for ((spec, button) in buttons) {
-            button.text = keyLabel(spec, second)
-            button.contentDescription = describe(spec, second)
-            if (spec.style == Style.SHIFT) {
-                button.backgroundTintList = ColorStateList.valueOf(if (second) color(R.attr.calc_key_enter) else color(R.attr.calc_key_operator))
+            button.text = keyLabel(spec)
+            button.contentDescription = describe(spec, layer)
+            val usable = when (layer) {
+                ShiftLayer.NONE -> true
+                ShiftLayer.F -> spec.fAction != null || spec.mainAction is Action.Shift
+                ShiftLayer.G -> spec.gAction != null || spec.mainAction is Action.Shift
             }
+            button.alpha = if (usable) 1f else 0.4f
+            if (spec.style == Style.SHIFT_F || spec.style == Style.SHIFT_G) {
+                val active = (spec.style == Style.SHIFT_F && layer == ShiftLayer.F) || (spec.style == Style.SHIFT_G && layer == ShiftLayer.G)
+                button.strokeWidth = if (active) dp(3) else 0
+                button.strokeColor = ColorStateList.valueOf(color(R.attr.calc_text_primary))
+            }
+        }
+        for ((spec, label) in fLabels) {
+            val highlighted = layer == ShiftLayer.F && spec.fAction != null
+            label.alpha = if (layer == ShiftLayer.G || (layer == ShiftLayer.F && !highlighted)) 0.4f else 1f
+            label.scaleX = if (highlighted) 1.2f else 1f
+            label.scaleY = if (highlighted) 1.2f else 1f
         }
         renderMessage()
     }
@@ -505,26 +616,24 @@ class FinancialPanel(
     private fun shown(token: String): String =
         if (token == ".") settings().decimalSeparator else labelResources[token]?.let { context.getString(it) } ?: token
 
-    private fun keyLabel(spec: KeySpec, second: Boolean): CharSequence {
-        val secondLabel = spec.second?.let(::shown)
-        if (secondLabel == null) return shown(spec.main)
-        val big: String
-        val small: String
-        if (second) {
-            big = secondLabel; small = shown(spec.main)
-        } else {
-            big = shown(spec.main); small = secondLabel
-        }
+    /** The main label, with the blue g function in small type below it. */
+    private fun keyLabel(spec: KeySpec): CharSequence {
+        val g = spec.gLabel?.let(::shown) ?: return shown(spec.main)
         val text = SpannableStringBuilder()
-        text.append(small, RelativeSizeSpan(0.62f), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        text.setSpan(ForegroundColorSpan(color(R.attr.calc_accent)), 0, small.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text.append(shown(spec.main))
         text.append("\n")
-        text.append(big)
+        val start = text.length
+        text.append(g, RelativeSizeSpan(0.62f), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        text.setSpan(ForegroundColorSpan(color(if (spec.style == Style.ENTER) R.attr.calc_on_key_enter else R.attr.calc_shift_g)), start, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         return text
     }
 
-    private fun describe(spec: KeySpec, second: Boolean): String {
-        val res = if (second && spec.secondDescription != null) spec.secondDescription else spec.mainDescription
+    private fun describe(spec: KeySpec, layer: ShiftLayer): String {
+        val res = when (layer) {
+            ShiftLayer.F -> spec.fDescription
+            ShiftLayer.G -> spec.gDescription
+            ShiftLayer.NONE -> null
+        } ?: spec.mainDescription
         return if (res > 0) context.getString(res) else shown(spec.main)
     }
 
@@ -541,7 +650,8 @@ class FinancialPanel(
             e.warnings.contains(FinancialWarning.MULTIPLE_SIGN_CHANGES) -> text = context.getString(R.string.fin_warn_multiple_sign_changes)
             viewModel.pendingMemory == PendingMemory.STORE -> text = context.getString(R.string.fin_help_sto)
             viewModel.pendingMemory == PendingMemory.RECALL -> text = context.getString(R.string.fin_help_rcl)
-            viewModel.secondActive -> text = context.getString(R.string.fin_help_second)
+            viewModel.shift == ShiftLayer.F -> text = context.getString(R.string.fin_help_f)
+            viewModel.shift == ShiftLayer.G -> text = context.getString(R.string.fin_help_g)
             lastHint != null -> text = lastHint!!
             e.tvm.pv == null && e.tvm.pmt == null && e.tvm.n == null && e.tvm.i == null && e.tvm.fv == null -> text = context.getString(R.string.fin_help_default)
             else -> text = context.getString(R.string.fin_help_tvm)
@@ -589,6 +699,7 @@ class FinancialPanel(
                     "sqrt" -> "√${n(values.getValue("X"))}"
                     "1/x" -> "1/${n(values.getValue("X"))}"
                     "%" -> "${n(values.getValue("X"))}% × ${n(values.getValue("Y"))}"
+                    "%T" -> "%T ${n(values.getValue("X"))} / ${n(values.getValue("Y"))}"
                     "delta%" -> "Δ% ${n(values.getValue("Y"))} → ${n(values.getValue("X"))}"
                     else -> "${n(values.getValue("Y"))} $symbol ${n(values.getValue("X"))}"
                 }

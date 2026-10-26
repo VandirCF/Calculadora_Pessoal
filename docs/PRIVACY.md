@@ -27,7 +27,7 @@ O Android pode copiar as preferências do aplicativo para a **sua própria** con
 ## Apagar os dados
 
 - Histórico: menu ⋮ → *Limpar histórico* (com confirmação), deslizar um item ou *Excluir* no detalhe.
-- Registradores financeiros: `2ª` + `CLx`, ou menu ⋯ → *Limpar registradores* / *Limpar tudo* (com confirmação).
+- Registradores financeiros: `f` + `CLx`, ou menu ⋯ → *Limpar registradores* / *Limpar tudo* (com confirmação).
 - Configurações: Configurações → *Restaurar configurações padrão*.
 - Tudo: Configurações do Android → Apps → Calculadora Financeira RPN → Armazenamento → *Limpar dados*, ou desinstalar.
 

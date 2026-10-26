@@ -64,7 +64,7 @@ Só o **build** usa rede, e só na primeira vez: o Gradle baixa o próprio Gradl
 |---|---|---|
 | configurações, tema, modo ativo | `SharedPreferences` do aplicativo | |
 | histórico | idem, JSON | texto já formatado |
-| memória, registradores financeiros, pilha | idem, JSON com versão | persistem ao fechar o app; apagam com 2ª + CLx ou em Limpar tudo |
+| memória, registradores financeiros, pilha | idem, JSON com versão | persistem ao fechar o app; apagam com f + CLx ou em Limpar tudo |
 
 `allowBackup` continua ligado (padrão do Android). Se o backup do aparelho estiver ativado, o Android pode copiar essas preferências para **a sua própria conta Google** e restaurá-las num celular novo. Se preferir que nada saia do aparelho, desative o backup do Android ou mude `android:allowBackup` para `false` no manifesto. As regras estão em `res/xml/backup_rules.xml` e `res/xml/data_extraction_rules.xml`: só preferências.
 

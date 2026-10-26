@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName
  *
  * Decision (documented in docs/ARCHITECTURE.md): financial registers persist across app restarts so
  * a calculation is not lost by closing the app; the user clears them explicitly from the menu
- * (or with 2nd + CLx). Unreadable or newer-version data is ignored and the engine starts empty.
+ * (or with f + CLx). Unreadable or newer-version data is ignored and the engine starts empty.
  */
 object FinancialStateStore {
     const val CURRENT_VERSION = 1

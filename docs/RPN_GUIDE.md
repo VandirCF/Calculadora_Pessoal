@@ -23,10 +23,10 @@ A pilha tem quatro níveis. **X** é o valor mostrado; Y, Z e T ficam acima dele
 | Operação com dois números (`+ − × ÷ yˣ`) | Calcula `Y op X`, guarda o operando em LAST X, põe o resultado em X, **desce** a pilha (Y←Z, Z←T, T permanece) e ativa a elevação. |
 | Operação com um número (`√x`, `1/x`, `%`, `Δ%`) | Calcula sobre X, guarda LAST X, ativa a elevação. |
 | `x⇄y` | Troca X e Y. |
-| `R↓` / `R↑` (2ª) | Gira a pilha para baixo ou para cima. |
-| `ÚLT X` (2ª, tecla 6) | Traz de volta o último valor de X usado por uma operação. |
+| `R↓` / `g R↓` (R↑) | Gira a pilha para baixo ou para cima. |
+| `ÚLT X` | Traz de volta o último valor de X usado por uma operação. |
 | `CLx` | Zera X e **desativa** a elevação. |
-| `LIMPAR` (2ª, tecla `R↓`) | Zera X, Y, Z e T (não apaga registradores). |
+| `f LIMPAR` (dourado, sobre `R↓`) | Zera X, Y, Z e T (não apaga registradores). |
 | `⌫` | Apaga o último dígito digitado; sem digitação em andamento, zera X. |
 
 Depois de um **erro**, a pilha e os registradores ficam como estavam, a mensagem aparece abaixo dos registradores, e a próxima tecla limpa o erro e funciona normalmente.
@@ -41,7 +41,9 @@ Depois de um **erro**, a pilha e os registradores ficam como estavam, a mensagem
 100 ENTER 10 % −    →  90
 ```
 
-`Δ%` (2ª, tecla 3) calcula a variação percentual de Y para X: `80 ENTER 100 Δ%` dá 25.
+`%T` calcula **quanto por cento X é de Y** e também mantém Y: `200 ENTER 50 %T` dá 25. Com Y igual a zero há erro de divisão por zero.
+
+`Δ%` calcula a variação percentual de Y para X: `80 ENTER 100 Δ%` dá 25.
 
 ## Registradores financeiros
 
@@ -79,11 +81,11 @@ PMT          →  88,85
 
 ### Pagamento no início ou no final
 
-`INÍCIO` (2ª, tecla 4) calcula com pagamentos no **início** de cada período; `FIM` (2ª, tecla 5), no **final**. A etiqueta **INÍCIO** aparece no visor quando o modo início está ativo. O mesmo ajuste existe em Configurações.
+`g 7` (**INÍCIO**, azul) calcula com pagamentos no **início** de cada período; `g 8` (**FIM**), no **final**. A etiqueta **INÍCIO** aparece no visor quando o modo início está ativo. O mesmo ajuste existe em Configurações.
 
 ### Pagamentos por ano
 
-`12×` (2ª sobre `n`) multiplica X pelos pagamentos por ano e guarda o resultado em `n`; `12÷` (2ª sobre `i`) divide X e guarda em `i`. O número de pagamentos por ano (padrão 12) muda em ⋯ → *Pagamentos por ano* ou em Configurações.
+`g n` (12×, azul) multiplica X pelos pagamentos por ano e guarda o resultado em `n`; `g i` (12÷) divide X e guarda em `i`. O número de pagamentos por ano (padrão 12) muda em ⋯ → *Pagamentos por ano* ou em Configurações.
 
 ```
 30 12×   →  n = 360
@@ -92,13 +94,13 @@ PMT          →  88,85
 
 ## Fluxo de caixa, VPL e TIR
 
-| Tecla (2ª) | Função |
+| Teclas | Função |
 |---|---|
-| `CF0` (sobre `PV`) | fluxo inicial (tempo 0) |
-| `CFj` (sobre `PMT`) | adiciona o próximo fluxo (até 80) |
-| `Nj` (sobre `FV`) | repete o último fluxo `Nj` vezes (1 a 99) |
-| `NPV` (sobre 7) | valor presente líquido à taxa `i` |
-| `IRR` (sobre 8) | taxa interna de retorno, em % por período |
+| `g PV` (CF0) | fluxo inicial (tempo 0) |
+| `g PMT` (CFj) | adiciona o próximo fluxo (até 80) |
+| `g FV` (Nj) | repete o último fluxo `Nj` vezes (1 a 99) |
+| `f PV` (NPV, dourado) | valor presente líquido à taxa `i` |
+| `f FV` (IRR, dourado) | taxa interna de retorno, em % por período |
 
 Convenção temporal: CF0 não é descontado; o primeiro `CFj` ocorre no final do período 1.
 
@@ -114,7 +116,7 @@ IRR          →  8,90   (%)
 
 ## Amortização
 
-Com PV, PMT e `i` preenchidos, digite o número de períodos e pressione `AMORT` (2ª, tecla 9). O resultado é:
+Com PV, PMT e `i` preenchidos, digite o número de períodos e pressione `f n` (AMORT). O resultado é:
 
 - **X**: juros dos períodos amortizados (com o sinal do pagamento);
 - **Y**: principal amortizado;
@@ -124,19 +126,29 @@ Chamadas seguintes continuam a partir do próximo período. A **tabela completa*
 
 ## Memória
 
-`GRAVAR` (2ª, tecla 1) seguida de um dígito 0–9 guarda X; `CHAMAR` (2ª, tecla 2) e um dígito trazem o valor de volta. O quadro de registradores (⋯ → *Registradores e fluxo de caixa*) lista tudo.
+`GRAVAR` seguida de um dígito 0–9 guarda X; `CHAMAR` e um dígito trazem o valor de volta. O quadro de registradores (⋯ → *Registradores e fluxo de caixa*) lista tudo.
 
-## Segunda função (2ª)
+## Teclas f e g (como em uma calculadora financeira)
 
-A tecla `2ª` ativa a função escrita **acima** de cada tecla. Quando ela está ativa, aparece a etiqueta **2ª** no visor, a tecla fica destacada, os rótulos trocam de lugar (o da função ativa fica grande) e a mensagem de ajuda explica. Ela vale para **uma** tecla e depois se desativa.
+O teclado segue a ideia das calculadoras financeiras clássicas: cada tecla pode ter até três funções.
+
+| Onde está escrito | Como usar |
+|---|---|
+| Na tecla, em branco | pressione a tecla |
+| **Acima** da tecla, em **dourado** | pressione `f` (tecla dourada) e depois a tecla |
+| Na tecla, em **azul** | pressione `g` (tecla azul) e depois a tecla |
+
+Com `f` ou `g` ativa aparece a etiqueta **f** ou **g** no visor, a tecla fica com contorno, as teclas que não têm função naquela camada ficam apagadas e a mensagem de ajuda explica. A camada vale para **uma** tecla; tocar de novo em `f` ou `g` a desliga, e tocar em uma tecla sem função naquela camada só a cancela.
+
+Em paisagem o teclado tem 4 linhas de 10 teclas, com o `ENTER` alto; em retrato, 8 linhas de 5.
 
 ## Limpar
 
 | Ação | Efeito |
 |---|---|
 | `CLx` | zera X |
-| `CLR` (2ª) | zera a pilha |
-| `LIMP. REG` (2ª sobre `CLx`) ou ⋯ → *Limpar registradores* | zera n, i, PV, PMT, FV, a lista de fluxos e o progresso da amortização (**pede confirmação**; mantém pilha e memória) |
+| `f CLR` (sobre `R↓`) | zera a pilha |
+| `f LIMP. REG` (sobre `CLx`) ou ⋯ → *Limpar registradores* | zera n, i, PV, PMT, FV, a lista de fluxos e o progresso da amortização (**pede confirmação**; mantém pilha e memória) |
 | ⋯ → *Limpar tudo* | zera também a pilha e a memória (**pede confirmação**) |
 
 Os registradores **são mantidos ao fechar o aplicativo**; só deixam de existir quando você os limpa.

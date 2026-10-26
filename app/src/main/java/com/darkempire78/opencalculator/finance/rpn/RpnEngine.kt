@@ -18,7 +18,7 @@ import java.math.BigDecimal
 /** Keys of the RPN financial calculator. UI buttons map one-to-one to these. */
 enum class RpnKey {
     D0, D1, D2, D3, D4, D5, D6, D7, D8, D9, DOT, CHS, BACKSPACE,
-    ENTER, ADD, SUB, MUL, DIV, POW, RECIPROCAL, SQRT, PERCENT, DELTA_PERCENT,
+    ENTER, ADD, SUB, MUL, DIV, POW, RECIPROCAL, SQRT, PERCENT, PERCENT_TOTAL, DELTA_PERCENT,
     SWAP, ROLL_DOWN, ROLL_UP, LAST_X, CLX, CLEAR_STACK,
     N, I, PV, PMT, FV, N_TIMES_PER_YEAR, I_DIV_PER_YEAR, BEGIN, END, CLEAR_FINANCIAL, CLEAR_ALL,
     RCL_N, RCL_I, RCL_PV, RCL_PMT, RCL_FV,
@@ -182,6 +182,10 @@ class RpnEngine {
             }
             RpnKey.SQRT -> unary("sqrt") { v -> BigMath.sqrt(v) }
             RpnKey.PERCENT -> unary("%") { v -> y.multiply(v, WORK_MC).divide(HUNDRED, WORK_MC) }
+            RpnKey.PERCENT_TOTAL -> unary("%T") { v ->
+                if (y.signum() == 0) com.darkempire78.opencalculator.finance.fail(FinancialError.DIVISION_BY_ZERO, "total is zero")
+                v.multiply(HUNDRED, WORK_MC).divide(y, WORK_MC)
+            }
             RpnKey.DELTA_PERCENT -> unary("delta%") { v ->
                 if (y.signum() == 0) com.darkempire78.opencalculator.finance.fail(FinancialError.DIVISION_BY_ZERO, "base is zero")
                 v.subtract(y, WORK_MC).divide(y, WORK_MC).multiply(HUNDRED, WORK_MC)

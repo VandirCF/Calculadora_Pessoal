@@ -28,7 +28,7 @@ O aplicativo tem **dois temas**, ambos escuros: **Flamengo** (vermelho e preto) 
 | `display_background` | área do visor |
 | `primary` | cor principal do tema (logo) |
 | `secondary` | segunda cor do tema |
-| `accent` | destaques: textos de categoria, "2ª", barra do seletor, chaves ligadas |
+| `accent` | destaques: textos de categoria, "f" e "g", barra do seletor, chaves ligadas |
 | `text_primary` | textos e números |
 | `text_secondary` | textos de apoio (resultado em prévia, ajuda) |
 | `key_number` | teclas de número |
@@ -51,7 +51,7 @@ As cores foram tiradas dos logotipos que você forneceu.
 |---|---|---|
 | background | `#0B0B0B` | `#0A0A0A` |
 | display | `#141414` | `#111111` |
-| primary | `#E31B0C` | `#860038` |
+| primary | `#F5281A` | `#860038` |
 | accent | `#FF5447` | `#FDBB30` |
 | key_number | `#262626` | `#242124` |
 | key_operator | `#5A1410` | `#6E002E` |
@@ -91,3 +91,12 @@ Configurações → **Tema** abre um diálogo com os dois temas. Cada linha most
 ## Verificação visual
 
 Capturas dos dois temas (básica, científica, financeira, retrato e paisagem, histórico, configurações, diálogos e Sobre) estão em `docs/screenshots/`.
+
+
+## Troca de tema pelos escudos
+
+No topo da tela, ao lado do menu, ficam os **dois escudos** (Flamengo e Cleveland Cavaliers) lado a lado, separados por um espaço da largura de um escudo. O escudo do tema em uso fica nítido, com um contorno; tocar no outro troca o tema na hora. A escolha é lembrada ao reabrir.
+
+## Vermelho do Flamengo × vinho do Cavaliers
+
+O vermelho do Flamengo foi trocado por um vermelho vivo (teclas de operação `#D91A0B`, destaque `#F5281A`) e a tecla `ENTER`/`=` ficou clara, para que não seja confundido com o vinho (`#6E002E`/`#860038`) do Cavaliers, cuja tecla `ENTER` é dourada. `ThemeResourcesTest` garante que as cores principais dos dois temas fiquem distantes entre si e que o texto continue legível (contraste ≥ 4,5).

@@ -28,7 +28,7 @@ Regra: **todo texto visível ao usuário está em português do Brasil**; o cód
 ### 1. Visíveis ao usuário: todos em português
 
 - **339 strings** em `strings.xml` (46 marcadas como não traduzíveis: dígitos, operadores, símbolos matemáticos, o nome do aplicativo). As 7 que o OpenCalc não tinha traduzido para pt-BR foram traduzidas; três textos em inglês fixos nas Configurações (`Numbering System`, resumos `APP THEME` e `APP LANGUAGE`) foram corrigidos.
-- **Rótulos das teclas financeiras:** `2ª`, `INÍCIO`, `FIM`, `GRAVAR`, `CHAMAR`, `ÚLT X`, `LIMPAR`, `LIMP. REG` (antes em inglês: 2nd, BEG, END, STO, RCL, LSTx, CLR).
+- **Rótulos das teclas financeiras:** `f`, `g`, `INÍCIO`, `FIM`, `GRAVAR`, `CHAMAR`, `ÚLT X`, `LIMPAR`, `LIMP. REG` (antes em inglês: BEG, END, STO, RCL, LSTx, CLR).
 - **Textos derivados de erros:** o motor financeiro devolve uma mensagem de desenvolvedor em inglês (`detail`); a interface **nunca a mostra**. Para "mais de uma solução" ela lista os números encontrados (`errorCandidates`), formatados em pt-BR. Corrigido: antes, o texto em inglês vazava na mensagem.
 - **Rótulo da tela de configurações** (aparece nos apps recentes): era `SettingsActivity`, agora "Configurações".
 - **Seletor de numeração:** a opção (sistema indiano) foi removida da interface por não fazer sentido aqui; as descrições internas foram traduzidas.

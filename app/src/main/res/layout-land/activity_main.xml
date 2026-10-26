@@ -405,6 +405,7 @@
                         android:layout_weight="1"
                         android:backgroundTint="?attr/button_equals_color"
                         android:onClick="equalsButton"
+                        android:textColor="?attr/calc_on_key_enter"
                         app:srcCompat="@drawable/equals"
                         android:text="@string/equals"/>
 
@@ -602,15 +603,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
-    <ImageView
-        android:id="@+id/themeLogo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="4dp"
-        android:alpha="0.95"
-        android:importantForAccessibility="no"
-        android:scaleType="fitCenter"
-        android:src="?attr/calc_logo"
+    <include
+        android:id="@+id/themeSwitcherInclude"
+        layout="@layout/view_theme_switcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/menuButton"
         app:layout_constraintEnd_toStartOf="@+id/menuButton"
         app:layout_constraintTop_toTopOf="@+id/menuButton" />

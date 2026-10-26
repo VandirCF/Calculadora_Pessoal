@@ -9,19 +9,22 @@
     <color name="flamengo_surface">#151515</color>
     <color name="flamengo_surface_variant">#202020</color>
     <color name="flamengo_display">#141414</color>
-    <color name="flamengo_primary">#E31B0C</color>
-    <color name="flamengo_secondary">#B3140A</color>
+    <color name="flamengo_primary">#F5281A</color>
+    <color name="flamengo_secondary">#FF3B2A</color>
     <color name="flamengo_accent">#FF5447</color>
     <color name="flamengo_text_primary">#F5F5F5</color>
     <color name="flamengo_text_secondary">#B8B8B8</color>
     <color name="flamengo_key_number">#262626</color>
-    <color name="flamengo_key_operator">#5A1410</color>
+    <color name="flamengo_key_operator">#D91A0B</color>
     <color name="flamengo_key_function">#1A1A1A</color>
     <color name="flamengo_key_danger">#5C5C5C</color>
-    <color name="flamengo_key_financial">#3A1512</color>
-    <color name="flamengo_key_enter">#C8180A</color>
+    <color name="flamengo_key_financial">#232323</color>
+    <color name="flamengo_key_enter">#F5F5F5</color>
     <color name="flamengo_ripple">#66FFFFFF</color>
     <color name="flamengo_outline">#5F5F5F</color>
+    <color name="flamengo_shift_g">#4DA3FF</color>
+    <color name="flamengo_shift_f">#F2B705</color>
+    <color name="flamengo_on_key_enter">#0B0B0B</color>
 
     <!-- cavaliers -->
     <color name="cavaliers_background">#0A0A0A</color>
@@ -38,8 +41,11 @@
     <color name="cavaliers_key_function">#171717</color>
     <color name="cavaliers_key_danger">#5C5C5C</color>
     <color name="cavaliers_key_financial">#3A0F20</color>
-    <color name="cavaliers_key_enter">#A5003F</color>
+    <color name="cavaliers_key_enter">#FDBB30</color>
     <color name="cavaliers_ripple">#66FFFFFF</color>
     <color name="cavaliers_outline">#6A6064</color>
+    <color name="cavaliers_shift_g">#4DA3FF</color>
+    <color name="cavaliers_shift_f">#F2B705</color>
+    <color name="cavaliers_on_key_enter">#0A0A0A</color>
 
 </resources>

@@ -34,6 +34,15 @@ class RpnEngineTest {
 
     @Test fun percentThenAddGivesIncrease() = assertX("110", run("100 ENTER 10 % +"))
     @Test fun percentThenSubtractGivesDiscount() = assertX("90", run("100 ENTER 10 % -"))
+    @Test fun percentOfTotal() = assertX("25", run("200 ENTER 50 PERCENT_TOTAL"))
+    @Test fun percentOfTotalKeepsY() {
+        val e = run("200 ENTER 50 PERCENT_TOTAL")
+        assertEquals("200", e.y.stripTrailingZeros().toPlainString())
+    }
+    @Test fun percentOfZeroTotalIsAnError() {
+        val e = run("0 ENTER 5 PERCENT_TOTAL")
+        assertEquals(FinancialError.DIVISION_BY_ZERO, e.error)
+    }
     @Test fun deltaPercent() = assertX("25", run("80 ENTER 100 DELTA_PERCENT"))
     @Test fun deltaPercentWithZeroBaseIsError() {
         val e = run("0 ENTER 5 DELTA_PERCENT")

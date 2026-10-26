@@ -185,7 +185,6 @@
     <string name="fin_title">Calculadora financeira RPN</string>
     <string name="fin_badge_rpn">RPN</string>
     <string name="fin_badge_begin">INÍCIO</string>
-    <string name="fin_badge_second">2ª</string>
     <string name="fin_menu_button">Menu da calculadora financeira</string>
     <string name="fin_menu_registers">Registradores e fluxo de caixa</string>
     <string name="fin_menu_rates">Conversão de taxas</string>
@@ -211,7 +210,6 @@
     <string name="fin_key_clx">Limpar X</string>
     <string name="fin_key_enter">Enter</string>
     <string name="fin_key_backspace">Apagar último dígito</string>
-    <string name="fin_key_second">Segunda função</string>
     <string name="fin_key_percent">Porcentagem</string>
     <string name="fin_key_add">Somar</string>
     <string name="fin_key_sub">Subtrair</string>
@@ -239,7 +237,6 @@
     <string name="fin_key2_delta">Variação percentual de Y para X</string>
     <string name="fin_key2_clrfin">Limpar registradores financeiros</string>
     <string name="fin_help_default">Digite um número, pressione ENTER, digite outro e uma operação. Exemplo: 2 ENTER 3 +</string>
-    <string name="fin_help_second">2ª ativa: a próxima tecla executa a função escrita acima dela</string>
     <string name="fin_help_sto">GRAVAR: pressione um dígito 0-9 para guardar X</string>
     <string name="fin_help_rcl">CHAMAR: pressione um dígito 0-9 para recuperar</string>
     <string name="fin_help_tvm">Digite um valor e pressione n, i, PV, PMT ou FV para guardá-lo. Pressione a tecla de novo sem digitar nada para calculá-la. Entrada de caixa é positiva e saída é negativa (use CHS).</string>
@@ -308,7 +305,7 @@
     <string name="fin_ppy_invalid">Informe um número inteiro de 1 a 365</string>
     <string name="fin_ok">OK</string>
     <string name="fin_help_title">Como usar</string>
-    <string name="fin_help_body">RPN: digite primeiro os números e depois a operação. ENTER separa dois números.\n\n2 ENTER 3 +  resulta em 5\n\nParcela de um financiamento: 1000 CHS PV, 12 n, 1 i, 0 FV e depois PMT.\nCHS troca o sinal. Entrada de caixa é positiva e saída é negativa, então PV (valor presente) e PMT (pagamento) precisam ter sinais opostos.\n\nPressionar n (períodos), i (taxa), PV (valor presente), PMT (pagamento) ou FV (valor futuro) depois de digitar um número o guarda. Pressionar de novo sem digitar nada calcula o valor.\n\nA tecla 2ª dá a função escrita acima de cada tecla. GRAVAR e CHAMAR usam a memória 0-9. INÍCIO e FIM escolhem quando o pagamento ocorre.\n\nFluxo de caixa: CF0 para o fluxo inicial, CFj para os próximos e Nj para repetir o último. Informe i e use NPV (valor presente líquido), ou pressione IRR (taxa interna de retorno).\n\nToque e segure uma tecla para ver o nome dela em português.</string>
+    <string name="fin_help_body">RPN: digite primeiro os números e depois a operação. ENTER separa dois números.\n\n2 ENTER 3 +  resulta em 5\n\nParcela de um financiamento: 1000 CHS PV, 12 n, 1 i, 0 FV e depois PMT.\nCHS troca o sinal. Entrada de caixa é positiva e saída é negativa, então PV (valor presente) e PMT (pagamento) precisam ter sinais opostos.\n\nPressionar n (períodos), i (taxa), PV (valor presente), PMT (pagamento) ou FV (valor futuro) depois de digitar um número o guarda. Pressionar de novo sem digitar nada calcula o valor.\n\nA tecla f executa a função dourada escrita acima da tecla seguinte (por exemplo, f PV = NPV, valor presente líquido; f FV = IRR, taxa interna de retorno; f n = AMORT, amortização). A tecla g executa a função azul escrita na própria tecla (g PV = CF0, g PMT = CFj, g FV = Nj, g n = 12×, g i = 12÷, g 7 = INÍCIO, g 8 = FIM).\n\nGRAVAR e CHAMAR usam a memória 0-9. f CLx limpa os registradores financeiros.\n\nToque e segure uma tecla para ver o nome dela em português.</string>
     <string name="fin_hist_amort_result">Juros %1$s | Principal %2$s | Saldo %3$s</string>
 
     <!-- Unified history -->
@@ -383,7 +380,6 @@
     <string name="theme_selected">Selecionado</string>
 
     <!-- Rótulos das teclas financeiras em português (as siglas PV, FV, PMT, NPV, IRR e CHS seguem a notação das calculadoras financeiras) -->
-    <string name="fin_label_second">2ª</string>
     <string name="fin_label_begin">INÍCIO</string>
     <string name="fin_label_end">FIM</string>
     <string name="fin_label_store">GRAVAR</string>
@@ -391,4 +387,15 @@
     <string name="fin_label_last_x">ÚLT X</string>
     <string name="fin_label_clear_stack">LIMPAR</string>
     <string name="fin_label_clear_registers">LIMP. REG</string>
+
+    <!-- Painel financeiro estilo calculadora financeira (teclas f e g) -->
+    <string name="theme_switch_to">Trocar para o tema %1$s</string>
+    <string name="theme_switch_current">Tema %1$s, em uso</string>
+    <string name="fin_badge_f">f</string>
+    <string name="fin_badge_g">g</string>
+    <string name="fin_key_f">Tecla f: a próxima tecla executa a função dourada escrita acima dela</string>
+    <string name="fin_key_g">Tecla g: a próxima tecla executa a função azul escrita na tecla</string>
+    <string name="fin_help_f">f ativa: a próxima tecla executa a função dourada escrita acima dela</string>
+    <string name="fin_help_g">g ativa: a próxima tecla executa a função azul escrita na tecla</string>
+    <string name="fin_key_percent_total">Porcentagem do total: X é quantos por cento de Y</string>
 </resources>

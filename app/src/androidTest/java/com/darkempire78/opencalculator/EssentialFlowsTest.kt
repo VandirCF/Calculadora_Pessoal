@@ -145,7 +145,7 @@ class EssentialFlowsTest {
         onView(withId(R.id.modeFinancialButton)).perform(click())
         typeNumber("500"); key("PV")
         register("PV").check(matches(withText(containsString("500"))))
-        keys("2nd", "CLx")
+        keys("f", "CLx")
         onView(withText(R.string.fin_confirm_clear_title)).check(matches(isDisplayed()))
         onView(withId(android.R.id.button1)).perform(click())
         register("PV").check(matches(withText("PV")))
@@ -182,6 +182,14 @@ class EssentialFlowsTest {
     }
 
     @Test
+    fun tappingAShieldSwitchesTheTheme() {
+        onView(withId(R.id.themeCavaliers)).perform(click())
+        assertEquals(R.style.Theme_Calc_Cavaliers, currentTheme)
+        onView(withId(R.id.themeFlamengo)).perform(click())
+        assertEquals(R.style.Theme_Calc_Flamengo, currentTheme)
+    }
+
+    @Test
     fun theSelectedThemeIsRestoredWhenTheAppStartsAgain() {
         applyTheme(ThemeOption.CAVALIERS)
         scenario.close()
@@ -199,7 +207,8 @@ class EssentialFlowsTest {
             onView(withId(R.id.scientistModeRow2)).check(matches(isDisplayed()))
             onView(withId(R.id.modeFinancialButton)).perform(click())
             onView(withTagValue(equalTo("key:ENTER"))).check(matches(isDisplayed()))
-            onView(withId(R.id.themeLogo)).check(matches(isDisplayed()))
+            onView(withId(R.id.themeFlamengo)).check(matches(isDisplayed()))
+            onView(withId(R.id.themeCavaliers)).check(matches(isDisplayed()))
         }
     }
 

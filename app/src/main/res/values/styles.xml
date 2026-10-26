@@ -33,6 +33,9 @@
         <item name="calc_key_financial">@color/flamengo_key_financial</item>
         <item name="calc_key_enter">@color/flamengo_key_enter</item>
         <item name="calc_outline">@color/flamengo_outline</item>
+        <item name="calc_on_key_enter">@color/flamengo_on_key_enter</item>
+        <item name="calc_shift_f">@color/flamengo_shift_f</item>
+        <item name="calc_shift_g">@color/flamengo_shift_g</item>
         <item name="calc_logo">@drawable/logo_flamengo</item>
         <item name="calc_error">@color/calculation_error_color</item>
 
@@ -99,6 +102,9 @@
         <item name="calc_key_financial">@color/cavaliers_key_financial</item>
         <item name="calc_key_enter">@color/cavaliers_key_enter</item>
         <item name="calc_outline">@color/cavaliers_outline</item>
+        <item name="calc_on_key_enter">@color/cavaliers_on_key_enter</item>
+        <item name="calc_shift_f">@color/cavaliers_shift_f</item>
+        <item name="calc_shift_g">@color/cavaliers_shift_g</item>
         <item name="calc_logo">@drawable/logo_cavaliers</item>
         <item name="calc_error">@color/calculation_error_color</item>
 

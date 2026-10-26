@@ -29,7 +29,7 @@ class ThemeResourcesTest {
     private val tokens = listOf(
         "background", "surface", "surface_variant", "display", "primary", "secondary", "accent",
         "text_primary", "text_secondary", "key_number", "key_operator", "key_function", "key_danger",
-        "key_financial", "key_enter", "ripple", "outline"
+        "key_financial", "key_enter", "on_key_enter", "shift_f", "shift_g", "ripple", "outline"
     )
 
     // ---- completeness -----------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ class ThemeResourcesTest {
         "calc_background", "calc_surface", "calc_surface_variant", "calc_display_background", "calc_primary",
         "calc_secondary", "calc_accent", "calc_text_primary", "calc_text_secondary", "calc_key_number",
         "calc_key_operator", "calc_key_function", "calc_key_danger", "calc_key_financial", "calc_key_enter",
-        "calc_outline", "calc_logo", "calc_error",
+        "calc_outline", "calc_logo", "calc_error", "calc_on_key_enter", "calc_shift_f", "calc_shift_g",
         // inherited attributes that the original layouts still use
         "foreground_color", "background_color", "popup_background_color", "history_background_color", "text_color",
         "text_second_color", "text_third_color", "text_category_color", "button_color", "button_symbol_color",
@@ -121,10 +121,33 @@ class ThemeResourcesTest {
         for (theme in themes) {
             val text = token(theme, "text_primary")
             for (surface in listOf("background", "surface", "surface_variant", "display", "key_number", "key_operator",
-                "key_function", "key_danger", "key_financial", "key_enter")) {
+                "key_function", "key_danger", "key_financial")) {
                 val ratio = contrast(text, token(theme, surface))
                 assertTrue("$theme: text on $surface has contrast $ratio (< 4.5)", ratio >= 4.5)
             }
+        }
+    }
+
+    @Test
+    fun enterAndShiftKeysHaveReadableText() {
+        for (theme in themes) {
+            val ratio = contrast(token(theme, "on_key_enter"), token(theme, "key_enter"))
+            assertTrue("$theme: text on enter key has contrast $ratio (< 4.5)", ratio >= 4.5)
+            for (shift in listOf("shift_f", "shift_g")) {
+                assertTrue("$theme: $shift key text", contrast(token(theme, "background"), token(theme, shift)) >= 4.5)
+                // the printed f and g functions sit on the dark key faces and above them
+                for (surface in listOf("background", "key_financial", "key_function", "key_number"))
+                    assertTrue("$theme: $shift label on $surface", contrast(token(theme, shift), token(theme, surface)) >= 4.5)
+            }
+        }
+    }
+
+    @Test
+    fun theTwoThemesDoNotShareSimilarReds() {
+        // Flamengo's vivid red must not be mistaken for the Cavaliers' wine
+        for (name in listOf("primary", "key_operator", "key_enter")) {
+            val d = distance(token("flamengo", name), token("cavaliers", name))
+            assertTrue("$name looks too similar in both themes (distance $d)", d >= 100)
         }
     }
 

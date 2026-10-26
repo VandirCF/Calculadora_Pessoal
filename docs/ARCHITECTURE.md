@@ -44,7 +44,7 @@ Compartilhados: MyPreferences (SharedPreferences) · Themes (Flamengo | Clevelan
 
 **`BigDecimal` com política explícita** (34 dígitos, `HALF_EVEN`). Detalhes em [FINANCIAL_FUNCTIONS.md](FINANCIAL_FUNCTIONS.md).
 
-**Persistência.** O modo ativo é restaurado ao abrir. O estado financeiro (registradores, pilha, memória, fluxos) é gravado como JSON com `version` em `SharedPreferences` e **persiste após fechar o aplicativo**: perder uma conta por fechar o app é pior do que ter de limpá-la. Para limpar há ação explícita e com confirmação (2ª + CLx, ou o menu ⋯). JSON ilegível ou de outra versão é ignorado e o motor começa vazio.
+**Persistência.** O modo ativo é restaurado ao abrir. O estado financeiro (registradores, pilha, memória, fluxos) é gravado como JSON com `version` em `SharedPreferences` e **persiste após fechar o aplicativo**: perder uma conta por fechar o app é pior do que ter de limpá-la. Para limpar há ação explícita e com confirmação (f + CLx, ou o menu ⋯). JSON ilegível ou de outra versão é ignorado e o motor começa vazio.
 
 **Histórico unificado.** Uma única lista em JSON; cada item tem `mode`, `type` e `details` opcionais. Itens antigos (sem esses campos) são lidos como Básico. Resultados já gravados são texto e **não mudam** quando o usuário altera formatos nas configurações. O histórico financeiro tem lista própria porque o painel deslizante fica por trás do painel financeiro.
 

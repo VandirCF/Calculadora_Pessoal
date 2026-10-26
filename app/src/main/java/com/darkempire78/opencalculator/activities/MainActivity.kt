@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.darkempire78.opencalculator.MyPreferences
 import com.darkempire78.opencalculator.R
 import com.darkempire78.opencalculator.TextSizeAdjuster
+import com.darkempire78.opencalculator.ThemeOption
 import com.darkempire78.opencalculator.Themes
 import com.darkempire78.opencalculator.calculator.Calculator
 import com.darkempire78.opencalculator.calculator.division_by_0
@@ -142,6 +143,7 @@ class MainActivity : BaseActivity() {
         calculatorMode = modeViewModel.mode ?: MyPreferences(this).calculatorMode
         modeViewModel.mode = calculatorMode
         setupModeSwitcher()
+        setupThemeSwitcher()
         setupFinancialPanel()
 
         // Disable the keyboard on display EditText
@@ -1726,6 +1728,36 @@ class MainActivity : BaseActivity() {
         val value = android.util.TypedValue()
         theme.resolveAttribute(attr, value, true)
         return value.data
+    }
+
+    /** The two shields next to the menu: tapping one switches the theme right away (the last one is restored on start). */
+    private fun setupThemeSwitcher() {
+        val current = Themes(this).getSelected()
+        val shields = mapOf(
+            ThemeOption.FLAMENGO to binding.themeSwitcherInclude.themeFlamengo,
+            ThemeOption.CAVALIERS to binding.themeSwitcherInclude.themeCavaliers
+        )
+        for ((option, shield) in shields) {
+            val name = getString(option.nameRes)
+            val isCurrent = option == current
+            shield.alpha = if (isCurrent) 1f else 0.4f
+            shield.contentDescription = if (isCurrent) getString(R.string.theme_switch_current, name) else getString(R.string.theme_switch_to, name)
+            androidx.appcompat.widget.TooltipCompat.setTooltipText(shield, name)
+            if (isCurrent) {
+                // a thin ring marks the theme in use
+                shield.background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                    cornerRadius = resources.displayMetrics.density * 10
+                    setStroke((resources.displayMetrics.density * 1.5f).toInt(), themeColor(R.attr.calc_accent))
+                }
+            }
+            shield.setOnClickListener {
+                if (!isCurrent) {
+                    MyPreferences(this).appThemeId = option.id
+                    recreate()
+                }
+            }
+        }
     }
 
     private fun setupModeSwitcher() {

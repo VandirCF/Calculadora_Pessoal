@@ -36,6 +36,9 @@
         <attr name="calc_key_financial" format="color"/>
         <attr name="calc_key_enter" format="color"/>
         <attr name="calc_outline" format="color"/>
+        <attr name="calc_on_key_enter" format="color"/>
+        <attr name="calc_shift_f" format="color"/>
+        <attr name="calc_shift_g" format="color"/>
         <attr name="calc_error" format="color"/>
         <attr name="calc_logo" format="reference"/>
     </declare-styleable>

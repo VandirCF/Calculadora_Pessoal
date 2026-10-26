@@ -7,6 +7,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/). 
 ### Mudança de escopo
 O aplicativo é **pessoal e não será publicado em loja**. Saíram do projeto: `store/` (textos, capturas e declarações de loja), a lista de conferência de publicação, a configuração de AAB, o ícone de loja do OpenCalc (`ic_launcher-playstore.png`), os atalhos de doação, avaliação, tradução, Discord e política em página web, e a classe `DonationDialog`. Entrou `docs/GERAR_APK.md` e os scripts `tools/gerar-apk.ps1` e `tools/criar-chave-release.ps1`.
 
+### Visual da calculadora financeira (estilo HP-12C) e temas
+- **Teclado financeiro no estilo das calculadoras financeiras clássicas:** funções em **dourado acima** das teclas (`f`) e em **azul** nas teclas (`g`), teclas `f` e `g` coloridas, `ENTER` alto e claro. Paisagem: 4 linhas de 10 teclas; retrato: 8 linhas de 5. Teclas diretas `GRAVAR`, `CHAMAR`, `ÚLT X`; a antiga tecla `2ª` foi substituída por `f` e `g` (`docs/RPN_GUIDE.md`).
+- **Nova tecla `%T`** (porcentagem do total: X é quantos por cento de Y), com testes.
+- **Escudos lado a lado no topo** para trocar o tema com um toque (no lugar do logotipo único).
+- **Flamengo com vermelho vivo**, distinto do vinho do Cavaliers; novos tokens `on_key_enter`, `shift_f`, `shift_g` e testes de contraste e de distância entre as paletas.
+
 ### Adicionado
 - **Dois temas escuros, Flamengo e Cleveland Cavaliers**, por atributos de tema (`calc_*`) e uma paleta por tema em `colors.xml`; seletor com logotipo e prévia, troca imediata e tema lembrado ao reabrir. Logotipos fornecidos pelo dono do projeto em `res/drawable-nodpi`; `tools/prepare_logos.py` os torna transparentes (`docs/TEMAS.md`).
 - **Formato brasileiro por padrão** (`1.234.567,89`), com testes de que os cálculos nunca usam texto localizado (`docs/FORMATACAO_NUMERICA.md`).
