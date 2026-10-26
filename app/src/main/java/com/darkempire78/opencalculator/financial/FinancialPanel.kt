@@ -535,7 +535,7 @@ class FinancialPanel(
         var isError = false
         when {
             error != null -> {
-                text = errorText(error, e.errorDetail)
+                text = errorText(error, e.errorDetail, e.errorCandidates)
                 isError = true
             }
             e.warnings.contains(FinancialWarning.MULTIPLE_SIGN_CHANGES) -> text = context.getString(R.string.fin_warn_multiple_sign_changes)
@@ -550,7 +550,11 @@ class FinancialPanel(
         messageView.setTextColor(if (isError) color(R.attr.calc_error) else color(R.attr.calc_text_secondary))
     }
 
-    private fun errorText(error: FinancialError, detail: String): String = when (error) {
+    /**
+     * Message for the user. The detail text produced by the domain is a developer message (English) and is
+     * never shown, except the name of a missing register; several solutions are listed as formatted numbers.
+     */
+    private fun errorText(error: FinancialError, detail: String, candidates: List<BigDecimal> = emptyList()): String = when (error) {
         FinancialError.INVALID_INPUT -> context.getString(R.string.fin_err_invalid_input)
         FinancialError.DIVISION_BY_ZERO -> context.getString(R.string.fin_err_division_by_zero)
         FinancialError.OUT_OF_RANGE -> context.getString(R.string.fin_err_out_of_range)
@@ -558,7 +562,7 @@ class FinancialPanel(
         FinancialError.INCONSISTENT_SIGNS -> context.getString(R.string.fin_err_inconsistent_signs)
         FinancialError.NO_SOLUTION -> context.getString(R.string.fin_err_no_solution)
         FinancialError.NO_CONVERGENCE -> context.getString(R.string.fin_err_no_convergence)
-        FinancialError.MULTIPLE_SOLUTIONS -> context.getString(R.string.fin_err_multiple_solutions, detail)
+        FinancialError.MULTIPLE_SOLUTIONS -> context.getString(R.string.fin_err_multiple_solutions, candidates.joinToString("; ") { natural(it, settings()) + " %" })
         FinancialError.EMPTY_CASH_FLOWS -> context.getString(R.string.fin_err_empty_cash_flows)
         FinancialError.NO_SIGN_CHANGE -> context.getString(R.string.fin_err_no_sign_change)
         FinancialError.MISSING_REGISTER -> context.getString(R.string.fin_err_missing_register, detail)
@@ -845,7 +849,7 @@ class FinancialPanel(
                 }
                 is FinancialResult.Failure -> {
                     lastResult = null
-                    result.text = errorText(outcome.error, outcome.detail)
+                    result.text = errorText(outcome.error, outcome.detail, outcome.candidates)
                 }
             }
         }
@@ -904,7 +908,7 @@ class FinancialPanel(
                 return@setOnClickListener
             }
             when (val outcome = Amortization.schedule(pv.abs(), pmt.abs(), rate, from, to, e.tvm.beginMode)) {
-                is FinancialResult.Failure -> table.text = errorText(outcome.error, outcome.detail)
+                is FinancialResult.Failure -> table.text = errorText(outcome.error, outcome.detail, outcome.candidates)
                 is FinancialResult.Success -> {
                     val summary = outcome.value
                     fun money(v: BigDecimal) = RpnFormatter.format(v, s.decimals, s.decimalSeparator, s.groupingSeparator, s.grouping)

@@ -71,6 +71,9 @@ class RpnEngine {
 
     var error: FinancialError? = null; private set
     var errorDetail: String = ""; private set
+
+    /** Values found when the error is MULTIPLE_SOLUTIONS (e.g. several IRRs); empty otherwise. */
+    var errorCandidates: List<BigDecimal> = emptyList(); private set
     var warnings: List<com.darkempire78.opencalculator.finance.FinancialWarning> = emptyList(); private set
 
     /** Last successful computation, cleared at the start of every key press. */
@@ -95,6 +98,7 @@ class RpnEngine {
     fun press(key: RpnKey) {
         error = null
         errorDetail = ""
+        errorCandidates = emptyList()
         warnings = emptyList()
         lastEvent = null
         try {
@@ -401,7 +405,10 @@ class RpnEngine {
                 liftEnabled = true
                 warnings = result.warnings
             }
-            is FinancialResult.Failure -> setError(result.error, result.detail)
+            is FinancialResult.Failure -> {
+                setError(result.error, result.detail)
+                errorCandidates = result.candidates
+            }
         }
     }
 

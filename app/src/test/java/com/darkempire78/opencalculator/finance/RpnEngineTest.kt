@@ -258,4 +258,19 @@ class RpnEngineTest {
         val e = run("12.50")
         assertEquals(0, BigDecimal("12.5").compareTo(e.displayValue))
     }
+
+    // ---- the user never sees developer (English) messages --------------------------------------------------
+    @Test fun severalIrrsAreReportedAsNumbersNotText() {
+        val e = run("100 CHS CF0 230 CFJ 132 CHS CFJ IRR")
+        assertEquals(FinancialError.MULTIPLE_SOLUTIONS, e.error)
+        assertEquals(2, e.errorCandidates.size)
+        assertClose("10", e.errorCandidates[0], "1E-9")
+        assertClose("20", e.errorCandidates[1], "1E-9")
+    }
+
+    @Test fun candidatesAreClearedByTheNextKey() {
+        val e = run("100 CHS CF0 230 CFJ 132 CHS CFJ IRR CLX")
+        assertEquals(null, e.error)
+        assertTrue(e.errorCandidates.isEmpty())
+    }
 }

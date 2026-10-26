@@ -3,7 +3,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.compose.compiler)
 }
 
 // Release signing data lives OUTSIDE the repository. Create keystore.properties next to this
@@ -91,7 +90,6 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(libs.androidx.runtime)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.preference.ktx)

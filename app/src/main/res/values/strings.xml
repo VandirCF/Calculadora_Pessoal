@@ -142,7 +142,7 @@
     <!-- Others -->
     <string name="value_copied">Copiado</string>
     <string name="infinity">Infinidade</string>
-    <string name="title_activity_settings" translatable="false">SettingsActivity</string>
+    <string name="title_activity_settings">Configurações</string>
     <string name="require_real_number">Número real necessário</string>
     <string name="settings_auto_save_calculation_without_equal_button">Salvar cálculos automaticamente</string>
     <string name="settings_auto_save_calculation_without_equal_button_desc">Salvar cálculos automaticamente no histórico sem precisar pressionar o botão de igual</string>
