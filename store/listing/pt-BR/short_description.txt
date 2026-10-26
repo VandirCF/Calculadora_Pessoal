@@ -1,1 +1,0 @@
-Básica, científica e financeira RPN com TVM, VPL e TIR. 100% offline.

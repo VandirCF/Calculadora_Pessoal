@@ -30,7 +30,7 @@ android {
         // Provisional id (see docs/RELEASE_CHECKLIST.md). It must be decided before the first
         // publication and can never change afterwards.
         applicationId = "io.github.vandircf.calculadorafinanceira"
-        resourceConfigurations += listOf("ar", "az", "be", "bn", "bs", "cs", "de", "el", "es", "fa", "fr", "hi", "hr", "hu", "in", "it", "ja", "kn", "mk", "ml", "nb-rNO", "nl", "or", "pl", "pt-rBR", "ro", "ru", "sat", "sr", "sv", "tr", "uk", "vi", "zh-rCN", "zh-rHK", "zh-rTW")
+        resourceConfigurations += listOf("pt-rBR")
         minSdk = 21
         targetSdk = 35
         versionCode = 1
@@ -63,13 +63,6 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
-        }
-    }
-
-    // The in-app language picker needs every language inside the base module
-    bundle {
-        language {
-            enableSplit = false
         }
     }
 

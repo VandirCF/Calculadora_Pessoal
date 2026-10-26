@@ -1,75 +1,91 @@
 package com.darkempire78.opencalculator
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
- * English (default) and Brazilian Portuguese must be complete for every string the multi-mode
- * work added, with matching format placeholders. Other languages fall back to English.
+ * The app has one language: Brazilian Portuguese. The default resources ARE the Portuguese ones, no
+ * other language folder exists, and the visible texts must not contain English.
  */
 class StringResourcesTest {
 
     private val resDir: File = listOf("src/main/res", "app/src/main/res").map(::File).first { it.exists() }
+    private val mainDir: File = resDir.parentFile
 
-    private fun load(folder: String): Map<String, String> {
-        val file = File(resDir, "$folder/strings.xml")
-        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+    private fun load(): Map<String, String> {
+        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(File(resDir, "values/strings.xml"))
         val nodes = doc.getElementsByTagName("string")
         return (0 until nodes.length).map { nodes.item(it) }
             .filter { it.attributes.getNamedItem("translatable")?.nodeValue != "false" }
             .associate { it.attributes.getNamedItem("name").nodeValue to it.textContent }
     }
 
-    private val english = load("values")
-    private val portugueseBrazil = load("values-pt-rBR")
-    private val portuguese = load("values-pt")
+    private val strings = load()
 
-    private val ownedPrefixes = listOf(
-        "fin_", "hist_", "mode_", "menu_memory", "menu_insert_previous", "memory_", "no_previous_result",
-        "settings_financial", "settings_restore", "settings_formatting_decimal", "settings_formatting_grouping",
-        "settings_formatting_note", "settings_category_financial", "sep_", "payment_mode_", "menu_filter_history",
-        "paste_invalid_number", "toggle_sign_action", "nthRootDesc", "reciprocalDesc", "absoluteValueDesc"
+    @Test
+    fun noOtherLanguageFolderExists() {
+        val languageFolder = Regex("^values-[a-z]{2,3}(-r[A-Z]{2})?$")
+        val extra = resDir.listFiles()!!.map { it.name }.filter { languageFolder.matches(it) }
+        assertTrue("language folders must not exist: $extra", extra.isEmpty())
+        assertFalse("locales_config must not exist", File(resDir, "xml/locales_config.xml").exists())
+    }
+
+    @Test
+    fun theManifestHasNoLanguageListAndNoNetworkAccess() {
+        val manifest = File(mainDir, "AndroidManifest.xml").readText()
+        assertFalse(manifest.contains("localeConfig"))
+        assertFalse("the app must work offline and ask for no network permission", manifest.contains("android.permission.INTERNET"))
+        assertFalse(manifest.contains("ACCESS_NETWORK_STATE"))
+    }
+
+    @Test
+    fun noLayoutOrMenuHasHardCodedVisibleText() {
+        // technical tokens that are the same in every language
+        val allowed = setOf("DEG", "RAD", "45", "00", "000", "")
+        val attribute = Regex("(?:android|app):(?:text|contentDescription|hint|title|summary)=\"([^@\"][^\"]*)\"")
+        val offenders = mutableListOf<String>()
+        resDir.walkTopDown().filter { it.extension == "xml" && (it.parentFile.name.startsWith("layout") || it.parentFile.name == "menu" || it.parentFile.name == "xml") }
+            .forEach { file ->
+                attribute.findAll(file.readText()).map { it.groupValues[1] }.filter { it !in allowed }
+                    .forEach { offenders.add("${file.parentFile.name}/${file.name}: $it") }
+            }
+        assertTrue("texts that should be in strings.xml: $offenders", offenders.isEmpty())
+    }
+
+    private val englishMarkers = Regex(
+        "\\b(the|and|your|you|with|from|this|that|are|not|for|please|settings|cancel|delete|clear history|history|theme|language|" +
+            "calculator|scientific|financial|payment|present value|future value|interest|enter a|invalid|close|history|copy|paste)\\b",
+        RegexOption.IGNORE_CASE
     )
 
-    private fun owned(map: Map<String, String>) = map.keys.filter { key -> ownedPrefixes.any { key.startsWith(it) } }
-
-    private fun placeholders(text: String) = Regex("%(\\d+)\\$[sd]").findAll(text).map { it.groupValues[1] }.sorted().toList()
-
-    @Test
-    fun portugueseBrazilHasEveryOwnedString() {
-        val missing = owned(english).filter { it !in portugueseBrazil }
-        assertTrue("missing in values-pt-rBR: $missing", missing.isEmpty())
-    }
+    // words that are also valid Portuguese or technical names
+    private val allowedMatches = setOf("para", "financial rpn")
 
     @Test
-    fun portugueseHasEveryOwnedString() {
-        val missing = owned(english).filter { it !in portuguese }
-        assertTrue("missing in values-pt: $missing", missing.isEmpty())
+    fun noVisibleStringContainsEnglishWords() {
+        val offenders = strings.filter { (name, text) ->
+            val clean = text.replace("%[0-9]*\\$?[sd]".toRegex(), "")
+            // OpenCalc and technical formula names are proper nouns, not English text
+            val withoutNames = clean.replace("OpenCalc", "").replace("GPL-3.0", "").replace("Gson", "")
+            val hit = englishMarkers.find(withoutNames)?.value?.lowercase()
+            hit != null && hit !in allowedMatches && name !in knownAcceptable
+        }.keys
+        assertTrue("strings that still look English: $offenders", offenders.isEmpty())
     }
 
-    @Test
-    fun ownedStringsAreNotEmpty() {
-        for ((name, text) in english.filterKeys { it in owned(english) }) assertTrue("$name is empty", text.isNotBlank())
-        for ((name, text) in portugueseBrazil.filterKeys { it in owned(english) }) assertTrue("$name (pt-BR) is empty", text.isNotBlank())
-    }
-
-    @Test
-    fun placeholdersMatchBetweenLanguages() {
-        for (name in owned(english)) {
-            val en = placeholders(english.getValue(name))
-            val pt = placeholders(portugueseBrazil[name] ?: continue)
-            assertEquals("placeholders of $name differ", en, pt)
-        }
-    }
+    // names whose Portuguese text legitimately contains one of the markers (e.g. "Material You")
+    private val knownAcceptable = setOf<String>()
 
     @Test
     fun brazilianTerminologyFollowsTheSpecification() {
         val expected = mapOf(
             "mode_basic" to "Calculadora básica",
             "mode_scientific" to "Calculadora científica",
+            "mode_financial" to "Calculadora financeira RPN",
             "fin_key_pv" to "Valor presente",
             "fin_key_fv" to "Valor futuro",
             "fin_key_pmt" to "Pagamento",
@@ -80,21 +96,25 @@ class StringResourcesTest {
             "fin_reg_flows" to "Fluxos de caixa",
             "fin_menu_clear_registers" to "Limpar registradores",
             "fin_reg_mode_begin" to "início do período",
-            "fin_reg_mode_end" to "final do período"
+            "fin_reg_mode_end" to "final do período",
+            "fin_menu_amortization" to "Tabela de amortização"
         )
-        for ((name, text) in expected) assertEquals(name, text, portugueseBrazil[name])
-        assertTrue(portugueseBrazil.getValue("mode_financial").startsWith("Calculadora financeira"))
-        assertTrue(portugueseBrazil.getValue("fin_title").startsWith("Calculadora financeira"))
-        assertTrue(portugueseBrazil.getValue("fin_key2_amort").contains("Amortizar"))
-        assertEquals("Tabela de amortização", portugueseBrazil["fin_menu_amortization"])
+        for ((name, text) in expected) assertEquals(name, text, strings[name])
     }
 
     @Test
-    fun noHardCodedFinancialLabelsAreMissingFromTheDefaultLanguage() {
-        // every fin_* string used by the panel code exists in the default resources
-        val panel = File(resDir.parentFile, "java/com/darkempire78/opencalculator/financial/FinancialPanel.kt").readText()
-        val used = Regex("R\\.string\\.(fin_[a-z0-9_]+)").findAll(panel).map { it.groupValues[1] }.toSet()
-        val missing = used.filter { it !in english }
+    fun everyStringUsedByTheFinancialPanelIsDefined() {
+        val panel = File(mainDir, "java/com/darkempire78/opencalculator/financial/FinancialPanel.kt").readText()
+        val used = Regex("R\\.string\\.([a-zA-Z0-9_]+)").findAll(panel).map { it.groupValues[1] }.toSet()
+        val allNames = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(File(resDir, "values/strings.xml"))
+            .getElementsByTagName("string").let { n -> (0 until n.length).map { n.item(it).attributes.getNamedItem("name").nodeValue }.toSet() }
+        val missing = used.filter { it !in allNames }
         assertTrue("strings used by FinancialPanel but not defined: $missing", missing.isEmpty())
+    }
+
+    @Test
+    fun noStringIsEmpty() {
+        val empty = strings.filter { it.value.isBlank() }.keys
+        assertTrue("empty strings: $empty", empty.isEmpty())
     }
 }

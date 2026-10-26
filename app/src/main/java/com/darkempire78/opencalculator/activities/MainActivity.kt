@@ -49,7 +49,6 @@ import com.darkempire78.opencalculator.calculator.parser.NumberingSystem.Compani
 import com.darkempire78.opencalculator.calculator.require_real_number
 import com.darkempire78.opencalculator.calculator.syntax_error
 import com.darkempire78.opencalculator.databinding.ActivityMainBinding
-import com.darkempire78.opencalculator.dialogs.DonationDialog
 import com.darkempire78.opencalculator.history.History
 import com.darkempire78.opencalculator.history.HistoryType
 import com.darkempire78.opencalculator.history.historyTypeLabel
@@ -472,10 +471,6 @@ class MainActivity : AppCompatActivity() {
     fun openSettings(menuItem: MenuItem) {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent, null)
-    }
-
-    fun openDonation(menuItem: MenuItem) {
-        DonationDialog(this, layoutInflater).openDonationDialog()
     }
 
     fun clearHistory(menuItem: MenuItem) {

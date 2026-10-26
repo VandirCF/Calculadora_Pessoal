@@ -8,21 +8,12 @@
         <!--app:iconSpaceReserved="false"-->
 
         <Preference
-            android:id="@+id/settings_select_app_language"
-            app:key="darkempire78.opencalculator.APP_LANGUAGE"
-            app:selectable="true"
-            app:enabled="true"
-            app:title="@string/settings_general_language"
-            app:summary="APP LANGUAGE"
-            app:icon="@drawable/language" />
-
-        <Preference
             android:id="@+id/settings_select_app_theme"
             app:key="darkempire78.opencalculator.APP_THEME_SELECTOR"
             app:selectable="true"
             app:enabled="true"
             app:title="@string/settings_general_theme"
-            app:summary="APP THEME"
+            app:summary="@string/settings_general_theme"
             app:icon="@drawable/theme" />
 
         <Preference
@@ -30,8 +21,8 @@
             app:key="darkempire78.opencalculator.NUMBERING_SYSTEM"
             app:selectable="true"
             app:enabled="true"
-            app:title="Numbering System"
-            app:summary="APP THEME"
+            app:title="@string/settings_general_numbering_system"
+            app:summary="@string/settings_general_theme"
             app:icon="@drawable/numbering_system" />
 
         <SwitchPreferenceCompat
@@ -53,15 +44,6 @@
             app:singleLineTitle="false"
             app:defaultValue="false"
             app:widgetLayout="@drawable/material_switch" />
-
-        <Preference
-            android:id="@+id/settings_select_scientificMode_system"
-            app:key="darkempire78.opencalculator.SCIENTIFIC_MODE_ENABLED_BY_DEFAULT"
-            app:selectable="true"
-            app:enabled="true"
-            app:title="@string/settings_general_scientific_mode"
-            app:summary="@string/settings_general_scientific_mode_desc"
-            app:icon="@drawable/science" />
 
 
         <SwitchPreferenceCompat

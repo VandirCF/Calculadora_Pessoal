@@ -17,7 +17,17 @@ object PastedNumber {
         if (text.isEmpty() || text.length > MAX_LENGTH) return null
 
         if (groupingSeparator.isNotEmpty() && groupingSeparator != decimalSeparator) {
-            text = text.replace(groupingSeparator, "")
+            val decimalIndex = text.indexOf(decimalSeparator)
+            val integerPart = if (decimalIndex >= 0) text.substring(0, decimalIndex) else text
+            val fractionPart = if (decimalIndex >= 0) text.substring(decimalIndex) else ""
+            // A grouping mark inside the decimals, or in the wrong place, means the number is written in
+            // another convention (e.g. "1,234.5" read with "," as decimal): refuse instead of misreading it.
+            if (fractionPart.contains(groupingSeparator)) return null
+            if (integerPart.contains(groupingSeparator)) {
+                val properlyGrouped = Regex("^[+-]?[0-9]{1,3}(" + Regex.escape(groupingSeparator) + "[0-9]{3})+$")
+                if (!properlyGrouped.matches(integerPart)) return null
+            }
+            text = integerPart.replace(groupingSeparator, "") + fractionPart
         }
         text = text.replace(decimalSeparator, ".")
         if (!numberPattern.matches(text)) return null

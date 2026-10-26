@@ -77,24 +77,6 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-            val appLanguagePreference = findPreference<Preference>("darkempire78.opencalculator.APP_LANGUAGE")
-
-            // remove the app language button if you are using an Android version lower than v33 (Android 13)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                appLanguagePreference?.isVisible = false
-            } else {
-                // Display the current selected language
-                appLanguagePreference?.summary = Locale.getDefault().displayLanguage
-            }
-
-            // Select app language button
-            appLanguagePreference?.setOnPreferenceClickListener {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    launchChangeAppLanguageIntent()
-                }
-                true
-            }
-
             // Theme button
             val appThemePreference = findPreference<Preference>("darkempire78.opencalculator.APP_THEME_SELECTOR")
 
@@ -132,19 +114,6 @@ class SettingsActivity : AppCompatActivity() {
                         requireActivity().recreate()
                     }
                     .show()
-                true
-            }
-
-            // Numbering System button  settings_select_scientificMode_system
-            val scientificModeTypesSystemPreference =
-                findPreference<Preference>("darkempire78.opencalculator.SCIENTIFIC_MODE_ENABLED_BY_DEFAULT")
-
-            val storedType = MyPreferences(requireContext()).scientificMode
-           val scientificModeType = ScientificMode.getScientificModeType(storedType)
-            val typeDescription=ScientificMode.getScientificModeTypeDescription(requireContext(),scientificModeType)
-            scientificModeTypesSystemPreference?.summary = typeDescription
-            scientificModeTypesSystemPreference?.setOnPreferenceClickListener {
-                openDialogScientificModeSelector(this.requireContext())
                 true
             }
 
@@ -187,64 +156,6 @@ class SettingsActivity : AppCompatActivity() {
         private fun reloadActivity(context: Context) {
             (context as Activity).finish()
             ContextCompat.startActivity(context, context.intent, null)
-        }
-
-        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-        fun launchChangeAppLanguageIntent() {
-            try {
-                Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
-                    data = Uri.fromParts("package", requireContext().packageName, null)
-                    startActivity(this)
-                }
-            } catch (e: Exception) {
-                try {
-                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", requireContext().packageName, null)
-                        startActivity(this)
-                    }
-                } catch (e: Exception) {
-                    println(e)
-                }
-            }
-        }
-        private fun openDialogScientificModeSelector(context: Context) {
-
-            val preferences = MyPreferences(context)
-
-            val builder = MaterialAlertDialogBuilder(context)
-            builder.background = ContextCompat.getDrawable(context, R.drawable.rounded)
-
-            val scientificMode = hashMapOf(
-                0 to context.getString(R.string.settings_general_scientific_mode_deactivate_desc),
-                1 to context.getString(R.string.settings_general_scientific_mode_desc),
-                2 to context.getString(R.string.settings_general_scientific_mode_hide_desc)
-            )
-
-            val checkedItem = preferences.scientificMode
-
-            builder.setSingleChoiceItems(
-                scientificMode.values.toTypedArray(),
-                checkedItem
-            ) { dialog, which ->
-                when (which) {
-                    0 -> {
-                        preferences.scientificMode = 0
-                    }
-
-                    1 -> {
-                        preferences.scientificMode = 1
-                    }
-
-                    2-> {
-                        preferences.scientificMode = 2
-                    }
-
-                }
-                dialog.dismiss()
-                reloadActivity(requireContext())
-            }
-            val dialog = builder.create()
-            dialog.show()
         }
     }
 }
