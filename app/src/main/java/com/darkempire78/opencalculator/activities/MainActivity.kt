@@ -1811,6 +1811,7 @@ class MainActivity : BaseActivity() {
     private fun enableOrDisableScientistMode(isEnabled: Boolean) {
         val imageId = if (isEnabled) R.drawable.ic_baseline_keyboard_arrow_up_24 else R.drawable.ic_baseline_keyboard_arrow_down_24
         binding.scientistModeRow1?.isVisible = true
+        if (binding.scientistModeRow1 == null) setLandscapeBasicKeypad(false)
         binding.scientistModeRow2.isVisible = isEnabled
         binding.scientistModeRow3.isVisible = isEnabled
         binding.degreeTextView.visibility = View.VISIBLE
@@ -1828,9 +1829,58 @@ class MainActivity : BaseActivity() {
 
     private fun hideScientificMode() {
         binding.scientistModeRow1?.visibility = View.GONE
-        binding.scientistModeRow2.visibility = View.GONE
-        binding.scientistModeRow3.visibility = View.GONE
         binding.degreeTextView.visibility = View.GONE
+        if (binding.scientistModeRow1 == null) {
+            // landscape: one grid for both modes. Basic hides only the scientific keys, so every digit stays visible
+            setLandscapeBasicKeypad(true)
+        } else {
+            binding.scientistModeRow2.visibility = View.GONE
+            binding.scientistModeRow3.visibility = View.GONE
+        }
+    }
+
+    private var percentHome: Pair<android.widget.TableRow, Int>? = null
+
+    /** Landscape grid: basic shows 4 x 5 keys (digits and operations, "%" taking the place of "^"). */
+    private fun setLandscapeBasicKeypad(basic: Boolean) {
+        val scientific = listOf(
+            binding.squareButton, binding.factorialButton, binding.degreeButton, binding.eButton, binding.piButton,
+            binding.invButton, binding.naturalLogarithmButton, binding.logarithmButton,
+            binding.sineButton, binding.cosineButton, binding.tangentButton
+        )
+        scientific.forEach { it.visibility = if (basic) View.GONE else View.VISIBLE }
+        val percent = binding.divideBy100Button
+        val slot = binding.exponentButton
+        val slotRow = slot.parent as? android.widget.TableRow ?: return
+        if (basic) {
+            binding.scientistModeRow2.visibility = View.VISIBLE
+            binding.scientistModeRow3.visibility = View.VISIBLE
+            if (percent.parent !== slotRow) {
+                val home = percent.parent as android.widget.TableRow
+                percentHome = home to home.indexOfChild(percent)
+                home.removeView(percent)
+                val index = slotRow.indexOfChild(slot)
+                val slotParams = slot.layoutParams as android.widget.TableRow.LayoutParams
+                slotRow.addView(percent, index, android.widget.TableRow.LayoutParams(0, android.widget.TableRow.LayoutParams.MATCH_PARENT, 1f).apply {
+                    setMargins(slotParams.leftMargin, slotParams.topMargin, slotParams.rightMargin, slotParams.bottomMargin)
+                })
+                percent.setBackgroundTintList(slot.backgroundTintList)
+            }
+            slot.visibility = View.GONE
+        } else {
+            slot.visibility = View.VISIBLE
+            percentHome?.let { (home, index) ->
+                if (percent.parent === slotRow) {
+                    slotRow.removeView(percent)
+                    val sibling = binding.squareButton.layoutParams as android.widget.TableRow.LayoutParams
+                    home.addView(percent, index, android.widget.TableRow.LayoutParams(0, android.widget.TableRow.LayoutParams.MATCH_PARENT, 1f).apply {
+                        setMargins(sibling.leftMargin, sibling.topMargin, sibling.rightMargin, sibling.bottomMargin)
+                    })
+                    percent.backgroundTintList = binding.squareButton.backgroundTintList
+                }
+            }
+            percentHome = null
+        }
     }
 
     // Method to add padding to app window to accommodate system bars
