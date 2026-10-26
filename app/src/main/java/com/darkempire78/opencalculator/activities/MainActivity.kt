@@ -80,7 +80,7 @@ import java.util.UUID
 var appLanguage: Locale = Locale.getDefault()
 var currentTheme: Int = 0
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var view: View
 
     // Resolved from the language and the user settings; refreshed in onResume

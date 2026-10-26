@@ -159,13 +159,84 @@ class EssentialFlowsTest {
         onView(withText(containsString("2 + 3"))).check(matches(isDisplayed()))
     }
 
-    // ---- theme -----------------------------------------------------------------------------------------------------------
+    // ---- themes -----------------------------------------------------------------------------------------------------------
+    private fun applyTheme(option: ThemeOption) {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        MyPreferences(context).appThemeId = option.id
+        scenario.recreate()
+    }
+
+    @Test
+    fun flamengoIsTheDefaultTheme() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        assertEquals(ThemeOption.FLAMENGO, Themes(context).getSelected())
+        assertEquals(R.style.Theme_Calc_Flamengo, currentTheme)
+    }
+
     @Test
     fun changingTheThemeIsAppliedAfterRecreation() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        MyPreferences(context).theme = 1 // AMOLED
-        scenario.recreate()
-        assertEquals(Themes(context).getTheme(), currentTheme)
-        assertEquals(R.style.AmoledTheme, currentTheme)
+        applyTheme(ThemeOption.CAVALIERS)
+        assertEquals(R.style.Theme_Calc_Cavaliers, currentTheme)
+        applyTheme(ThemeOption.FLAMENGO)
+        assertEquals(R.style.Theme_Calc_Flamengo, currentTheme)
+    }
+
+    @Test
+    fun theSelectedThemeIsRestoredWhenTheAppStartsAgain() {
+        applyTheme(ThemeOption.CAVALIERS)
+        scenario.close()
+        scenario = ActivityScenario.launch(MainActivity::class.java)
+        assertEquals(R.style.Theme_Calc_Cavaliers, currentTheme)
+    }
+
+    @Test
+    fun bothThemesShowAllThreeModes() {
+        for (option in ThemeOption.entries) {
+            applyTheme(option)
+            onView(withId(R.id.modeBasicButton)).perform(click())
+            onView(withId(R.id.sevenButton)).check(matches(isDisplayed()))
+            onView(withId(R.id.modeScientificButton)).perform(click())
+            onView(withId(R.id.scientistModeRow2)).check(matches(isDisplayed()))
+            onView(withId(R.id.modeFinancialButton)).perform(click())
+            onView(withTagValue(equalTo("key:ENTER"))).check(matches(isDisplayed()))
+            onView(withId(R.id.themeLogo)).check(matches(isDisplayed()))
+        }
+    }
+
+    @Test
+    fun theMathDoesNotDependOnTheTheme() {
+        for (option in ThemeOption.entries) {
+            applyTheme(option)
+            onView(withId(R.id.modeFinancialButton)).perform(click())
+            keys("CLx", "2", "ENTER", "3", "+")
+            stackX().check(matches(withText(startsWith("5"))))
+        }
+    }
+
+    // ---- language and number format ------------------------------------------------------------------------------------------
+    @Test
+    fun theInterfaceIsInBrazilianPortuguese() {
+        scenario.onActivity { activity ->
+            val locale = activity.resources.configuration.locales[0]
+            assertEquals("pt", locale.language)
+            assertEquals("Calculadora financeira RPN", activity.getString(R.string.mode_financial))
+        }
+        onView(withId(R.id.modeFinancialButton)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun financialValuesUseTheBrazilianFormat() {
+        onView(withId(R.id.modeFinancialButton)).perform(click())
+        typeNumber("1000"); keys("CHS", "PV")
+        register("PV").check(matches(withText(containsString("-1.000,00"))))
+    }
+
+    @Test
+    fun basicCalculatorUsesTheBrazilianFormat() {
+        onView(withId(R.id.oneButton)).perform(click())
+        onView(withId(R.id.zeroButton)).perform(click())
+        onView(withId(R.id.zeroButton)).perform(click())
+        onView(withId(R.id.zeroButton)).perform(click())
+        onView(withId(R.id.input)).check(matches(withText("1.000")))
     }
 }

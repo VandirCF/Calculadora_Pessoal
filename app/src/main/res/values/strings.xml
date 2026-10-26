@@ -75,7 +75,7 @@
     <string name="pointDesc">ponto</string>
 
     <!-- App menu -->
-    <string name="menu_clear_history">Limpar Histórico</string>
+    <string name="menu_clear_history">Limpar histórico</string>
     <string name="menu_settings">Configurações</string>
     <string name="menu_about">Sobre</string>
 
@@ -240,8 +240,8 @@
     <string name="fin_key2_clrfin">Limpar registradores financeiros</string>
     <string name="fin_help_default">Digite um número, pressione ENTER, digite outro e uma operação. Exemplo: 2 ENTER 3 +</string>
     <string name="fin_help_second">2ª ativa: a próxima tecla executa a função escrita acima dela</string>
-    <string name="fin_help_sto">STO: pressione um dígito 0-9 para guardar X</string>
-    <string name="fin_help_rcl">RCL: pressione um dígito 0-9 para recuperar</string>
+    <string name="fin_help_sto">GRAVAR: pressione um dígito 0-9 para guardar X</string>
+    <string name="fin_help_rcl">CHAMAR: pressione um dígito 0-9 para recuperar</string>
     <string name="fin_help_tvm">Digite um valor e pressione n, i, PV, PMT ou FV para guardá-lo. Pressione a tecla de novo sem digitar nada para calculá-la. Entrada de caixa é positiva e saída é negativa (use CHS).</string>
     <string name="fin_err_invalid_input">Entrada inválida</string>
     <string name="fin_err_division_by_zero">Não é possível dividir por zero</string>
@@ -308,7 +308,7 @@
     <string name="fin_ppy_invalid">Informe um número inteiro de 1 a 365</string>
     <string name="fin_ok">OK</string>
     <string name="fin_help_title">Como usar</string>
-    <string name="fin_help_body">RPN: digite primeiro os números e depois a operação. ENTER separa dois números.\n\n2 ENTER 3 +  resulta em 5\n\nParcela de um financiamento: 1000 CHS PV, 12 n, 1 i, 0 FV e depois PMT.\nCHS troca o sinal. Entrada de caixa é positiva e saída é negativa, então PV e PMT precisam ter sinais opostos.\n\nPressionar n, i, PV, PMT ou FV depois de digitar um número o guarda. Pressionar de novo sem digitar nada calcula o valor.\n\nA tecla 2ª dá a função escrita acima de cada tecla. STO e RCL usam a memória 0-9.\n\nFluxo de caixa: CF0 para o fluxo inicial, CFj para os próximos e Nj para repetir o último. Informe i e use NPV, ou pressione IRR.</string>
+    <string name="fin_help_body">RPN: digite primeiro os números e depois a operação. ENTER separa dois números.\n\n2 ENTER 3 +  resulta em 5\n\nParcela de um financiamento: 1000 CHS PV, 12 n, 1 i, 0 FV e depois PMT.\nCHS troca o sinal. Entrada de caixa é positiva e saída é negativa, então PV (valor presente) e PMT (pagamento) precisam ter sinais opostos.\n\nPressionar n (períodos), i (taxa), PV (valor presente), PMT (pagamento) ou FV (valor futuro) depois de digitar um número o guarda. Pressionar de novo sem digitar nada calcula o valor.\n\nA tecla 2ª dá a função escrita acima de cada tecla. GRAVAR e CHAMAR usam a memória 0-9. INÍCIO e FIM escolhem quando o pagamento ocorre.\n\nFluxo de caixa: CF0 para o fluxo inicial, CFj para os próximos e Nj para repetir o último. Informe i e use NPV (valor presente líquido), ou pressione IRR (taxa interna de retorno).\n\nToque e segure uma tecla para ver o nome dela em português.</string>
     <string name="fin_hist_amort_result">Juros %1$s | Principal %2$s | Saldo %3$s</string>
 
     <!-- Unified history -->
@@ -344,7 +344,7 @@
     <string name="settings_category_financial">Calculadora financeira</string>
     <string name="settings_financial_decimals">Casas decimais para valores monetários</string>
     <string name="settings_financial_payment_mode">Pagamentos</string>
-    <string name="settings_financial_payment_mode_desc">Início ou final de cada período (igual às teclas BEG e END)</string>
+    <string name="settings_financial_payment_mode_desc">Início ou final de cada período (igual às teclas INÍCIO e FIM)</string>
     <string name="settings_financial_payments_per_year">Pagamentos por ano</string>
     <string name="settings_formatting_decimal_separator">Separador decimal</string>
     <string name="settings_formatting_grouping">Separador de milhares</string>
@@ -367,18 +367,28 @@
 
     <!-- Sobre -->
     <string name="about_back">Voltar</string>
-    <string name="about_description">Calculadora pessoal com os modos básico, científico e financeiro RPN. Funciona totalmente offline.</string>
+    <string name="about_description">Calculadora pessoal com os modos básico, científico e financeiro RPN. Funciona totalmente sem internet.</string>
     <string name="about_category_credits">CRÉDITOS E LICENÇA</string>
     <string name="about_based_on_text">Baseado no OpenCalc, de Darkempire78 e colaboradores. Software livre sob a Licença Pública Geral GNU, versão 3 (GPL-3.0).</string>
     <string name="about_offline_note">Sem anúncios, sem conta, sem coleta de dados e sem acesso à internet.</string>
     <string name="about_license_title">Licença e créditos</string>
     <string name="about_license_text">Este aplicativo é software livre: você pode redistribuí-lo e modificá-lo sob os termos da Licença Pública Geral GNU, versão 3, publicada pela Free Software Foundation. Ele é fornecido sem garantia.\n\nÉ uma obra derivada do OpenCalc, de Darkempire78 e colaboradores (github.com/Darkempire78/OpenCalc), também licenciado sob a GPL-3.0. Os avisos de direitos autorais originais foram mantidos.\n\nBibliotecas: AndroidX, Material Components e Gson (Licença Apache 2.0) e AndroidSlidingUpPanel (Licença Apache 2.0).\n\nO texto completo da GPL-3.0 acompanha o código-fonte, no arquivo LICENSE.</string>
     <string name="privacy_title">Privacidade</string>
-    <string name="privacy_text">Este aplicativo funciona totalmente offline. Não tem acesso à internet, conta, anúncios, compras, análise de uso nem rastreamento.\n\nSuas configurações, histórico, memória da calculadora e registradores financeiros ficam apenas no seu aparelho, no armazenamento privado do aplicativo.\n\nA única permissão é a vibração, usada no retorno das teclas (pode ser desativada em Configurações).\n\nVocê pode apagar o histórico no menu do aplicativo e os registradores financeiros com 2ª + CLx, ou apagar tudo limpando o armazenamento do aplicativo nas configurações do Android.</string>
+    <string name="privacy_text">Este aplicativo funciona totalmente sem internet. Não tem acesso à rede, conta, anúncios, compras, análise de uso nem rastreamento.\n\nSuas configurações, histórico, memória da calculadora e registradores financeiros ficam apenas no seu aparelho, no armazenamento privado do aplicativo.\n\nA única permissão é a vibração, usada no retorno das teclas (pode ser desativada em Configurações).\n\nVocê pode apagar o histórico no menu do aplicativo e os registradores financeiros com 2ª + CLx, ou apagar tudo limpando o armazenamento do aplicativo nas configurações do Android.</string>
     <string name="privacy_close">Fechar</string>
 
     <!-- Temas -->
     <string name="theme_flamengo">Flamengo</string>
     <string name="theme_cavaliers">Cleveland Cavaliers</string>
     <string name="theme_selected">Selecionado</string>
+
+    <!-- Rótulos das teclas financeiras em português (as siglas PV, FV, PMT, NPV, IRR e CHS seguem a notação das calculadoras financeiras) -->
+    <string name="fin_label_second">2ª</string>
+    <string name="fin_label_begin">INÍCIO</string>
+    <string name="fin_label_end">FIM</string>
+    <string name="fin_label_store">GRAVAR</string>
+    <string name="fin_label_recall">CHAMAR</string>
+    <string name="fin_label_last_x">ÚLT X</string>
+    <string name="fin_label_clear_stack">LIMPAR</string>
+    <string name="fin_label_clear_registers">LIMP. REG</string>
 </resources>

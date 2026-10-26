@@ -163,6 +163,14 @@ class FinancialPanel(
     private val chips = LinkedHashMap<RpnKey, TextView>()
     /** "PV - Valor presente": what the last technical key pressed means, so the notation is never a mystery. */
     private var lastHint: String? = null
+    /** Text shown on a key: Portuguese labels for the English abbreviations, the decimal mark in use for ".". */
+    private val labelResources = mapOf(
+        "2nd" to R.string.fin_label_second, "BEG" to R.string.fin_label_begin, "END" to R.string.fin_label_end,
+        "STO" to R.string.fin_label_store, "RCL" to R.string.fin_label_recall, "LSTx" to R.string.fin_label_last_x,
+        "CLR" to R.string.fin_label_clear_stack, "CLR\u0192" to R.string.fin_label_clear_registers
+    )
+
+    // NOTE: everything build() reads must be declared above this line (property initializers run in order)
     val root: View = build()
 
     private fun dp(v: Int) = (v * context.resources.displayMetrics.density).toInt()
@@ -396,7 +404,7 @@ class FinancialPanel(
         val action: Action = if (second && spec.secondAction != null) spec.secondAction else spec.mainAction
         if (action !is Action.Shift) viewModel.secondActive = false
         val label = if (second && spec.second != null) spec.second else spec.main
-        lastHint = if (action is Action.Press && !label[0].isDigit() && label != "ENTER") "$label \u2014 ${describe(spec, second)}" else null
+        lastHint = if (action is Action.Press && !label[0].isDigit() && label != "ENTER") "${shown(label)} \u2014 ${describe(spec, second)}" else null
         when (action) {
             is Action.Shift -> {
                 viewModel.secondActive = !viewModel.secondActive
@@ -494,15 +502,18 @@ class FinancialPanel(
         return RpnFormatter.format(trimmed, scale, s.decimalSeparator, s.groupingSeparator, s.grouping)
     }
 
+    private fun shown(token: String): String =
+        if (token == ".") settings().decimalSeparator else labelResources[token]?.let { context.getString(it) } ?: token
+
     private fun keyLabel(spec: KeySpec, second: Boolean): CharSequence {
-        val secondLabel = spec.second
-        if (secondLabel == null) return spec.main
+        val secondLabel = spec.second?.let(::shown)
+        if (secondLabel == null) return shown(spec.main)
         val big: String
         val small: String
         if (second) {
-            big = secondLabel; small = spec.main
+            big = secondLabel; small = shown(spec.main)
         } else {
-            big = spec.main; small = secondLabel
+            big = shown(spec.main); small = secondLabel
         }
         val text = SpannableStringBuilder()
         text.append(small, RelativeSizeSpan(0.62f), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -514,7 +525,7 @@ class FinancialPanel(
 
     private fun describe(spec: KeySpec, second: Boolean): String {
         val res = if (second && spec.secondDescription != null) spec.secondDescription else spec.mainDescription
-        return if (res > 0) context.getString(res) else spec.main
+        return if (res > 0) context.getString(res) else shown(spec.main)
     }
 
     private fun renderMessage() {

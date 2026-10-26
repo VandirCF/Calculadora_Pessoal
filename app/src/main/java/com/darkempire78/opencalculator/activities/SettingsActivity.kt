@@ -22,7 +22,7 @@ import com.darkempire78.opencalculator.Themes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.Locale
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

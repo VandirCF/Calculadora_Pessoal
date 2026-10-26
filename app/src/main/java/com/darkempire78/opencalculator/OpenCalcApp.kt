@@ -1,8 +1,6 @@
 package com.darkempire78.opencalculator
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import java.util.Locale
 
 class OpenCalcApp : Application() {
@@ -12,8 +10,8 @@ class OpenCalcApp : Application() {
 
         // The interface exists only in Brazilian Portuguese, whatever the device language is.
         // Numbers, dates and library texts follow it too.
+        // (activities also receive a pt-BR context, see BaseActivity)
         Locale.setDefault(BRAZIL)
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("pt-BR"))
     }
 
     companion object {

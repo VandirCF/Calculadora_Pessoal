@@ -60,6 +60,8 @@
         <item name="colorOnPrimaryContainer">@color/flamengo_text_primary</item>
         <item name="colorSecondary">@color/flamengo_accent</item>
         <item name="colorOnSecondary">@color/flamengo_background</item>
+        <item name="colorSecondaryContainer">@color/flamengo_key_operator</item>
+        <item name="colorOnSecondaryContainer">@color/flamengo_text_primary</item>
         <item name="colorSurface">@color/flamengo_surface</item>
         <item name="colorOnSurface">@color/flamengo_text_primary</item>
         <item name="colorSurfaceVariant">@color/flamengo_surface_variant</item>
@@ -124,6 +126,8 @@
         <item name="colorOnPrimaryContainer">@color/cavaliers_text_primary</item>
         <item name="colorSecondary">@color/cavaliers_accent</item>
         <item name="colorOnSecondary">@color/cavaliers_background</item>
+        <item name="colorSecondaryContainer">@color/cavaliers_key_operator</item>
+        <item name="colorOnSecondaryContainer">@color/cavaliers_text_primary</item>
         <item name="colorSurface">@color/cavaliers_surface</item>
         <item name="colorOnSurface">@color/cavaliers_text_primary</item>
         <item name="colorSurfaceVariant">@color/cavaliers_surface_variant</item>
