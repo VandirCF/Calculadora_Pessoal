@@ -6,6 +6,7 @@ import org.junit.Assert.assertEquals
 import org.junit.BeforeClass
 import org.junit.Test
 import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -14,8 +15,9 @@ import java.text.DecimalFormatSymbols
  */
 class ExpressionUnitTest {
 
-    private val decimalSeparatorSymbol = DecimalFormatSymbols.getInstance().decimalSeparator.toString()
-    private val groupingSeparatorSymbol = DecimalFormatSymbols.getInstance().groupingSeparator.toString()
+    // Fixed locale: tests must not depend on the machine locale (e.g. pt-BR swaps "." and ",")
+    private val decimalSeparatorSymbol = DecimalFormatSymbols.getInstance(Locale.US).decimalSeparator.toString()
+    private val groupingSeparatorSymbol = DecimalFormatSymbols.getInstance(Locale.US).groupingSeparator.toString()
     @Test
     fun percentage_isCorrect() {
         var result = calculate("100*95%", false).toDouble()
